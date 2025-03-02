@@ -1,123 +1,60 @@
-# Online Casino - Biztonságos Pénzköltés és Időkezelés Funkciócsomag
+# Projekt Dokumentáció
 
-## Általános leírás
+## Bevezetés
 
-Ez a dokumentáció egy online casino platform **Biztonságos Pénzköltés és Időkezelés** funkciócsomagját mutatja be. A funkciócsomag célja, hogy a felhasználók felelősségteljesen játszhassanak, miközben a platform segítségével kontrollálják pénzköltésüket és játékidejüket. A funkcionális modell bemutatja a rendszer működését, a használati eseteket, a jogosultságokat, valamint a felületi terveket.
+Ez a dokumentáció a projekt futtatásához szükséges lépéseket tartalmazza. A projekt két fő összetevőből áll: a FrontEnd és a BackEnd. A FrontEnd React alapú alkalmazásokat tartalmaz, míg a BackEnd egy Spring Boot alapú rendszer, amely jelenleg még prototípus állapotban van.
 
----
+## Futtatási Instrukciók
 
-## Funkcionális modell
+### 1. FrontEnd/Main Mappa
 
-### 1. **Pénzköltési figyelmeztető rendszer**
+A FrontEnd/Main mappában található React projekt futtatásához kövesse az alábbi lépéseket:
 
-- **Funkció:** A rendszer figyeli a felhasználó pénzköltését, és értesíti, ha közeledik vagy eléri a beállított keretet.
-- **Működés:**
-  - A felhasználó beállíthat napi, heti vagy havi költségkereteket.
-  - A rendszer figyelmeztetést küld, ha a felhasználó eléri a keret 80%-át.
-  - A keret elérésekor a rendszer letiltja a további pénzköltést.
+1. Nyisson meg egy parancssori ablakot (CMD).
+2. Navigáljon a `FrontEnd/Main` mappába a következő parancs segítségével:
 
-### 2. **Játékidő figyelmeztető rendszer**
+   ```bash
+   cd FrontEnd/Main
+   ```
 
-- **Funkció:** A rendszer figyeli a felhasználó játékidejét, és értesíti, ha túllépi a beállított időkeretet.
-- **Működés:**
-  - A felhasználó beállíthat napi játékidő-korlátot.
-  - A rendszer figyelmeztetést küld, ha a felhasználó eléri az időkeret 80%-át.
-  - Az időkeret elérésekor a rendszer kijelentkezteti a felhasználót.
+3. Futtassa a projektet az alábbi parancsok kiadásával:
 
-### 3. **Önellenőrzési eszközök**
+   ```bash
+   npm install
+   npm start
+   ```
 
-- **Funkció:** A felhasználó részletes statisztikákat kap a pénzköltéséről és játékidejéről.
-- **Működés:**
-  - A rendszer havi jelentéseket készít a felhasználó tevékenységeiről.
-  - A felhasználó beállíthat célokat, például heti költségcsökkentést vagy időkorlátot.
+### 2. FrontEnd/Games Mappa
 
----
+A FrontEnd/Games mappában található React projekt futtatásához kövesse az alábbi lépéseket:
 
-## Használati esetek
+1. Nyisson meg egy új parancssori ablakot (CMD).
+2. Navigáljon a `FrontEnd/Games` mappába a következő parancs segítségével:
 
-### 1. **Pénzköltési figyelmeztetés**
+   ```bash
+   cd FrontEnd/Games
+   ```
 
-- **Felhasználó:** Bejelentkezett felhasználó.
-- **Előfeltétel:** A felhasználó beállított egy napi költségkeretet.
-- **Forgatókönyv:**
-  1.  A felhasználó elkezd játszani és pénzt költeni.
-  2.  A rendszer figyeli a költéseket.
-  3.  Ha a felhasználó eléri a keret 80%-át, a rendszer figyelmeztető üzenetet küld.
-  4.  Ha a felhasználó eléri a keretet, a rendszer letiltja a további pénzköltést.
+3. Futtassa a projektet az alábbi parancsok kiadásával:
 
-### 2. **Játékidő figyelmeztetés**
+   ```bash
+   npm install
+   npm start
+   ```
 
-- **Felhasználó:** Bejelentkezett felhasználó.
-- **Előfeltétel:** A felhasználó beállított egy napi játékidő-korlátot.
-- **Forgatókönyv:**
-  1.  A felhasználó elkezd játszani.
-  2.  A rendszer figyeli a játékidőt.
-  3.  Ha a felhasználó eléri az időkeret 80%-át, a rendszer figyelmeztető üzenetet küld.
-  4.  Ha a felhasználó eléri az időkeretet, a rendszer kijelentkezteti.
+### 3. BackEnd/UserManagementSystem Mappa
 
-### 3. **Önellenőrzési eszközök használata**
+A BackEnd/UserManagementSystem mappában található Spring Boot projekt futtatásához kövesse az alábbi lépéseket:
 
-- **Felhasználó:** Bejelentkezett felhasználó.
-- **Előfeltétel:** A felhasználó már játszott és költött pénzt a platformon.
-- **Forgatókönyv:**
-  1.  A felhasználó megnyitja az önellenőrzési eszközöket.
-  2.  A rendszer megjeleníti a havi statisztikákat (pénzköltés, játékidő).
-  3.  A felhasználó beállíthat új célokat a felelősségteljes játék érdekében.
+1. Nyissa meg az IntelliJ IDEA-t (vagy bármely más, Spring Boot-ot támogató IDE-t).
+2. Töltse be a projektet a `BackEnd/UserManagementSystem` mappából.
+3. Ellenőrizze, hogy a szükséges függőségek telepítve vannak, és a projekt sikeresen fordul.
+4. Futtassa a projektet az IDE beépített futtatási lehetőségével.
 
----
+### Fontos Megjegyzés
 
-## Jogosultságok
+A `BackEnd/UserManagementSystem` jelenleg prototípus állapotban van.
 
-### 1. **Felhasználói jogosultságok**
+## Záró Megjegyzések
 
-- **Regisztrált felhasználó:**
-  - Beállíthat pénzköltési és játékidő-korlátokat.
-  - Kaphat figyelmeztetéseket a költésekről és játékidőről.
-  - Hozzáférhet az önellenőrzési eszközökhöz.
-- **Vendég felhasználó:**
-  - Nem fér hozzá a funkciókhoz, regisztráció szükséges.
-
-### 2. **Adminisztrátori jogosultságok**
-
-- **Rendszergazda:**
-  - Beállíthat alapértelmezett korlátokat az összes felhasználó számára.
-  - Hozzáférhet a felhasználói statisztikákhoz.
-  - Kezelheti a felhasználói fiókokat (pl. önkéntes kizárások).
-
----
-
-## Felületi terv
-
-### 1. **Profilbeállítások oldal**
-
-- **Elemek:**
-  - Pénzköltési korlát beállítása (napi/heti/havi).
-  - Játékidő-korlát beállítása (napi).
-  - Önkéntes kizárás beállítása (pl. 1 hónapra).
-
-### 2. **Figyelmeztető üzenetek**
-
-- **Design:**
-  - Figyelmeztető üzenetek megjelennek a képernyőn, ha a felhasználó közeledik a korlátokhoz.
-  - Üzenetek: "Figyelem! Elérte a napi költségkeret 80%-át." vagy "Figyelem! Már 1,5 órát töltött a platformon."
-
-### 3. **Önellenőrzési eszközök oldal**
-
-- **Elemek:**
-  - Havi statisztikák (pénzköltés, játékidő).
-  - Célok beállítása (pl. "Havi költségem 20%-kal kevesebb legyen.").
-  - Jelentések letöltése (CSV vagy PDF formátumban).
-
----
-
-## Kollaboráns tanulók
-
-- **Bétéri Gábor**
-- **Hansághy Bence**
-- **Kerekes Dominik**
-
----
-
-## Következtetés
-
-A **Biztonságos Pénzköltés és Időkezelés** funkciócsomag lehetővé teszi a felhasználók számára, hogy felelősségteljesen játszanak, miközben a platform segítségével kontrollálják pénzügyeiket és időbeosztásukat. A funkcionális modell, a használati esetek, a jogosultságok és a felületi terv részletesen bemutatják, hogyan valósul meg ez a cél. A kollaboráns tanulók közreműködése biztosítja, hogy a projekt minden szempontból kidolgozott legyen.
+Kérjük, győződjön meg arról, hogy a szükséges szoftverek (Node.js, npm, IntelliJ IDEA stb.) telepítve vannak a rendszerén, mielőtt megpróbálná futtatni a projekteket.

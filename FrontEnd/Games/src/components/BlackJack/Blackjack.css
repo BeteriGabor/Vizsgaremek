@@ -1,0 +1,104 @@
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif; /* Használj Roboto betűtípust */
+    background-color: #e0f7fa; /* Világoskék háttérszín */
+}
+
+h2 {
+    color: #00796b; /* Sötétzöld szín */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h4 {
+    color: #004d40; /* Sötétzöld szín */
+}
+
+h6 {
+    color: #555; /* Szürke szín */
+}
+
+button {
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Gombok háttérszínének animációja */
+    border-radius: 5px; /* Lekerekített sarkok */
+}
+
+button:hover {
+    background-color: #004d40; /* Sötétzöld szín a gombok fölé húzva */
+    transform: scale(1.05); /* Gombok méretének növelése hover állapotban */
+
+}
+
+.card {
+    background-color: #ffffff; /* Fehér háttér a kártyákhoz */
+    border: 1px solid #ccc; /* Szürke keret */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Árnyék a kártyákhoz */
+    padding: 15px; /* Padding a kártyákhoz */
+    border-radius: 8px; /* Lekerekített sarkok */
+    transition: transform 0.2s; /* Animáció a kártyákhoz */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Kártyák felemelése hover állapotban */
+}
+
+.container {
+    padding: 20px; /* Padding a konténerhez */
+    border-radius: 8px; /* Lekerekített sarkok */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Árnyék a konténerhez */
+}
+
+.message {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 15px; /* Padding a szöveg körül */
+    border-radius: 8px; /* Lekerekített sarkok */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Árnyék a doboz körül */
+    transition: background-color 0.3s ease, opacity 0.5s ease; /* Háttérszín és átlátszóság animáció */
+    opacity: 0; /* Kezdetben átlátszó */
+}
+
+
+.dynamic-background {
+    background-image: linear-gradient(to bottom right , red , black);
+    padding: 20px; /* Padding a szöveg körül */
+    border-radius: 18px; /* Lekerekített sarkok */
+
+}
+
+.fade-in {
+    opacity: 1; /* Teljesen látható */
+    transition: opacity 3s ease, transform 3s ease;
+}
+
+.fade-out {
+    opacity: 0; /* Teljesen átlátszó */
+}
+
+.message.bust {
+    color: #ffffff; /* Fehér szín a szöveghez */
+    background-color: #d32f2f; /* Piros háttérszín */
+}
+
+.message.bust:hover {
+    background-color: #b71c1c; /* Sötétebb piros szín hover állapotban */
+}
+
+.message.win {
+    color: #ffffff; /* Fehér szín a szöveghez */
+    background-color: #388e3c; /* Zöld háttérszín */
+}
+
+.message.win:hover {
+    background-color: #2e7d32; /* Sötétebb zöld szín hover állapotban */
+}
+
+.message.tie {
+    color: #000000; /* Fekete szín a szöveghez */
+    background-color: #9e9e9e; /* Szürke háttérszín */
+}
+
+.message.tie:hover {
+    background-color: #757575; /* Sötétebb szürke szín hover állapotban */
+}
