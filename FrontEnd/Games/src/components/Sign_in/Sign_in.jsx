@@ -52,7 +52,8 @@ function Sign_in() {
 
     const style3 = {
       display: 'flex',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      color: 'black'
     }
 
     const handleSubmit = async (event) => {

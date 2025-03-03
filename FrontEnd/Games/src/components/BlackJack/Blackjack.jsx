@@ -133,6 +133,8 @@ const Blackjack = () => {
                 setMessage('You win!');
             } else if (playerScore < dealerScore) {
                 setMessage('You lose!');
+            } else if (playerScore === 21 && dealerScore < 21) {
+                setMessage('You win')
             } else {
                 setMessage('It\'s a tie!');
             }

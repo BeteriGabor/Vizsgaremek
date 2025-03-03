@@ -55,6 +55,10 @@ function Register(){
           justifyContent: 'space-between'
         }
 
+        const style3 = {
+          color: 'black'
+        }
+
         const handleSubmit = async (event) => {
           event.preventDefault(); 
           const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -74,7 +78,7 @@ function Register(){
                     birthDate: dayjs(birthDate).format("YYYY-MM-DD"),
                   });
       
-                  console.log(response.data);
+                  alert(response.data.message)
                   navigate('/sign_in');
       
               } catch (error) {
@@ -190,7 +194,7 @@ function Register(){
                                 <Button variant="contained" type="submit" color="secondary">Back to Login page!</Button>
                             </Link>
                         </Box>         
-                        <p>Be careful! The more you play the more chance you will become an addict!</p>
+                        <p style={style3}>Be careful! The more you play the more chance you will become an addict!</p>
                     </FormControl>
                </form>
             </Box>
