@@ -1,7 +1,7 @@
 import React from "react";
 import "./App.css"
-import Sign_in from "./components/Sign_in/Sign_in";
 import { Button, Box } from '@mui/material'
+import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 
 function App() {
@@ -22,21 +22,27 @@ const style = {
 
 const style2 = {
   display: 'flex',
-  justifyContent: 'center'
+  justifyContent: 'space-between'
 }
 
   return (
     <>
+      <Typography variant="h5" gutterBottom align="center" color="white" className="dynamic-background2">
+        Welcome in our Casino!  
+      </Typography>
       <Box sx={style}>
             <Box sx={style2}>
-              <Link to="/blackjack">
-                <Button variant="contained" type="submit" color="secondary" >Blackjack</Button>
-              </Link>
-              <Link>
-                <Button variant="contained" type="submit" color="secondary" >Slot</Button>
-              </Link>
-            </Box>
-          </Box>
+          <Link to="/blackjack">
+            <Button variant="contained" type="submit" color="secondary" >Blackjack</Button>
+          </Link>
+          <Link to="/slot">
+            <Button variant="contained" type="submit" color="secondary" >Slot</Button>
+          </Link>
+          <Link to="/sign_in">
+            <Button variant="contained" type="submit" color="secondary">Login</Button>
+          </Link>
+        </Box>
+      </Box>
     </>
   );
 }

@@ -1,19 +1,22 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router, Routes , Route } from 'react-router-dom';
 import Register from './components/Register/Register'
 import Blackjack from './components/BlackJack/Blackjack';
 import Sign_in from './components/Sign_in/Sign_in';
 import Slot from './components/Slot/Slot';
+import PasswordChange from './components/PasswordChange/PasswordChange';
+import App from './App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Router>
       <Routes>
+        <Route path='/' element={<App/>}></Route>
+        <Route path='password_change' element={<PasswordChange />}></Route>
         <Route path='slot' element={<Slot/>}></Route>
         <Route path='sign_in' element={<Sign_in />}></Route>
         <Route path='register' element={<Register/>}></Route>

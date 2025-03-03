@@ -8,7 +8,7 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import './Register.css'
+import axios from 'axios';
 
 function Register(){
         const [open, setOpen] = useState(true)
@@ -55,23 +55,34 @@ function Register(){
           justifyContent: 'space-between'
         }
 
-        const handleSubmit = (event) => {
-            event.preventDefault(); 
-            const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-            console.log(username + "\n" + password + "\n" + email + "\n" + birthDate);
-            if (username === "" || password === "" || birthDate === null || email === "") {
-                alert("Please fill out the form fully and correctly!")
-            } else if (password !== passwordHelp){
-                alert("Password are not the same!")
-            } else if(!emailPattern.test(email)){
-                alert("Your email is incorrrect!")
-                setEmailError("Your email is incorrrect!")
-            } else {
-                console.log(username + "\n" + password + "\n" + email + "\n" + birthDate );
-                navigate('/')
-            }
-        };
+        const handleSubmit = async (event) => {
+          event.preventDefault(); 
+          const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          
+          if (password !== passwordHelp) {
+              alert("Passwords are not the same!");
+          } else if (!emailPattern.test(email)) {
+              alert("Your email is incorrect!");
+              setEmailError("Your email is incorrect!");
+          } else {
+              try {
+                  const response = await axios.post('http://localhost:1010/auth/register', {
+                    username: username,
+                    email: email,
+                    password: password,
+                    role: 'user', 
+                    birthDate: dayjs(birthDate).format("YYYY-MM-DD"),
+                  });
+      
+                  console.log(response.data);
+                  navigate('/sign_in');
+      
+              } catch (error) {
+                  console.error("There was an error registering!", error);
+                  alert("Registration failed! Please try again.");
+              }
+          }
+      };
 
     return(
         <Modal open={open} onClose={handleClose} disableEscapeKeyDown BackdropProps={{
@@ -80,7 +91,7 @@ function Register(){
             sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
             <Fade in={open} timeout={2000}>
             <Box sx={style}>
-              <h1>Register!</h1>
+              <h2>Register!</h2>
                <form onSubmit={handleSubmit}>
                <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined" >
                 <TextField id="outlined-basic" label="Username" variant="outlined" onChange={(e) => {setUsername(e.target.value)}} required/>
@@ -175,7 +186,7 @@ function Register(){
                     <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
                         <Box sx={style2}>
                             <Button variant="contained" type="submit" color="success">Register</Button>
-                            <Link to="/">
+                            <Link to="/sign_in">
                                 <Button variant="contained" type="submit" color="secondary">Back to Login page!</Button>
                             </Link>
                         </Box>         

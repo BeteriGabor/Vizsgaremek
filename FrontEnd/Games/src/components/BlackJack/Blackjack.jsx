@@ -5,7 +5,6 @@ import Card from '../Card/Card';
 import blackjackImage from '../assests/blackjack.jpg';
 import { Link } from 'react-router-dom';
 
-
 const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
 const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 
@@ -44,16 +43,19 @@ const Blackjack = () => {
                 (hand[0].rank === '10' && hand[1].rank === 'A')
     };
 
-    const calculateScore = (hand) => {
+    const calculateScore = (hand, forceAceAsEleven = false) => {
         let score = hand.reduce((total, card) => total + getCardValue(card), 0);
         let aces = hand.filter(card => card.rank === 'A').length;
-        
-
-        while (score > 21 && aces) {
-            score -= 10; 
-            aces--;
+    
+        if (forceAceAsEleven && score <= 21) {
+            score += aces; 
+        } else {
+            while (score > 21 && aces) {
+                score -= 10; 
+                aces--;
+            }
         }
-
+    
         return score;
     };
 
@@ -113,92 +115,112 @@ const Blackjack = () => {
         if (!gameOver && playerHand.length > 0) {
             let newDeck = [...deck];
             let dealerScore = calculateScore(dealerHand);
+            
             while (dealerScore < 17) {
                 const newCard = newDeck.pop();
                 setDealerHand([...dealerHand, newCard]);
                 dealerScore = calculateScore([...dealerHand, newCard]);
                 newDeck = newDeck;
             }         
+            
             const playerScore = calculateScore(playerHand);
-            if (dealerScore > 21 || playerScore > dealerScore) {
+            
+            if (playerScore > 21) {
+                setMessage('You lose! (Busted)');
+            } else if (dealerScore > 21) {
+                setMessage('You win! (Dealer busted)');
+            } else if (playerScore > dealerScore) {
                 setMessage('You win!');
             } else if (playerScore < dealerScore) {
                 setMessage('You lose!');
             } else {
                 setMessage('It\'s a tie!');
             }
+            
             setGameOver(true);
             setDeck(newDeck);
         }
     };
 
     return (
-        <Container sx={{ minHeight: '100vh', width: '100%', padding: '10px' , backgroundImage: `url(${blackjackImage})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat'}}>
-            <Typography variant="h5" gutterBottom align="center" color="white" className="dynamic-background">
+        <>
+            <Typography variant="h4" align="center" color="white" className="dynamic-background">
                 Blackjack
             </Typography>
-            <Box mt={4} display="flex" flexDirection="column" alignItems="center" sx={{
-                                                                                        backgroundColor: 'white', 
-                                                                                        border: '2px solid black', 
-                                                                                        borderRadius: '10px', 
-                                                                                        padding: '10px', 
-                                                                                        width: '50%',
-                                                                                        margin: '0 auto'
-                                                                                    }}>
-                <Typography variant="h6" color="black">Dealer's Hand:</Typography>
-                <Box display="flex" justifyContent="center" flexWrap="wrap">
-                    {dealerHand.map((card, index) => (
-                        <Card key={index}>
-                            {card.rank} of {card.suit}
-                        </Card>
-                    ))}
+            <Box className="container">
+                <Box className="dealer-box">
+                    <Typography variant="h6" color="black">Dealer's Hand:</Typography>
+                    <Box display="flex" justifyContent="center" flexWrap="wrap">
+                        {dealerHand.map((card, index) => (
+                            <Card key={index}>
+                                {card.rank} of {card.suit}
+                            </Card>
+                        ))}
+                    </Box>
+                    <Typography variant="h6" color="black">Dealer's Score: {calculateScore(dealerHand)}</Typography>
                 </Box>
-                <Typography variant="h6" color="black">Dealer's Score: {calculateScore(dealerHand)}</Typography>
-            </Box>
 
-            <Box mt={4} display="flex" flexDirection="column" alignItems="center">
-                <Button variant="contained" color="primary" onClick={startGame} sx={{ marginBottom: '20px' }}>
-                    Start Game
-                </Button>
-            </Box>
-            <Box mt={2} display="flex" flexDirection='column' alignItems="center" sx={{
-                                                                                        backgroundColor: 'white', 
-                                                                                        border: '2px solid black', 
-                                                                                        borderRadius: '10px', 
-                                                                                        padding: '10px', 
-                                                                                        width: '50%',
-                                                                                        margin: '0 auto'
-                                                                                    }}>
-                <Typography variant="h6" color="black">Your Hand:</Typography>
-                <Box display="flex" justifyContent="center" flexWrap="wrap">
-                    {playerHand.map((card, index) => (
-                        <Card key={index}>
-                            {card.rank} of {card.suit}
-                        </Card>
-                    ))}
+                <Box className="button-container">
+                    <Button variant="contained" color="primary" onClick={startGame}>
+                        Start Game
+                    </Button>
                 </Box>
-                <Typography variant="h6" color="black">Your Score: {calculateScore(playerHand)}</Typography>
+
+                <Box className="player-box">
+                    <Typography variant="h6" color="black">Your Hand:</Typography>
+                    <Box display="flex" justifyContent="center" flexWrap="wrap">
+                        {playerHand.map((card, index) => (
+                            <Card key={index}>
+                                {card.rank} of {card.suit}
+                            </Card>
+                        ))}
+                    </Box>
+                    <Typography variant="h6" color="black">Your Score: {calculateScore(playerHand)}</Typography>
+                </Box>
+
+                <Box className="button-container">
+                    <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={hit} 
+                        disabled={gameOver || playerHand.length === 0} 
+                        sx={{ 
+                            marginRight: '10px', 
+                            opacity: gameOver || playerHand.length === 0 ? 0.5 : 1, 
+                            cursor: gameOver || playerHand.length === 0 ? 'not-allowed' : 'pointer' 
+                        }}
+                    >
+                        Hit
+                    </Button>
+                    <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={stand} 
+                        disabled={gameOver || playerHand.length === 0} 
+                        sx={{ 
+                            opacity: gameOver || playerHand.length === 0 ? 0.5 : 1, 
+                            cursor: gameOver || playerHand.length === 0 ? 'not-allowed' : 'pointer' 
+                        }}
+                    >
+                        Stand
+                    </Button>
+                </Box>
+
+                {message && (
+                    <Box className={`message ${fade ? 'fade-in' : 'fade-out'} ${message.includes('lose') ? 'bust' : message.includes('win') ? 'win' : message.includes('tie') ? 'tie' : ''}`}>
+                        <Typography variant="h6" align="center">
+                            {message}
+                        </Typography>
+                    </Box>
+                )}
+
+                <Box className="button-container">
+                    <Link to="http://localhost:3000">
+                        <Button variant="contained" color="secondary">Close Blackjack</Button>
+                    </Link>
+                </Box>
             </Box>
-            <Box mt={4} display="flex" justifyContent="center">
-                <Button variant="contained" color="secondary" onClick={hit} disabled={gameOver || playerHand.length === 0} sx={{ marginRight: '10px', opacity: gameOver || playerHand.length === 0 ? 0.5 : 1 , cursor: gameOver || playerHand.length === 0 ? 'not-allowed' : 'pointer' } }>
-                    Hit
-                </Button>
-                <Button variant="contained" color="secondary" onClick={stand} disabled={gameOver || playerHand.length === 0} sx={{ opacity: gameOver || playerHand.length === 0 ? 0.5 : 1, cursor: gameOver || playerHand.length === 0 ? 'not-allowed' : 'pointer'}}>
-                    Stand
-                </Button>
-            </Box>
-            {message && (
-                <Typography variant="h6" mt={2} color="error">
-                    <p  className={`message ${fade ? 'fade-in' : 'fade-out'} ${message.includes('Bust') || message.includes('lose') ? 'bust' : message.includes('win') ? 'win' : message.includes('tie') ? 'tie' : ''}`}>{message}</p>
-                </Typography>
-            )}
-           
-           <Box mt={4} display="flex" justifyContent="center">
-                <Link to="/">
-                    <Button variant="contained" color="secondary">Close Blackjack</Button>
-                </Link>
-            </Box>
-        </Container>
+        </>
     );
 };
 

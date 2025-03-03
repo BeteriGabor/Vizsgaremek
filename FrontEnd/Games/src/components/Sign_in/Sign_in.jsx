@@ -3,6 +3,7 @@ import { Modal , Button , Box , FormControl , InputLabel, OutlinedInput , InputA
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Link , useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import "./Sign_in.css"
 
 
@@ -10,8 +11,9 @@ function Sign_in() {
     const [open, setOpen] = useState(true)
     const [showPassword, setShowPassword] = useState(false)
 
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState("")
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const navigate = useNavigate();
@@ -26,7 +28,7 @@ function Sign_in() {
 
 
     function handleClose(){
-      setOpen(true);
+      setOpen(false);
     }
 
     const style = {
@@ -48,19 +50,32 @@ function Sign_in() {
       justifyContent: 'center'
     }
 
-    const handleSubmit = (event) => {
+    const style3 = {
+      display: 'flex',
+      justifyContent: 'space-between'
+    }
+
+    const handleSubmit = async (event) => {
       event.preventDefault(); 
+  
+      try {
+        const response = await axios.post('http://localhost:1010/auth/login', {
+            username: username,
+            password: password
+        });
 
-      if (username === "" || password === "") {
-          alert("Please fill out the form fully and correctly!");
-      } else {
-          console.log(username + "\n" + password);
-          navigate('http://localhost:3000')
+        console.log(JSON.stringify(response.data, null, 2)); // Szép formázás
+        if (response.data.message === "Successfully logged in") {
+          alert(response.data.message)
+          navigate('http://localhost:3000');
+        } else {
+            alert("Login failed! " + "Please check your credentials.");
+        }
+
+      } catch (error) {
+        alert("Login failed! Please check your credentials.");
       }
-
-      setOpen(false)
-    };
-
+  };
     return(
         <>
           <Modal open={open} 
@@ -74,7 +89,7 @@ function Sign_in() {
           >
             <Fade in={open} timeout={2000}>
               <Box sx={style}>
-                <h1>Login to your account!</h1>
+                <h2>Login to your account!</h2>
                   <form onSubmit={handleSubmit}>
                     <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
                       <TextField id="outlined-basic" label="Username" variant="outlined" onChange={(e) => {setUsername(e.target.value)}} required/>
@@ -105,10 +120,17 @@ function Sign_in() {
             
                     <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
                       <Box sx={style2}>
-                        <Button variant="contained" type="submit" color="success" >Login</Button>
+                        <Button variant="contained" type="submit" color="success">Login</Button>
                       </Box>
-                      <p>You don't have an account?</p>
-                      <Link to="/register">Click here!</Link>         
+                      <Box sx={style3}>
+                        <p>You don't have an account?</p>
+                        <p>Forgot your password?</p>
+                      </Box>
+
+                      <Box sx={style3}>
+                        <Link to="/register">Register!</Link> 
+                        <Link to="/password_change">Change password!</Link>   
+                      </Box>      
                     </FormControl>
                   </form> 
               </Box>
@@ -120,3 +142,4 @@ function Sign_in() {
 }
 
 export default Sign_in;
+

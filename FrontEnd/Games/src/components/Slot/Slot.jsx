@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Slot.modules.css';
+import './Slot.css';
 
 const SYMBOLS = ['🍎', '🍋', '🍇', '🍒', '💎', '7️⃣'];
 
