@@ -9,6 +9,7 @@ import Sign_in from './components/Sign_in/Sign_in';
 import Slot from './components/Slot/Slot';
 import PasswordChange from './components/PasswordChange/PasswordChange';
 import App from './App';
+import Aviator from './components/Aviator/Aviator';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -18,6 +19,7 @@ root.render(
         <Route path='/' element={<App/>}></Route>
         <Route path='password_change' element={<PasswordChange />}></Route>
         <Route path='slot' element={<Slot/>}></Route>
+        <Route path='aviator' element={<Aviator/>}></Route>
         <Route path='sign_in' element={<Sign_in />}></Route>
         <Route path='register' element={<Register/>}></Route>
         <Route path='blackjack' element={<Blackjack/>}></Route>

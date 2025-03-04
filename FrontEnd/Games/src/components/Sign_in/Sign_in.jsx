@@ -65,7 +65,6 @@ function Sign_in() {
             password: password
         });
 
-        console.log(JSON.stringify(response.data, null, 2)); // Szép formázás
         if (response.data.message === "Successfully logged in") {
           alert(response.data.message)
           navigate('http://localhost:3000');

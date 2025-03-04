@@ -47,19 +47,34 @@ function PasswordChange(){
         justifyContent: 'space-between'
     }
 
+    const fetchUser = async (name) => {
+        try {
+            const response = await axios.get(`http://localhost:1010/admin/get-all-users`);
+            const users = response.data.data;
+            console.log(users)
+            const user = users.find(user => user.name === name);
+            return user ? user.id : null;
+        } catch (error) {
+            alert("User not found!");
+            return null;
+        }
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault(); 
-        try {
-            const response = await axios.post('http://localhost:1010/auth/refresh', {
-                password: password,
-            });
+        const userId = await fetchUser(username)
 
-            console.log(response.data);
-            navigate('/sign_in');
-
-        } catch (error) {
-            console.error("There was an error changing password!", error);
-            alert("There was an error changing password! Passwords are not the same!");
+        if(userId){
+            try {
+                const response = await axios.put(`http://localhost:1010/admin/update/${userId}`, {
+                    password: password,
+                });
+                alert("Password succesfully changed! Login with the new password!")
+                navigate('/sign_in');
+    
+            } catch (error) {
+                alert("There was an error changing password! Passwords are not the same!");
+            }
         }
     };
     return(

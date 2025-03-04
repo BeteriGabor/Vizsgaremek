@@ -38,6 +38,9 @@ const style2 = {
           <Link to="/slot">
             <Button variant="contained" type="submit" color="secondary" >Slot</Button>
           </Link>
+          <Link to="/aviator">
+            <Button variant="contained" type="submit" color="secondary">Aviator</Button>
+          </Link>
           <Link to="/sign_in">
             <Button variant="contained" type="submit" color="secondary">Login</Button>
           </Link>

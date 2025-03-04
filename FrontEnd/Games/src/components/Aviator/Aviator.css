@@ -1,0 +1,102 @@
+body {
+    background: linear-gradient(135deg, #74ebd5, #acb6e5);
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.flight-display {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    height: 400px; 
+    width: 300px; 
+    margin: 0 auto; 
+}
+
+.airplane {
+    width: 50px;
+    height: 30px;
+    background: url("../assests/airplane.jpg") no-repeat center center;
+    background-size: contain;
+    position: absolute;
+    bottom: 0;
+    opacity: 1;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+@keyframes fly {
+    0% {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    80% {
+        transform: translateX(-50%) translateY(-200px); 
+        opacity: 1;
+    }
+    100% {
+        opacity: 0; 
+    }
+}
+
+@keyframes crash {
+    0% {
+        transform: translateX(-50%) translateY(-200px); 
+    }
+    100% {
+        transform: translateX(-50%) translateY(300px); 
+        opacity: 0;
+    }
+}
+
+.multiplier-display {
+    font-size: 2rem;
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #007BFF;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.controls {
+    margin: 20px 0;
+}
+
+button {
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    background-color: #0056b3;
+}
+
+.status {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    color: #555;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+a {
+    text-decoration: none;
+}
+
+a button {
+    margin-top: 20px;
+}
