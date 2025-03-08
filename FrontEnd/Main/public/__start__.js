@@ -185,6 +185,10 @@
 
     function initApp(device) {
         try {
+            //fetch a token kinyeréséhez
+            const urlParams = new URLSearchParams(window.location.search);
+            const myParam = urlParams.get('token');
+            console.log(myParam);
             var createOptions = new pc.AppOptions();
             createOptions.graphicsDevice = device;
 

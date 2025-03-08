@@ -5,4 +5,5 @@
 }
 body{
     background-image: url('./components/assests/bgimage.jpg');
+    overflow: hidden;
 }
