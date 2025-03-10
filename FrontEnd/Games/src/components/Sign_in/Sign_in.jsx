@@ -67,7 +67,7 @@ function Sign_in() {
 
         if (response.data.message === "Successfully logged in") {
           alert(response.data.message)
-          navigate('http://localhost:3000');
+          navigate('/');
         } else {
             alert("Login failed! " + "Please check your credentials.");
         }
