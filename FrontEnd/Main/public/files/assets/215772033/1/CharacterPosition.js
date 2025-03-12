@@ -20,9 +20,10 @@ CharacterPosition.prototype.update = function(dt) {
        
         var inZone = Math.abs(playerPos.x - target.x) < 12 && Math.abs(playerPos.z - target.z) < 7;
 
+        
         if (inZone && !target.inside) { 
             
-            window.open(target.url, '_blank');
+            window.location.href = target.url;
             target.inside = true;
         } 
         
