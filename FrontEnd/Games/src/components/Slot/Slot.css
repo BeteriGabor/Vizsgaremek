@@ -1,6 +1,6 @@
 .slot-machine-page {
   min-width: 220vh;
-  background-image: url('../assests/slotbackground.png');
+  background-image: url('../assets/slotbackground.png');
   background-position: center;
   background-repeat: no-repeat;
   display: flex;

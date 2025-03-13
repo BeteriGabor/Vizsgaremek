@@ -10,6 +10,8 @@ const StyledCard = styled(Paper)(({ theme }) => ({
     backgroundColor: '#ffffff',
     border: '20,px solid #ccc',
     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)', 
+    display:'flex',
+    flexDirection:'row',
 }));
 
 const Card = ({ children }) => {
