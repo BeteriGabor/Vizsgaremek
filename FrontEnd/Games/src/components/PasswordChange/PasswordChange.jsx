@@ -6,6 +6,8 @@ import { Link , useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function PasswordChange(){
+    //előző jelszó lekérése és a név alapján az id megkeresése 
+    
     const [open, setOpen] = useState(true)
     const [showPassword, setShowPassword] = useState(false)
     const handleClickShowPassword = () => setShowPassword((show) => !show);
