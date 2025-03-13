@@ -24,14 +24,16 @@ const getCardValue = (card) => {
 };
 
 const Blackjack = () => {
+    //felhasználó beépítése
+    
     const [deck, setDeck] = useState(createDeck());
     const [playerHand, setPlayerHand] = useState([]);
     const [dealerHand, setDealerHand] = useState([]);
     const [gameOver, setGameOver] = useState(false);
     const [message, setMessage] = useState('');
-    const [credits, setCredits] = useState(100); // Kezdő kreditek
-    const [bet, setBet] = useState(0); // Fogadott összeg
-    const [gameStarted, setGameStarted] = useState(false); // Nyomon követjük, hogy a játék elindult-e
+    const [credits, setCredits] = useState(100); 
+    const [bet, setBet] = useState(0); 
+    const [gameStarted, setGameStarted] = useState(false);
 
     const isBlackjack = (hand) => {
         return (hand[0].rank === 'Ace' && hand[1].rank === 'Jack') || 
@@ -62,7 +64,7 @@ const Blackjack = () => {
 
     useEffect(() => {
         if (message) {
-            const timer = setTimeout(() => setMessage(''), 5000); // 5 másodperc múlva eltűnik az üzenet
+            const timer = setTimeout(() => setMessage(''), 5000); 
             return () => clearTimeout(timer);
         }
     }, [message]);
@@ -85,7 +87,7 @@ const Blackjack = () => {
 
         if (isBlackjack(playerCards)) {
             setMessage('You got a Blackjack! You win!');
-            setCredits(prevCredits => prevCredits + bet * 1.5); // Blackjack esetén 1.5x a nyeremény
+            setCredits(prevCredits => prevCredits + bet * 1.5);
             setGameOver(true);
         } else if (isBlackjack(dealerCards)) {
             setMessage('Dealer got a Blackjack! You lose!');
