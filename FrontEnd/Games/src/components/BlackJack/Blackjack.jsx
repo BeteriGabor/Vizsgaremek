@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Typography, Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-import './Blackjack.css';
+import './Blackjack.module.css';
 import blackjackImage from '../assets/blackjack.jpg';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 
 const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
 const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
@@ -24,8 +25,6 @@ const getCardValue = (card) => {
 };
 
 const Blackjack = () => {
-    //felhasználó beépítése
-    
     const [deck, setDeck] = useState(createDeck());
     const [playerHand, setPlayerHand] = useState([]);
     const [dealerHand, setDealerHand] = useState([]);
@@ -33,7 +32,8 @@ const Blackjack = () => {
     const [message, setMessage] = useState('');
     const [credits, setCredits] = useState(100); 
     const [bet, setBet] = useState(0); 
-    const [gameStarted, setGameStarted] = useState(false);
+    const [gameStarted, setGameStarted] = useState(false); 
+    const navigate = useNavigate();
 
     const isBlackjack = (hand) => {
         return (hand[0].rank === 'Ace' && hand[1].rank === 'Jack') || 
@@ -82,18 +82,18 @@ const Blackjack = () => {
         setPlayerHand(playerCards);
         setDealerHand(dealerCards);
         setDeck(newDeck);
-        setGameStarted(true); // Beállítjuk, hogy elindult a játék
+        setGameStarted(true); 
         setGameOver(false);
 
-        if (isBlackjack(playerCards)) {
+        /*if (isBlackjack(playerCards)) {
             setMessage('You got a Blackjack! You win!');
-            setCredits(prevCredits => prevCredits + bet * 1.5);
+            setCredits(prevCredits => prevCredits + bet * 1.5); 
             setGameOver(true);
         } else if (isBlackjack(dealerCards)) {
             setMessage('Dealer got a Blackjack! You lose!');
             setCredits(prevCredits => prevCredits - bet);
             setGameOver(true);
-        }
+        }*/
     };
 
     const hit = () => {
@@ -102,13 +102,16 @@ const Blackjack = () => {
             const newCard = newDeck.pop();
             setPlayerHand([...playerHand, newCard]);
             setDeck(newDeck);
-            if (calculateScore([...playerHand, newCard]) > 21) {
+            /*if (calculateScore([...playerHand, newCard]) > 21) {
                 setMessage('Bust! You lose.');
                 setCredits(prevCredits => prevCredits - bet);
                 setGameOver(true);
+                stand();
             } else if (calculateScore([...playerHand, newCard]) === 21) {
                 stand();
-            }
+            }*/
+           if(calculateScore([...playerHand, newCard]) >= 21)
+           stand()
         }
     };
 
@@ -125,31 +128,36 @@ const Blackjack = () => {
             }
 
             const playerScore = calculateScore(playerHand);
-
-            if (playerScore > 21) {
-                setMessage('You lose! (Busted)');
-                setCredits(prevCredits => prevCredits - bet);
-            } else if (dealerScore > 21) {
-                setMessage('You win! (Dealer busted)');
+            if(playerScore===21){
+                setMessage('You won!')
                 setCredits(prevCredits => prevCredits + bet);
-            } else if (playerScore > dealerScore) {
-                setMessage('You win!');
+            }else if (playerScore > 21) {
+                setMessage('You lost! (Busted)');
+                setCredits(prevCredits => prevCredits - bet);
+            } else if (dealerScore > 21&&playerScore<21) {
+                setMessage('You won! (Dealer busted)');
+                setCredits(prevCredits => prevCredits + bet);
+            }else if (dealerScore>21&&playerScore>21){
+                setMessage('You lost')
+            }
+             else if (playerScore > dealerScore) {
+                setMessage('You won!');
                 setCredits(prevCredits => prevCredits + bet);
             } else if (playerScore < dealerScore) {
-                setMessage('You lose!');
+                setMessage('You lost!');
                 setCredits(prevCredits => prevCredits - bet);
             } else {
                 setMessage('It\'s a tie!');
             }
 
             setGameOver(true);
-            setGameStarted(false); // Visszaállítjuk a gameStarted állapotot
+            setGameStarted(false); 
             setDeck(newDeck);
         }
     };
 
     const handleExit = () => {
-        window.location.href = '/'; 
+        navigate('/');
     };
      const getCardImage = (rank, suit) => {
                 return require(`../assets/cards/${rank.toLowerCase()}_of_${suit.toLowerCase()}.png`);

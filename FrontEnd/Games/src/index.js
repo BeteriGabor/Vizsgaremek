@@ -10,6 +10,7 @@ import Slot from './components/Slot/Slot';
 import PasswordChange from './components/PasswordChange/PasswordChange';
 import App from './App';
 import Aviator from './components/Aviator/Aviator';
+import ChickenGame from './components/Chicken/Chicken';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -20,6 +21,7 @@ root.render(
         <Route path='/' element={<App/>}></Route>
         <Route path='password_change' element={<PasswordChange />}></Route>
         <Route path='slot' element={<Slot/>}></Route>
+        <Route path='chicken' element={<ChickenGame/>}></Route>
         <Route path='aviator' element={<Aviator/>}></Route>
         <Route path='sign_in' element={<Sign_in />}></Route>
         <Route path='register' element={<Register/>}></Route>

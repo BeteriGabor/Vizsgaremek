@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Box, Typography } from "@mui/material"
 import { Link } from "react-router-dom"
-import './Aviator.css';
+import './Aviator.module.css';
 
 
 const Aviator = () => {

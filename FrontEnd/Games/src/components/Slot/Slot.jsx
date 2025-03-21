@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './Slot.css';
+import style from './Slot.module.css';
 
 const SYMBOLS = ['🍎', '🍋', '🍇', '🍒', '💎', '7️⃣'];
 const BET_AMOUNTS = [10, 20, 50, 100];
@@ -91,52 +91,37 @@ const SlotMachine = () => {
   };
 
   return (
-    <div className="slot-machine-page">
-      <button 
-        className="exit-button" 
-        onClick={handleExit}
-        disabled={isSpinning}
-      >
-        EXIT
-      </button>
-      
-      <div className="slot-machine">
-      <div className="slots">
+    <div className={style.slotMachinePage}>
+    <button className={style.exitButton} onClick={handleExit} disabled={isSpinning}>
+      EXIT
+    </button>
+    <div className={style.slotMachine}>
+      <div className={style.slots}>
         {slots.map((symbol, index) => (
-          <div 
-            key={index} 
-            className={`slot ${winningPositions[index] ? 'winning' : ''}`}
-          >
+          <div key={index} className={`${style.slot} ${winningPositions[index] ? style.winning : ''}`}>
             {symbol}
           </div>
         ))}
+      </div>
+      <div className={style.controls}>
+        <div className={style.credits}>Credits: {credits}</div>
+        <div className={style.betSelector}>
+          <label>Select Bet:</label>
+          <select value={currentBet} onChange={(e) => setCurrentBet(Number(e.target.value))} disabled={isSpinning}>
+            {BET_AMOUNTS.map((amount) => (
+              <option key={amount} value={amount}>
+                {amount} credits
+              </option>
+            ))}
+          </select>
         </div>
-        <div className="controls">
-          <div className="credits">Credits: {credits}</div>
-          <div className="bet-selector">
-            <label>Select Bet:</label>
-            <select 
-              value={currentBet} 
-              onChange={(e) => setCurrentBet(Number(e.target.value))}
-              disabled={isSpinning}
-            >
-              {BET_AMOUNTS.map((amount) => (
-                <option key={amount} value={amount}>
-                  {amount} credits
-                </option>
-              ))}
-            </select>
-          </div>
-          <button 
-            className="spin-button" 
-            onClick={spin} 
-            disabled={isSpinning || credits < currentBet}
-          >
-            {isSpinning ? 'SPINNING...' : `SPIN! (${currentBet} credits)`}
-          </button>
-        </div>
+        <button className={style.spinButton} onClick={spin} disabled={isSpinning || credits < currentBet}>
+          {isSpinning ? 'SPINNING...' : `SPIN! (${currentBet} credits)`}
+        </button>
       </div>
     </div>
+  </div>
+  
   );
 };
 
