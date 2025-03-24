@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Typography, Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import './Blackjack.module.css';
-import blackjackImage from '../assets/blackjack.jpg';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -32,8 +31,20 @@ const Blackjack = () => {
     const [message, setMessage] = useState('');
     const [credits, setCredits] = useState(100); 
     const [bet, setBet] = useState(0); 
-    const [gameStarted, setGameStarted] = useState(false); 
     const navigate = useNavigate();
+    const [fade, setFade] = useState(false);
+
+    useEffect(() => {
+        if (message) {
+            setFade(true); 
+            const timer = setTimeout(() => {
+                setFade(false); 
+                setMessage(''); 
+            }, 5000); 
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
+
 
     const isBlackjack = (hand) => {
         return (hand[0].rank === 'Ace' && hand[1].rank === 'Jack') || 
@@ -63,11 +74,19 @@ const Blackjack = () => {
     };
 
     useEffect(() => {
-        if (message) {
-            const timer = setTimeout(() => setMessage(''), 5000); 
+        if (message) {  
+            setFade(true);
+            const timer = setTimeout(() => {
+                setFade(false);
+                const clearMessageTimer = setTimeout(() => {
+                    setMessage(''); 
+                }, 500);
+                return () => clearTimeout(clearMessageTimer);
+            }, 10000);
             return () => clearTimeout(timer);
         }
     }, [message]);
+    
     
     const startGame = () => {
         if (bet <= 0 || bet > credits) {
@@ -82,10 +101,9 @@ const Blackjack = () => {
         setPlayerHand(playerCards);
         setDealerHand(dealerCards);
         setDeck(newDeck);
-        setGameStarted(true); 
         setGameOver(false);
 
-        /*if (isBlackjack(playerCards)) {
+        if (isBlackjack(playerCards)) {
             setMessage('You got a Blackjack! You win!');
             setCredits(prevCredits => prevCredits + bet * 1.5); 
             setGameOver(true);
@@ -93,7 +111,7 @@ const Blackjack = () => {
             setMessage('Dealer got a Blackjack! You lose!');
             setCredits(prevCredits => prevCredits - bet);
             setGameOver(true);
-        }*/
+        }
     };
 
     const hit = () => {
@@ -102,16 +120,14 @@ const Blackjack = () => {
             const newCard = newDeck.pop();
             setPlayerHand([...playerHand, newCard]);
             setDeck(newDeck);
-            /*if (calculateScore([...playerHand, newCard]) > 21) {
+            if (calculateScore([...playerHand, newCard]) > 21) {
                 setMessage('Bust! You lose.');
                 setCredits(prevCredits => prevCredits - bet);
                 setGameOver(true);
                 stand();
             } else if (calculateScore([...playerHand, newCard]) === 21) {
                 stand();
-            }*/
-           if(calculateScore([...playerHand, newCard]) >= 21)
-           stand()
+            }
         }
     };
 
@@ -128,71 +144,47 @@ const Blackjack = () => {
             }
 
             const playerScore = calculateScore(playerHand);
-            if(playerScore===21){
-                setMessage('You won!')
-                setCredits(prevCredits => prevCredits + bet);
-            }else if (playerScore > 21) {
-                setMessage('You lost! (Busted)');
-                setCredits(prevCredits => prevCredits - bet);
-            } else if (dealerScore > 21&&playerScore<21) {
-                setMessage('You won! (Dealer busted)');
-                setCredits(prevCredits => prevCredits + bet);
-            }else if (dealerScore>21&&playerScore>21){
-                setMessage('You lost')
-            }
-             else if (playerScore > dealerScore) {
-                setMessage('You won!');
-                setCredits(prevCredits => prevCredits + bet);
-            } else if (playerScore < dealerScore) {
-                setMessage('You lost!');
-                setCredits(prevCredits => prevCredits - bet);
-            } else {
+            if(dealerScore === playerScore) {
                 setMessage('It\'s a tie!');
+            } else if(playerScore ===21){
+                if(dealerScore === 21){
+                    setMessage('It\'s a tie!');
+                } else {
+                    setMessage('You win!');
+                    setCredits(prevCredits => prevCredits + bet);
+                }
+            } else if (playerScore > 21) {
+                if(dealerScore > 21){
+                    setMessage('It\'s a tie!');
+                    setCredits(prevCredits => prevCredits + bet);
+                }else{
+                    setMessage('You lose!');
+                    setCredits(prevCredits => prevCredits - bet);
+                }
             }
+                
 
             setGameOver(true);
-            setGameStarted(false); 
             setDeck(newDeck);
         }
     };
 
-    const handleExit = () => {
+    function exit() {
         navigate('/');
+    }
+
+    const getCardImage = (rank, suit) => {
+        return require(`../assets/cards/${rank.toLowerCase()}_of_${suit.toLowerCase()}.png`);
     };
-     const getCardImage = (rank, suit) => {
-                return require(`../assets/cards/${rank.toLowerCase()}_of_${suit.toLowerCase()}.png`);
-            };
-    return (
+    
+    return(
         <>
-            <Typography variant="h4" className="dynamic-background">
-                Blackjack
-            </Typography>
-            <Box className="container">
-                <Box className="dealer-box">
-                    <Typography variant="h6">Dealer's Hand:</Typography>
-                    <Box className="card-container">
-                        {dealerHand.map((card, index) => (
-                            <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} />
-                        ))}
-                    </Box>
-                    <Typography variant="h6">Dealer's Score: {calculateScore(dealerHand)}</Typography>
-                </Box>
-
-                <Box className="player-box">
-                    <Typography variant="h6" color="black">Your Hand:</Typography>
-                    <Box className="card-container">
-                        {playerHand.map((card, index) => (
-                            <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} />
-                        ))}
-                    </Box>
-                    <Typography variant="h6" color="black">Your Score: {calculateScore(playerHand)}</Typography>
-                </Box>
-
-                <Typography className={`credit-display ${credits < 20 ? 'low-credits' : ''}`}>
-                    Credits: {credits}
-                </Typography>
-
-                <Box className="bet-box">
+            <Box className="game-container">
+                <Box className="header">
+                    <Button variant='contained' onClick={exit} color='error' className='exit'>Exit</Button>
+                    <Typography variant="h4" align="center" color="black">
+                        Blackjack
+                    </Typography>
                     <FormControl fullWidth>
                         <InputLabel>Bet Amount</InputLabel>
                         <Select
@@ -207,32 +199,83 @@ const Blackjack = () => {
                             ))}
                         </Select>
                     </FormControl>
+                    <Typography className={`credit-display ${credits < 20 ? 'low-credits' : ''}`}>
+                        Credits: {credits}
+                    </Typography>
                 </Box>
 
-                <Box className="button-container">
-                    <Button
-                        variant="contained"
-                        onClick={startGame}
-                        disabled={gameStarted} 
-                    >
-                        Start Game
-                    </Button>
-                </Box>
-
-                <Box className="button-container">
-                    <Button variant="contained" color="secondary" onClick={hit} disabled={gameOver || playerHand.length === 0}>Hit</Button>
-                    <Button variant="contained" color="secondary" onClick={stand} disabled={gameOver || playerHand.length === 0}>Stand</Button>
-                </Box>
-
-                {message && (
-                    <Box className={`message ${message.includes('lose') ? 'bust' : message.includes('win') ? 'win' : message.includes('tie') ? 'tie' : ''}`}>
-                        <Typography variant="h6" align="center">{message}</Typography>
+                <Box className="container">
+                    <Box className="dealer-box">
+                        <Typography variant="h6" color="black" textAlign={"center"}>Dealer's Hand:</Typography>
+                        <Box display="flex" justifyContent="center" flexWrap="wrap">
+                        {dealerHand.map((card, index) => (
+                            index === 0 ? (
+                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} />
+                            ) : (
+                                <img key={index} src={require('../assets/cards/back_of_card.png')} alt="Card Back" />
+                            )
+                            ))}
+                        </Box>
+                        <Typography variant="h6" color="black" textAlign={"center"}>Dealer's Score: {dealerHand.length > 0 ? getCardValue(dealerHand[0]) : 0}</Typography>
                     </Box>
-                )}
 
-                <button className="exit-button" onClick={handleExit}>EXIT</button>
+                    <Box className="player-box">
+                        <Typography variant="h6" color="black" textAlign={"center"}>Your Hand:</Typography>
+                        <Box display="flex" justifyContent="center" flexWrap="wrap">
+                            {playerHand.map((card, index) => (
+                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} />
+                            ))}
+                        </Box>
+                        <Typography variant="h6" color="black" textAlign={"center"}>Your Score: {calculateScore(playerHand)}</Typography>
+                    </Box>
+
+                    <Box className="button-container">
+                        <Button 
+                            variant="contained" 
+                            color="secondary" 
+                            onClick={hit} 
+                            disabled={gameOver || playerHand.length === 0} 
+                            sx={{ 
+                                marginRight: '10px', 
+                                opacity: gameOver || playerHand.length === 0 ? 0.5 : 1, 
+                                cursor: gameOver || playerHand.length === 0 ? 'not-allowed' : 'pointer' 
+                            }}
+                        >
+                            Hit
+                        </Button>
+                        <Button 
+                            variant="contained" 
+                            color="secondary" 
+                            onClick={stand} 
+                            disabled={gameOver || playerHand.length === 0} 
+                            sx={{ 
+                                opacity: gameOver || playerHand.length === 0 ? 0.5 : 1, 
+                                cursor: gameOver || playerHand.length === 0 ? 'not-allowed' : 'pointer' 
+                            }}
+                        >
+                            Stand
+                        </Button>
+                    </Box>
+
+
+                    <Box className="buttonStart-container">
+                        <Button variant="contained" color="primary" onClick={startGame}>
+                            Start Game
+                        </Button>
+                    </Box>
+                
+                    <Box className="message">
+                        {message && (
+                            <Box className={`message ${fade ? 'fade-in' : 'fade-out'} ${message.includes('lose') ? 'bust' : message.includes('win') ? 'win' : message.includes('tie') ? 'tie' : ''}`}>
+                                <Typography variant="h6" align="center">
+                                    {message}
+                                </Typography>
+                            </Box>
+                        )}
+                    </Box>
+                </Box>
             </Box>
-        </>
+        </>   
     );
 };
 
