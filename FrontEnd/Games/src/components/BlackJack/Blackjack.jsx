@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Typography, Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-import './Blackjack.module.css';
+import Navbar from '../Navbar/Navbar'; 
 import { useNavigate } from 'react-router-dom';
 
-
+console.log('Navbar:', Navbar)
 const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
 const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
 
@@ -169,9 +169,7 @@ const Blackjack = () => {
         }
     };
 
-    function exit() {
-        navigate('/');
-    }
+    
 
     const getCardImage = (rank, suit) => {
         return require(`../assets/cards/${rank.toLowerCase()}_of_${suit.toLowerCase()}.png`);
@@ -179,103 +177,89 @@ const Blackjack = () => {
     
     return(
         <>
-            <Box className="game-container">
-                <Box className="header">
-                    <Button variant='contained' onClick={exit} color='error' className='exit'>Exit</Button>
-                    <Typography variant="h4" align="center" color="black">
-                        Blackjack
-                    </Typography>
-                    <FormControl fullWidth>
-                        <InputLabel>Bet Amount</InputLabel>
-                        <Select
-                            value={bet}
-                            label="Bet Amount"
-                            onChange={(e) => setBet(e.target.value)}
-                        >
-                            {[10, 20, 50, 100].map((amount) => (
-                                <MenuItem key={amount} value={amount}>
-                                    {amount} Credits
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <Typography className={`credit-display ${credits < 20 ? 'low-credits' : ''}`}>
-                        Credits: {credits}
-                    </Typography>
-                </Box>
-
-                <Box className="container">
-                    <Box className="dealer-box">
-                        <Typography variant="h6" color="black" textAlign={"center"}>Dealer's Hand:</Typography>
-                        <Box display="flex" justifyContent="center" flexWrap="wrap">
-                        {dealerHand.map((card, index) => (
-                            index === 0 ? (
-                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} />
-                            ) : (
-                                <img key={index} src={require('../assets/cards/back_of_card.png')} alt="Card Back" />
-                            )
-                            ))}
-                        </Box>
-                        <Typography variant="h6" color="black" textAlign={"center"}>Dealer's Score: {dealerHand.length > 0 ? getCardValue(dealerHand[0]) : 0}</Typography>
-                    </Box>
-
-                    <Box className="player-box">
-                        <Typography variant="h6" color="black" textAlign={"center"}>Your Hand:</Typography>
-                        <Box display="flex" justifyContent="center" flexWrap="wrap">
-                            {playerHand.map((card, index) => (
-                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} />
-                            ))}
-                        </Box>
-                        <Typography variant="h6" color="black" textAlign={"center"}>Your Score: {calculateScore(playerHand)}</Typography>
-                    </Box>
-
-                    <Box className="button-container">
-                        <Button 
-                            variant="contained" 
-                            color="secondary" 
-                            onClick={hit} 
-                            disabled={gameOver || playerHand.length === 0} 
-                            sx={{ 
-                                marginRight: '10px', 
-                                opacity: gameOver || playerHand.length === 0 ? 0.5 : 1, 
-                                cursor: gameOver || playerHand.length === 0 ? 'not-allowed' : 'pointer' 
-                            }}
-                        >
-                            Hit
-                        </Button>
-                        <Button 
-                            variant="contained" 
-                            color="secondary" 
-                            onClick={stand} 
-                            disabled={gameOver || playerHand.length === 0} 
-                            sx={{ 
-                                opacity: gameOver || playerHand.length === 0 ? 0.5 : 1, 
-                                cursor: gameOver || playerHand.length === 0 ? 'not-allowed' : 'pointer' 
-                            }}
-                        >
-                            Stand
-                        </Button>
-                    </Box>
-
-
-                    <Box className="buttonStart-container">
-                        <Button variant="contained" color="primary" onClick={startGame}>
-                            Start Game
-                        </Button>
-                    </Box>
+        <Navbar>
+            {({ credits, setCredits }) => (
+                <div className="game-container w-full h-full pt-16">
+                    <div className="header flex justify-between items-center mb-6 p-4 rounded-xl shadow-lg">
+                        <div className="form-control w-full">
+                            <label htmlFor="bet-amount" className="block text-white mb-2">Bet Amount</label>
+                            <select 
+                                id="bet-amount"
+                                value={bet}
+                                onChange={(e) => setBet(Number(e.target.value))}
+                                className="w-full p-2 bg-white text-black rounded-lg shadow-md"
+                            >
+                                {[10, 20, 50, 100].map((amount) => (
+                                    <option key={amount} value={amount}>
+                                        {amount} Credits
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+            
+                    <div className="container flex flex-col items-center justify-center min-h-screen w-full">
+                        <div className="dealer-box mb-6 p-5 border-2 border-gray-700 rounded-xl shadow-lg">
+                            <h2 className="text-xl text-center text-white">Dealer's Hand:</h2>
+                            <div className="flex justify-center flex-wrap">
+                                {dealerHand.map((card, index) => (
+                                    gameOver || index === 0 ? (
+                                        <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} className="w-24 h-36 mr-2" />
+                                    ) : (
+                                        <img key={index} src={require('../assets/cards/back_of_card.png')} alt="Card Back" className="w-24 h-36 mr-2" />
+                                    )
+                                ))}
+                            </div>
+                            <p className="text-xl text-center text-white">
+                                Dealer's Score: {gameOver ? calculateScore(dealerHand) : (dealerHand.length > 0 ? getCardValue(dealerHand[0]) : 0)}
+                            </p>
+                        </div>
                 
-                    <Box className="message">
-                        {message && (
-                            <Box className={`message ${fade ? 'fade-in' : 'fade-out'} ${message.includes('lose') ? 'bust' : message.includes('win') ? 'win' : message.includes('tie') ? 'tie' : ''}`}>
-                                <Typography variant="h6" align="center">
-                                    {message}
-                                </Typography>
-                            </Box>
-                        )}
-                    </Box>
-                </Box>
-            </Box>
-        </>   
+                        <div className="player-box mb-6 p-5 border-2 border-gray-700 rounded-xl shadow-lg">
+                            <h2 className="text-xl text-center text-white">Your Hand:</h2>
+                            <div className="flex justify-center flex-wrap">
+                                {playerHand.map((card, index) => (
+                                    <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} className="w-24 h-36 mr-2" />
+                                ))}
+                            </div>
+                            <p className="text-xl text-center text-white">Your Score: {calculateScore(playerHand)}</p>
+                        </div>
+                
+                        <div className="button-container flex justify-center space-x-4 mb-6">
+                            <button 
+                                onClick={() => hit(credits, setCredits)} 
+                                disabled={gameOver || playerHand.length === 0} 
+                                className={`bg-gray-600 text-white py-2 px-6 rounded-lg hover:bg-gray-700 transition-opacity ${gameOver || playerHand.length === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}>
+                                Hit
+                            </button>
+                            <button 
+                                onClick={() => stand(credits, setCredits)} 
+                                disabled={gameOver || playerHand.length === 0} 
+                                className={`bg-gray-600 text-white py-2 px-6 rounded-lg hover:bg-gray-700 transition-opacity ${gameOver || playerHand.length === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}>
+                                Stand
+                            </button>
+                        </div>
+                
+                        <div className="buttonStart-container mb-6">
+                            <button 
+                                onClick={() => startGame(credits, setCredits)} 
+                                className="bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+                                Start Game
+                            </button>
+                        </div>
+                
+                        <div className="message mt-6 w-1/2 p-6 rounded-xl shadow-lg">
+                            {message && (
+                                <div className={`message ${fade ? 'fade-in' : 'fade-out'} ${message.includes('lose') ? 'bg-red-600' : message.includes('win') ? 'bg-green-700' : message.includes('tie') ? 'bg-gray-600' : ''}`}>
+                                    <h2 className="text-center text-white">{message}</h2>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </Navbar>
+    </>
     );
 };
 

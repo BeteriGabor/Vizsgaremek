@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import style from './Slot.module.css';
 
 const SYMBOLS = ['🍎', '🍋', '🍇', '🍒', '💎', '7️⃣'];
 const BET_AMOUNTS = [10, 20, 50, 100];
@@ -91,37 +90,62 @@ const SlotMachine = () => {
   };
 
   return (
-    <div className={style.slotMachinePage}>
-    <button className={style.exitButton} onClick={handleExit} disabled={isSpinning}>
-      EXIT
-    </button>
-    <div className={style.slotMachine}>
-      <div className={style.slots}>
-        {slots.map((symbol, index) => (
-          <div key={index} className={`${style.slot} ${winningPositions[index] ? style.winning : ''}`}>
-            {symbol}
-          </div>
-        ))}
-      </div>
-      <div className={style.controls}>
-        <div className={style.credits}>Credits: {credits}</div>
-        <div className={style.betSelector}>
-          <label>Select Bet:</label>
-          <select value={currentBet} onChange={(e) => setCurrentBet(Number(e.target.value))} disabled={isSpinning}>
-            {BET_AMOUNTS.map((amount) => (
-              <option key={amount} value={amount}>
-                {amount} credits
-              </option>
-            ))}
-          </select>
+    <div className="w-screen h-screen bg-cover bg-fixed bg-center bg-slotbg flex items-center relative font-sans">
+      <button 
+        className="fixed top-0 right-0 mt-[1%] mr-[1%] bg-red-600 hover:bg-red-700 text-white border-none rounded-lg cursor-pointer text-lg py-2 px-4 transition-all duration-300 ease-in-out hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed"
+        onClick={handleExit} 
+        disabled={isSpinning}
+      >
+        EXIT
+      </button>
+      
+      <div className="max-w-[20%] mx-auto text-center py-[20%]">
+        <div className="flex justify-center gap-[70px] mb-[270px] mt-[20%]">
+          {slots.map((symbol, index) => (
+            <div 
+              key={index} 
+              className={`w-full h-[120px] rounded-xl flex items-center justify-center text-[60px] ${
+                winningPositions[index] 
+                  ? 'bg-green-500/30 border-3 border-green-500 animate-pulse' 
+                  : ''
+              }`}
+            >
+              {symbol}
+            </div>
+          ))}
         </div>
-        <button className={style.spinButton} onClick={spin} disabled={isSpinning || credits < currentBet}>
-          {isSpinning ? 'SPINNING...' : `SPIN! (${currentBet} credits)`}
-        </button>
+        
+        <div className="flex flex-col items-center gap-4">
+          <div className="text-2xl text-gray-100 font-bold">
+            Credits: {credits}
+          </div>
+          
+          <div className="my-2.5 flex items-center gap-2.5 text-gray-100">
+            <label>Select Bet:</label>
+            <select 
+              value={currentBet} 
+              onChange={(e) => setCurrentBet(Number(e.target.value))} 
+              disabled={isSpinning}
+              className="p-1.5 text-base rounded bg-gray-800 text-gray-100 border-2 border-gray-900"
+            >
+              {BET_AMOUNTS.map((amount) => (
+                <option key={amount} value={amount}>
+                  {amount} credits
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <button 
+            className="py-4 px-10 text-xl bg-red-600 text-white border-none rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:bg-red-700 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed"
+            onClick={spin} 
+            disabled={isSpinning || credits < currentBet}
+          >
+            {isSpinning ? 'SPINNING...' : `SPIN!`}
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-  
   );
 };
 
