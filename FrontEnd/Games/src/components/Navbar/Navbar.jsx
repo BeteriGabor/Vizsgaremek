@@ -3,15 +3,12 @@ import { useNavigate } from 'react-router-dom';
 
 const Navbar = ({ children }) => {
   const navigate = useNavigate();
-
-
-  const [credits, setCredits] = useState(1000); 
+  const [credits, setCredits] = useState(1000);
 
   const exit = () => {
     navigate('/');
   };
 
-  // Extract page name from URL
   const pathName = window.location.pathname.split('/').pop();
   const pageName = pathName.charAt(0).toUpperCase() + pathName.slice(1);
 
