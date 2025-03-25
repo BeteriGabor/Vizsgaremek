@@ -100,3 +100,17 @@ a {
 a button {
     margin-top: 20px;
 }
+
+@media (max-width: 600px) {
+    .multiplier-display {
+        font-size: 20px; 
+    }
+
+    .airplane {
+        font-size: 40px;
+    }
+
+    button {
+        font-size: 14px;
+    }
+}

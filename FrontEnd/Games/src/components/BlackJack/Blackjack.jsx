@@ -173,18 +173,22 @@ const Blackjack = () => {
     return(
         <> 
             <Navbar></Navbar> 
-            <div className="container flex flex-col items-center justify-center min-h-screen w-full">
+            <div className="container flex flex-col items-center justify-center min-h-screen w-full mt-16">
                 <div className="flex justify-center space-x-4 mb-4 w-full max-w-5xl">
                     <div className="dealer-box p-4 border-2 border-gray-700 rounded-xl shadow-lg w-full max-w-3xl">
                         <h2 className="text-xl text-center text-white">Dealer's Hand:</h2>
-                        <div className="flex justify-center flex-wrap">
-                            {dealerHand.map((card, index) => (
-                                gameOver || index === 0 ? (
-                                    <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} className="w-20 h-32 mr-2" />
+                        <div className="flex justify-center flex-wrap gap-2">
+                        {dealerHand.map((card, index) => (
+                            gameOver ? (
+                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} className="w-20 h-32" />
+                            ) : (
+                                index === 0 ? (
+                                    <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} className="w-20 h-32" />
                                 ) : (
-                                    <img key={index} src={require('../assets/cards/back_of_card.png')} alt="Card Back" className="w-20 h-32 mr-2" />
+                                    <img key={index} src={require('../assets/cards/back_of_card.png')} alt="Card Back" className="w-20 h-32" />
                                 )
-                            ))}
+                            )
+                        ))}
                         </div>
                         <p className="text-xl text-center text-white">
                             Dealer's Score: {gameOver ? calculateScore(dealerHand) : (dealerHand.length > 0 ? getCardValue(dealerHand[0]) : 0)}
@@ -193,9 +197,9 @@ const Blackjack = () => {
 
                     <div className="player-box p-4 border-2 border-gray-700 rounded-xl shadow-lg w-full max-w-3xl">
                         <h2 className="text-xl text-center text-white">Your Hand:</h2>
-                        <div className="flex justify-center flex-wrap">
+                        <div className="flex justify-center flex-wrap gap-2">
                             {playerHand.map((card, index) => (
-                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} className="w-20 h-32 mr-2" />
+                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} className="w-20 h-32" />
                             ))}
                         </div>
                         <p className="text-xl text-center text-white">Your Score: {calculateScore(playerHand)}</p>

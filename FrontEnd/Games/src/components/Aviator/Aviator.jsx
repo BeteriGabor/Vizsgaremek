@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Box, Typography } from "@mui/material"
-import { Link } from "react-router-dom"
 import './Aviator.module.css';
+import Navbar from '../Navbar/Navbar';
 
 
 const Aviator = () => {
@@ -50,22 +50,74 @@ const Aviator = () => {
 
     return (
         <>
+            <Navbar />
             <Box sx={{ textAlign: 'center', padding: 2 }}>
-                <Typography variant="h4" gutterBottom>Aviator</Typography>
-                <Box className="flight-display" sx={{ margin: 2, position: 'relative', height: '200px', border: '2px solid #007BFF', borderRadius: '8px' }}>
-                    <div className="airplane" style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)' }}></div>
-                    <Typography variant="h6" className="multiplier-display" sx={{ position: 'absolute', top: 10, left: '50%', transform: 'translateX(-50%)' }}>
-                        Szorzó: <span>{multiplier}x</span>
+                <Typography variant="h4" gutterBottom>Aviator Game</Typography>
+                <Box 
+                    className="flight-display" 
+                    sx={{ 
+                        margin: 2, 
+                        position: 'relative', 
+                        height: '300px', 
+                        border: '3px solid #007BFF', 
+                        borderRadius: '12px', 
+                        background: 'linear-gradient(to top, #87CEEB, #FFFFFF)' 
+                    }}
+                >
+                    <div 
+                        className="airplane" 
+                        style={{ 
+                            position: 'absolute', 
+                            bottom: isFlying ? `${multiplier * 10}px` : '0', 
+                            left: '50%', 
+                            transform: 'translateX(-50%)', 
+                            transition: 'bottom 0.1s linear' 
+                        }}
+                    >
+                        ✈️
+                    </div>
+                    <Typography 
+                        variant="h6" 
+                        className="multiplier-display" 
+                        sx={{ 
+                            position: 'absolute', 
+                            top: 10, 
+                            left: '50%', 
+                            transform: 'translateX(-50%)', 
+                            fontWeight: 'bold', 
+                            color: '#333' 
+                        }}
+                    >
+                        Multiplier: <span>{multiplier}x</span>
                     </Typography>
                 </Box>
                 <Box className="controls" sx={{ margin: 2 }}>
-                    <Button variant="contained" color="primary" onClick={placeBet}>Tét elhelyezése</Button>
-                    <Button variant="contained" color="secondary" onClick={cashOut}>Kivétel</Button>
+                    <Button 
+                        variant="contained" 
+                        color="primary" 
+                        onClick={placeBet} 
+                        disabled={isFlying}
+                        sx={{ marginRight: 1 }}
+                    >
+                        Place Bet
+                    </Button>
+                    <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        onClick={cashOut} 
+                        disabled={!isFlying}
+                        sx={{ marginLeft: 1 }}
+                    >
+                        Cash Out
+                    </Button>
                 </Box>
-                <Typography variant="body1" className="status">{statusMessage}</Typography>
-                <Link to="http://localhost:3000">
-                    <Button variant="outlined" color="error">Close Aviator</Button>
-                </Link>
+                <Typography 
+                    variant="body1" 
+                    className="status" 
+                    sx={{ marginTop: 2, fontStyle: 'italic', color: '#555' }}
+                >
+                    {statusMessage}
+                </Typography>
             </Box>
         </>
     );
