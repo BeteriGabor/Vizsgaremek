@@ -4,7 +4,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { Link , useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import "./Sign_in.module.css"
+
 
 
 function Sign_in() {
@@ -32,7 +32,7 @@ function Sign_in() {
     }
 
     const style = {
-        width: '400px',
+        width: '470px',
         position: 'absolute',
         top: '50%',
         left: '50%',
@@ -86,10 +86,11 @@ function Sign_in() {
           sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
           aria-labelledby="modal-modal-title" 
           aria-describedby="modal-modal-description"
+          className="bg-defbg"
           >
             <Fade in={open} timeout={2000}>
-              <Box sx={style}>
-                <h2>Login to your account!</h2>
+              <Box sx={style} >
+                <h2 className="text-xl">Login to your account!</h2>
                   <form onSubmit={handleSubmit}>
                     <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
                       <TextField id="outlined-basic" label="Username" variant="outlined" onChange={(e) => {setUsername(e.target.value)}} required/>
@@ -128,8 +129,8 @@ function Sign_in() {
                       </Box>
 
                       <Box sx={style3}>
-                        <Link to="/register">Register!</Link> 
-                        <Link to="/password_change">Change password!</Link>   
+                        <Link to="/register" className=" text-green-600">Register!</Link> 
+                        <Link to="/password_change" className="text-red-600">Change password!</Link>   
                       </Box>      
                     </FormControl>
                   </form> 
