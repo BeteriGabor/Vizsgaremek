@@ -5,7 +5,7 @@ CharacterPosition.prototype.initialize = function() {
     this.targetPositions = [
         { x: -13, z: 17, url: "http://localhost:3001/sign_in", inside: false },
         { x: -21, z: 3, url: "http://localhost:3001/slot", inside: false },
-        { x: 19, z: 4, url: "http://localhost:3001/aviator", inside: false },
+        { x: 19, z: 4, url: "http://localhost:3001/othergames", inside: false },
         { x: 23, z: -14, url:"", inside: false},
         { x: -21, z: -14, url:"http://localhost:3001/blackjack", inside: false},
     ];

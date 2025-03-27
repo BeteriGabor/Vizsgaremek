@@ -173,9 +173,9 @@ const Blackjack = () => {
     return(
         <> 
             <Navbar></Navbar> 
-            <div className="container flex flex-col items-center justify-center min-h-screen w-full mt-16">
+            <div className=" flex flex-col items-center justify-center w-screen min-h-screen mt-16 bg-blackjackbg">
                 <div className="flex justify-center space-x-4 mb-4 w-full max-w-5xl">
-                    <div className="dealer-box p-4 border-2 border-gray-700 rounded-xl shadow-lg w-full max-w-3xl">
+                    <div className="dealer-box p-4 border-2 border-gray-700  bg-green-950 rounded-xl shadow-lg w-full max-w-3xl">
                         <h2 className="text-xl text-center text-white">Dealer's Hand:</h2>
                         <div className="flex justify-center flex-wrap gap-2">
                         {dealerHand.map((card, index) => (
@@ -195,7 +195,7 @@ const Blackjack = () => {
                         </p>
                     </div>
 
-                    <div className="player-box p-4 border-2 border-gray-700 rounded-xl shadow-lg w-full max-w-3xl">
+                    <div className="player-box p-4 border-2 border-gray-700  bg-green-950 rounded-xl shadow-lg w-full max-w-3xl">
                         <h2 className="text-xl text-center text-white">Your Hand:</h2>
                         <div className="flex justify-center flex-wrap gap-2">
                             {playerHand.map((card, index) => (
@@ -210,13 +210,13 @@ const Blackjack = () => {
                     <button 
                         onClick={() => hit(Navbar.credits, Navbar.setCredits)} 
                         disabled={gameOver || playerHand.length === 0} 
-                        className={`bg-gray-600 text-white py-2 px-6 rounded-lg hover:bg-gray-700 transition-opacity ${gameOver || playerHand.length === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}>
+                        className={`bg-orange-500 text-white py-2 px-6 rounded-lg hover:bg-orange-700 transition-opacity ${gameOver || playerHand.length === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}>
                         Hit
                     </button>
                     <button 
                         onClick={() => stand(Navbar.credits, Navbar.setCredits)} 
                         disabled={gameOver || playerHand.length === 0} 
-                        className={`bg-gray-600 text-white py-2 px-6 rounded-lg hover:bg-gray-700 transition-opacity ${gameOver || playerHand.length === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}>
+                        className={`bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-700  transition-opacity ${gameOver || playerHand.length === 0 ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}>
                         Stand
                     </button>
                 </div>
@@ -247,7 +247,7 @@ const Blackjack = () => {
                     </div>
                 </div>
 
-                <div className="message mt-6 w-full p-6 rounded-xl shadow-lg">
+                <div className="absolute bottom-0 message mt-6 w-full p-6 rounded-xl shadow-lg">
                     {message && (
                         <div className={`message ${fade ? 'fade-in' : 'fade-out'} ${message.includes('lose') ? 'bg-red-600' : message.includes('win') ? 'bg-green-700' : message.includes('tie') ? 'bg-gray-600' : ''}`}>
                             <h2 className="text-center text-white">{message}</h2>

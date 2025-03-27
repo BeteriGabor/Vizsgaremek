@@ -38,7 +38,7 @@ function Register(){
 
 
         const style = {
-            width: '400px',
+            width: '470px',
             position: 'absolute',
             top: '50%',
             left: '50%',
@@ -89,7 +89,7 @@ function Register(){
       };
 
     return(
-        <Modal open={open} onClose={handleClose} disableEscapeKeyDown BackdropProps={{
+        <Modal className="bg-defbg" open={open} onClose={handleClose} disableEscapeKeyDown BackdropProps={{
                 timeout: 2500,
             }}
             sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
