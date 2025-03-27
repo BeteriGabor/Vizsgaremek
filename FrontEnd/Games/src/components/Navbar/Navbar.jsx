@@ -13,6 +13,7 @@ const Navbar = ({ children }) => {
   const pageName = pathName.charAt(0).toUpperCase() + pathName.slice(1);
 
   return (
+    <>
     <div className="fixed top-0 left-0 right-0 flex justify-between items-center bg-gray-800 text-white p-4 z-10">
       <button
         onClick={exit}
@@ -28,9 +29,11 @@ const Navbar = ({ children }) => {
       <div className="absolute right-4 text-lg">
         Credits: {credits}
       </div>
-
-      {children && React.cloneElement(children, { credits, setCredits })}
+        {typeof children === 'function' 
+          ? children({ credits, setCredits }) 
+          : React.cloneElement(children || <div/>, { credits, setCredits })}
     </div>
+    </>
   );
 };
 
