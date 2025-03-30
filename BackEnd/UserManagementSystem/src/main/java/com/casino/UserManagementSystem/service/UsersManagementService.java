@@ -4,13 +4,19 @@ import com.casino.UserManagementSystem.dto.LoginRequestDTO;
 import com.casino.UserManagementSystem.dto.RegisterRequestDTO;
 import com.casino.UserManagementSystem.dto.ReqRes;
 import com.casino.UserManagementSystem.entity.OurUsers;
+import com.casino.UserManagementSystem.entity.Wallet;
 import com.casino.UserManagementSystem.repository.UsersRepo;
+import com.casino.UserManagementSystem.repository.WalletRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -25,8 +31,10 @@ public class UsersManagementService {
     private AuthenticationManager authenticationManager;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private WalletRepo walletRepo;
 
-    public ReqRes register (RegisterRequestDTO registrationRequest) {
+    public ReqRes register(RegisterRequestDTO registrationRequest) {
         ReqRes resp = new ReqRes();
         try {
             OurUsers ourUsers = new OurUsers();
@@ -35,20 +43,28 @@ public class UsersManagementService {
             ourUsers.setBirthDate(registrationRequest.getBirthDate());
             ourUsers.setRole(registrationRequest.getRole());
             ourUsers.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
-            ourUsers=usersRepo.save(ourUsers);
-            if (ourUsers.getId()>0){
+            ourUsers = usersRepo.save(ourUsers);
+
+            if (ourUsers.getId() > 0) {
+                // Új wallet létrehozása a regisztráció során
+                Wallet wallet = new Wallet();
+                wallet.setUser(ourUsers);
+                wallet.setBalance(BigDecimal.ZERO);
+                wallet.setLastUpdated(LocalDateTime.now());
+                walletRepo.save(wallet);
+
                 resp.setOurUsers(ourUsers);
-                resp.setMessage("User Saved Successfully");
+                resp.setMessage("User registered successfully with wallet");
                 resp.setStatusCode(200);
             }
 
-
-        }catch (Exception e) {
+        } catch (Exception e) {
             resp.setStatusCode(500);
             resp.setError(e.getMessage());
         }
         return resp;
     }
+
 
     public ReqRes login (LoginRequestDTO loginRequest) {
         ReqRes resp = new ReqRes();
@@ -200,4 +216,14 @@ public class UsersManagementService {
         return reqRes;
 
     }
+
+    public void updateUserPassword(OurUsers user) {
+        Optional<OurUsers> existingUser = usersRepo.findById(user.getId());
+        if (existingUser.isPresent()) {
+            OurUsers updatedUser = existingUser.get();
+            updatedUser.setPassword(user.getPassword()); // Csak a jelszó frissítése
+            usersRepo.save(updatedUser);
+        }
+    }
+
 }

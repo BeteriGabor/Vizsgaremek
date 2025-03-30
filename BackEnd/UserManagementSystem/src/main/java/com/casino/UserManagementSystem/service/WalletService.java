@@ -24,4 +24,17 @@ public class WalletService {
         wallet.setBalance(wallet.getBalance().add(amount));
         walletRepository.save(wallet);
     }
+
+    public Optional<Wallet> getWalletByToken(String username) {
+        return walletRepository.findByUserUsername(username);
+    }
+    public Optional<Wallet> getWalletByUserId(Integer userId) {
+        return walletRepository.findByUserId(userId);
+    }
+    // Wallet mentése (új vagy frissített)
+    public Wallet saveWallet(Wallet wallet) {
+        return walletRepository.save(wallet);
+    }
+
+
 }

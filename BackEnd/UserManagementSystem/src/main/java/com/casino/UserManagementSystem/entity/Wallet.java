@@ -44,6 +44,18 @@ public class Wallet {
         return lastUpdated;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUser(OurUsers user) {
+        this.user = user;
+    }
+
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
     public void setBalance(BigDecimal balance) {
         this.balance = balance;
         this.lastUpdated = LocalDateTime.now();
