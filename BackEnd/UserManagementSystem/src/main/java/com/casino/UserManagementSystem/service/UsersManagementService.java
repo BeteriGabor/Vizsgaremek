@@ -71,6 +71,11 @@ public class UsersManagementService {
         return resp;
     }
 
+    public Optional<OurUsers> getUserByUsername(String username) {
+        return usersRepo.findByUsername(username); // A repository metódus keresése username alapján
+    }
+
+
     public ReqRes refreshToken(ReqRes refreshTokenReqiest){
         ReqRes response = new ReqRes();
         try{
