@@ -1,6 +1,4 @@
 package com.casino.UserManagementSystem.service;
-
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.core.userdetails.UserDetails;

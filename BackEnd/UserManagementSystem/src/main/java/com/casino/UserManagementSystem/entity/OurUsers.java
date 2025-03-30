@@ -1,7 +1,6 @@
 package com.casino.UserManagementSystem.entity;
 
 import jakarta.persistence.*;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +11,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "ourusers")
-
 public class OurUsers implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,7 +73,6 @@ public class OurUsers implements UserDetails {
     public String getPassword() {
         return password;
     }
-
 
     @Override
     public boolean isAccountNonExpired() {

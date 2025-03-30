@@ -1,4 +1,6 @@
 package com.casino.UserManagementSystem.controller;
+import com.casino.UserManagementSystem.dto.LoginRequestDTO;
+import com.casino.UserManagementSystem.dto.RegisterRequestDTO;
 import com.casino.UserManagementSystem.dto.ReqRes;
 import com.casino.UserManagementSystem.entity.OurUsers;
 import com.casino.UserManagementSystem.service.UsersManagementService;
@@ -14,16 +16,21 @@ public class UserManagementController {
     @Autowired
     private UsersManagementService usersManagementService;
 
+    // Register user
     @PostMapping("/auth/register")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<ReqRes> regeister(@RequestBody ReqRes reg){
-        return ResponseEntity.ok(usersManagementService.register(reg));
+    public ResponseEntity<ReqRes> register(@RequestBody RegisterRequestDTO registerRequestDTO) {
+        // A register metódus a szolgáltatáson keresztül fogja elvégezni a felhasználó regisztrálását
+        ReqRes response = usersManagementService.register(registerRequestDTO);
+        return ResponseEntity.ok(response);
     }
 
+    // Login user
     @PostMapping("/auth/login")
-    public ResponseEntity<ReqRes> login(@RequestBody ReqRes req){
-        System.out.println("asd3");
-        return ResponseEntity.ok(usersManagementService.login(req));
+    public ResponseEntity<ReqRes> login(@RequestBody LoginRequestDTO loginRequestDTO) {
+        // A login metódus a szolgáltatáson keresztül fogja elvégezni a felhasználó beléptetését
+        ReqRes response = usersManagementService.login(loginRequestDTO);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/auth/refresh")

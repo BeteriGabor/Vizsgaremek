@@ -1,5 +1,7 @@
 package com.casino.UserManagementSystem.service;
 
+import com.casino.UserManagementSystem.dto.LoginRequestDTO;
+import com.casino.UserManagementSystem.dto.RegisterRequestDTO;
 import com.casino.UserManagementSystem.dto.ReqRes;
 import com.casino.UserManagementSystem.entity.OurUsers;
 import com.casino.UserManagementSystem.repository.UsersRepo;
@@ -24,7 +26,7 @@ public class UsersManagementService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public ReqRes register (ReqRes registrationRequest) {
+    public ReqRes register (RegisterRequestDTO registrationRequest) {
         ReqRes resp = new ReqRes();
         try {
             OurUsers ourUsers = new OurUsers();
@@ -48,7 +50,7 @@ public class UsersManagementService {
         return resp;
     }
 
-    public ReqRes login (ReqRes loginRequest) {
+    public ReqRes login (LoginRequestDTO loginRequest) {
         ReqRes resp = new ReqRes();
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
