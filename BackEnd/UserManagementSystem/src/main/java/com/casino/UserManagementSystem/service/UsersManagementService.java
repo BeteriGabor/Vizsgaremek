@@ -240,6 +240,19 @@ public class UsersManagementService {
             usersRepo.save(updatedUser);
         }
     }
+    public void updateUserProfile(OurUsers user) {
+        Optional<OurUsers> existingUser = usersRepo.findById(user.getId());
+        if (existingUser.isPresent()) {
+            OurUsers updatedUser = existingUser.get();
+
+            updatedUser.setUsername(user.getUsername());
+            updatedUser.setEmail(user.getEmail());
+            updatedUser.setBirthDate(user.getBirthDate());
+
+            usersRepo.save(updatedUser);
+        }
+    }
+
 
 
 

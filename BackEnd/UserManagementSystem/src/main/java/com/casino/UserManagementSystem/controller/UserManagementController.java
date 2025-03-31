@@ -2,15 +2,19 @@ package com.casino.UserManagementSystem.controller;
 
 import com.casino.UserManagementSystem.dto.*;
 import com.casino.UserManagementSystem.entity.OurUsers;
+import com.casino.UserManagementSystem.repository.UsersRepo;
 import com.casino.UserManagementSystem.service.UsersManagementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +30,8 @@ public class UserManagementController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UsersRepo usersRepo;
 
     // Register user
     @Operation(summary = "Register New User", description = "Registers a new user in the system")
@@ -104,7 +110,7 @@ public class UserManagementController {
             @ApiResponse(responseCode = "200", description = "Successfully fetched profile"),
             @ApiResponse(responseCode = "404", description = "Profile not found")
     })
-    @GetMapping("/adminuser/get-profile")
+    @GetMapping("/auth/get-profile")
     public ResponseEntity<ReqRes> getMyProfile(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
@@ -122,46 +128,20 @@ public class UserManagementController {
     public ResponseEntity<ReqRes> deleteUser(@PathVariable @Parameter(description = "User ID") Integer userId){
         return ResponseEntity.ok(usersManagementService.deleteUser(userId));
     }
-    @PutMapping("/auth/update-profile")
-    @Operation(
-            summary = "Update User Profile",
-            description = "Allows the user to update their profile (e.g., username, email, birth date). The authenticated user's details will be modified."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Profile successfully updated"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
-    public ResponseEntity<String> updateProfile(@Valid @RequestBody UpdateProfileDTO updateProfileDTO) {
-        // Retrieving the authenticated user
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        // Getting the user based on the username
-        Optional<OurUsers> userOptional = usersManagementService.getUserByUsername(username);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(404).body("User not found");
-        }
 
-        OurUsers user = userOptional.get();
-
-        // Updating profile
-        if (updateProfileDTO.getUsername() != null) {
-            user.setUsername(updateProfileDTO.getUsername());
-        }
-        if (updateProfileDTO.getEmail() != null) {
-            user.setEmail(updateProfileDTO.getEmail());
-        }
-        if (updateProfileDTO.getBirthDate() != null) {
-            user.setBirthDate(updateProfileDTO.getBirthDate());
-        }
-
-        // Updating user in the database
-        usersManagementService.updateUser(user.getId(), user);
-
-        return ResponseEntity.ok("Profile updated successfully");
-    }
 
     @PutMapping("/auth/update-password")
+    @Operation(
+            summary = "Change Password",
+            description = "Allows the user to change their password. It checks if the old password is correct before setting the new one."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password successfully updated", content = @Content(schema = @Schema(type = "string", example = "Password updated successfully"))),
+            @ApiResponse(responseCode = "400", description = "Old password is incorrect", content = @Content(schema = @Schema(type = "string", example = "Old password is incorrect"))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(type = "string", example = "User not found"))),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(schema = @Schema(type = "string", example = "An error occurred while updating the password")))
+    })
     public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
         // Az authentikált felhasználó lekérése
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -187,8 +167,6 @@ public class UserManagementController {
 
         return ResponseEntity.ok("Password updated successfully");
     }
-
-
 }
 
 
