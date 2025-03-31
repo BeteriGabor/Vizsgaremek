@@ -5,11 +5,15 @@ import com.casino.UserManagementSystem.dto.RegisterRequestDTO;
 import com.casino.UserManagementSystem.dto.ReqRes;
 import com.casino.UserManagementSystem.entity.OurUsers;
 import com.casino.UserManagementSystem.entity.Wallet;
+import com.casino.UserManagementSystem.repository.TransactionRepo;
 import com.casino.UserManagementSystem.repository.UsersRepo;
 import com.casino.UserManagementSystem.repository.WalletRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +37,8 @@ public class UsersManagementService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private WalletRepo walletRepo;
+    @Autowired
+    private TransactionRepo transactionRepo;
 
     public ReqRes register(RegisterRequestDTO registrationRequest) {
         ReqRes resp = new ReqRes();
@@ -147,14 +153,22 @@ public class UsersManagementService {
         }
         return reqRes;
     }
+    @Transactional
     public ReqRes deleteUser(Integer userId) {
         ReqRes reqRes = new ReqRes();
         try {
             Optional<OurUsers> userOptional = usersRepo.findById(userId);
             if (userOptional.isPresent()) {
+                // Először töröljük a felhasználóhoz tartozó walletet
+                walletRepo.deleteByUserId(userId);
+
+
+                transactionRepo.deleteByUserId(userId);
+                // Most már törölhetjük a felhasználót
                 usersRepo.deleteById(userId);
+
                 reqRes.setStatusCode(200);
-                reqRes.setMessage("User deleted successfully");
+                reqRes.setMessage("User and related data deleted successfully");
             } else {
                 reqRes.setStatusCode(404);
                 reqRes.setMessage("User not found for deletion");
@@ -165,6 +179,7 @@ public class UsersManagementService {
         }
         return reqRes;
     }
+
     public ReqRes updateUser(Integer userId, OurUsers updatedUser) {
         ReqRes reqRes = new ReqRes();
         try {
@@ -225,5 +240,7 @@ public class UsersManagementService {
             usersRepo.save(updatedUser);
         }
     }
+
+
 
 }

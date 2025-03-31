@@ -162,18 +162,11 @@ public class UserManagementController {
     }
 
     @PutMapping("/auth/update-password")
-    @Operation(
-            summary = "Change Password",
-            description = "Allows the user to change their password. It checks if the old password is correct before setting the new one."
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Password successfully updated"),
-            @ApiResponse(responseCode = "400", description = "Old password is incorrect"),
-            @ApiResponse(responseCode = "404", description = "User not found")
-    })
     public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordDTO changePasswordDTO) {
+        // Az authentikált felhasználó lekérése
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
+        // A felhasználó lekérése a username alapján
         Optional<OurUsers> userOptional = usersManagementService.getUserByUsername(username);
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(404).body("User not found");
@@ -181,15 +174,20 @@ public class UserManagementController {
 
         OurUsers user = userOptional.get();
 
+        // Ellenőrizzük, hogy a régi jelszó helyes-e
         if (!passwordEncoder.matches(changePasswordDTO.getOldPassword(), user.getPassword())) {
             return ResponseEntity.status(400).body("Old password is incorrect");
         }
 
+        // Az új jelszó beállítása és mentése
         user.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
-        usersManagementService.updateUser(user.getId(), user);
+
+        // Frissített felhasználó mentése (csak a jelszó)
+        usersManagementService.updateUserPassword(user);  // Új metódust kell hozzáadni a service rétegben
 
         return ResponseEntity.ok("Password updated successfully");
     }
+
 
 }
 

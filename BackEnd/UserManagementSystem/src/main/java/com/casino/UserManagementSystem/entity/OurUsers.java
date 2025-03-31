@@ -93,4 +93,8 @@ public class OurUsers implements UserDetails {
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
     }
+
+    public String getPassword(String encode) {
+        return password;
+    }
 }
