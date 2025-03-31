@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+
 import { BrowserRouter as Router, Routes , Route } from 'react-router-dom';
 import Register from './components/Register/Register'
 import Blackjack from './components/BlackJack/Blackjack';
@@ -11,6 +12,7 @@ import PasswordChange from './components/PasswordChange/PasswordChange';
 import App from './App';
 import Aviator from './components/Aviator/Aviator';
 import ChickenGame from './components/Chicken/Chicken';
+import OtherGames from './components/OtherGames/OtherGames';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -26,6 +28,7 @@ root.render(
         <Route path='sign_in' element={<Sign_in />}></Route>
         <Route path='register' element={<Register/>}></Route>
         <Route path='blackjack' element={<Blackjack/>}></Route>
+        <Route path='othergames' element={<OtherGames/>}></Route>
       </Routes>
     </Router>
   </React.StrictMode>
