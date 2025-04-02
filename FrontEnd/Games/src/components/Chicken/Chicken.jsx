@@ -86,14 +86,10 @@ const ChickenGame = () => {
         <div className="pt-20 px-4">
           <div className="text-white justify-items-center">
             <p className="text-5xl ">Current multiplier: {multiplier}x</p>
-            <p>{obstacle}</p>
           </div>
 
           {carVisible && (
-            <div
-              className="absolute top-0 w-36 h-36 animate-carFall bg-car bg-cover"
-              style={{ left: `${carLeft}px` }}
-            />
+            <img className="absolute top-0 w-36 h-36 animate-carFall bg-cover"  style={{ left: `${carLeft}px` }} src="car.png" alt="" />
           )}
 
           
@@ -104,14 +100,12 @@ const ChickenGame = () => {
               <p className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl text-red-600 font-bold">Game Over!</p>
               )
             ) : (
-              <div 
-                className="w-36 h-36 bg-chicken bg-cover absolute top-2/4" 
-                style={{ 
-                  transform: `translateX(${position*10}rem)`, 
-                  transition: "transform 0.3s ease" 
-                }}
-                onClick={nextStep}
-              />
+              <img className="w-36 h-36 absolute top-2/4" 
+              style={{ 
+                transform: `translateX(${position*10}rem)`, 
+                transition: "transform 0.3s ease" 
+              }}
+              onClick={nextStep} src="chicken.png" alt="" />
             )}
           
 
@@ -152,7 +146,6 @@ const ChickenGame = () => {
             </div>
           </div>
         </div>
-
         <style>
           {`
             @keyframes carFall {
@@ -164,6 +157,7 @@ const ChickenGame = () => {
             }
           `}
         </style>
+        
       </div>
     </>
   );

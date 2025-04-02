@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import Navbar from '../Navbar/Navbar';
 
 const Roulette = () => {
   const [spinning, setSpinning] = useState(false);
@@ -9,13 +10,6 @@ const Roulette = () => {
     0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 
     24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26
   ];
-
-  const getColor = (number) => {
-    if (number === 0) return 'bg-green-600';
-    return [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(number)
-       ? 'bg-red-600'
-       : 'bg-black';
-  };
 
   const getTextColor = (number) => {
     if (number === 0) return 'text-green-600';
@@ -29,8 +23,6 @@ const Roulette = () => {
     
     setSpinning(true);
     setResult(null);
-    
-    // Random number of full rotations (3-10) plus a random position
     const fullRotations = 3 + Math.floor(Math.random() * 8);
     const randomIndex = Math.floor(Math.random() * numbers.length);
     const rotationDegrees = fullRotations * 360 + (randomIndex * (360 / numbers.length));
@@ -52,21 +44,23 @@ const Roulette = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="flex flex-col items-center p-5">
-      <div className="relative w-[300px] h-[300px] mb-8">
+      <div className="relative w-[300px] h-[300px] mb-8 ">
         
         <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[10px] border-r-[10px] border-t-[20px] border-l-transparent border-r-transparent border-t-red-500 z-10"></div>
         
         <div
            ref={wheelRef}
-           className={`relative w-[300px] h-[300px] rounded-full bg-gray-800 ${spinning ? '' : 'transition-none'}`}
+           className={`relative w-[300px] h-[300px] rounded-full bg-roulette bg-cover  ${spinning ? '' : 'transition-none'}`}
         >
           {numbers.map((number, index) => {
             const rotation = index * (360 / numbers.length);
             return (
               <div 
                 key={index}
-                className={`absolute w-[30px] h-[30px] top-1/2 left-1/2 -ml-[15px] -mt-[15px] text-center leading-[30px] rounded-full text-white font-bold text-sm ${getColor(number)}`}
+                className={`absolute w-[30px] h-[30px] top-1/2 left-1/2 -ml-[15px] -mt-[15px] text-center leading-[30px] rounded-full text-white font-bold text-sm `}
                 style={{
                   transform: `rotate(${rotation}deg) translateY(-125px) rotate(-${rotation}deg)`
                 }}
@@ -94,6 +88,7 @@ const Roulette = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

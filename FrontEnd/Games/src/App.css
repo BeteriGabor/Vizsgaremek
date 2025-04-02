@@ -1,9 +1,9 @@
 .dynamic-background2 {
-    background-image: linear-gradient(to bottom , green , red);
+  
     border: 2px solid #000;
     padding: 15px;
 }
 body{
-    background-image: url('./components/assets/bgimage.jpg');
+   
     overflow: hidden;
 }
