@@ -7,6 +7,11 @@ const OtherGames = () => {
   
   const handleNavigateToAviator = () => navigate('/aviator');
   const handleNavigateToChicken = () => navigate('/chicken');
+
+
+
+
+
   
   return (
     <div 
@@ -23,6 +28,7 @@ const OtherGames = () => {
         >
           Chicken Game
         </button>
+
         <button
           onClick={handleNavigateToAviator}
           onMouseEnter={() => setBgImage('bg-aviatorcover')}
@@ -33,7 +39,6 @@ const OtherGames = () => {
         </button>
       </div>
     </div>
-  );
-};
-
-export default OtherGames;
+  )
+}
+export default OtherGames

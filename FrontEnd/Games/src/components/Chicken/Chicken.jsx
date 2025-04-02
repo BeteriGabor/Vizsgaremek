@@ -89,7 +89,7 @@ const ChickenGame = () => {
           </div>
 
           {carVisible && (
-            <img className="absolute top-0 w-36 h-36 animate-carFall bg-cover"  style={{ left: `${carLeft}px` }} src="car.png" alt="" />
+            <img className="absolute top-0 w-36 h-36 animate-carFall"  style={{ left: `${carLeft}px` }} src="car.png" alt="" />
           )}
 
           
@@ -101,6 +101,7 @@ const ChickenGame = () => {
               )
             ) : (
               <img className="w-36 h-36 absolute top-2/4" 
+
               style={{ 
                 transform: `translateX(${position*10}rem)`, 
                 transition: "transform 0.3s ease" 
@@ -146,6 +147,7 @@ const ChickenGame = () => {
             </div>
           </div>
         </div>
+
         <style>
           {`
             @keyframes carFall {
@@ -157,7 +159,6 @@ const ChickenGame = () => {
             }
           `}
         </style>
-        
       </div>
     </>
   );

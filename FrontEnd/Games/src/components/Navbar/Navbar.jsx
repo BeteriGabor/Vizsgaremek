@@ -11,11 +11,10 @@ const Navbar = ({ children }) => {
 
   const pathName = window.location.pathname.split('/').pop();
   const pageName = pathName.charAt(0).toUpperCase() + pathName.slice(1);
-  const name = "Lucky"
 
   return (
     <>
-    <div className="absolute top-0 left-0 right-0 flex justify-between items-center bg-gray-800 text-white p-4 z-10">
+    <div className="fixed top-0 left-0 right-0 flex justify-between items-center bg-gray-800 text-white p-4 z-10">
       <button
         onClick={exit}
         className="absolute left-4 bg-red-500 text-white py-2 px-4 rounded-lg text-lg"
