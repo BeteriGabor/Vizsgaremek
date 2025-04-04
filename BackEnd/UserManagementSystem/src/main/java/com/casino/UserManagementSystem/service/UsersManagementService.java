@@ -49,6 +49,14 @@ public class UsersManagementService {
             ourUsers.setBirthDate(registrationRequest.getBirthDate());
             ourUsers.setRole(registrationRequest.getRole());
             ourUsers.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+
+            // Ha admin a felhasználó, automatikusan igaz lesz az acceptedAgeVerification mező
+            if ("ADMIN".equals(registrationRequest.getRole())) {
+                ourUsers.setAcceptedAgeVerification(true);
+            } else {
+                ourUsers.setAcceptedAgeVerification(false); // Ha nem admin, akkor elvárjuk, hogy a mezőt tartalmazza
+            }
+
             ourUsers = usersRepo.save(ourUsers);
 
             if (ourUsers.getId() > 0) {
@@ -72,25 +80,57 @@ public class UsersManagementService {
     }
 
 
-    public ReqRes login (LoginRequestDTO loginRequest) {
+    public ReqRes login(LoginRequestDTO loginRequest) {
         ReqRes resp = new ReqRes();
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     loginRequest.getUsername(),
                     loginRequest.getPassword()));
             var user = usersRepo.findByUsername(loginRequest.getUsername()).orElseThrow();
+
+            // Ellenőrizzük, hogy a felhasználó elfogadta-e az életkor-ellenőrzést
+            if (!user.isAcceptedAgeVerification() && !"ADMIN".equals(user.getRole())) {
+                resp.setStatusCode(403); // Forbidden
+                resp.setMessage("You must accept the age verification to log in.");
+                return resp;
+            }
+
             var jwt = jwtUtils.generateToken(user);
-            var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(),user);
+            var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
             resp.setStatusCode(200);
             resp.setToken(jwt);
             resp.setRefreshToken(refreshToken);
             resp.setExpirationTime("24Hrs");
             resp.setMessage("Successfully logged in");
-        }catch (Exception e) {
+        } catch (Exception e) {
             resp.setStatusCode(500);
             resp.setError(e.getMessage());
         }
         return resp;
+    }
+    // Accept Age Verification for a user
+    public ReqRes acceptAgeVerification(Integer userId) {
+        ReqRes reqRes = new ReqRes();
+        try {
+            Optional<OurUsers> userOptional = usersRepo.findById(userId);
+            if (userOptional.isPresent()) {
+                OurUsers user = userOptional.get();
+
+                // Set acceptedAgeVerification to true for the user
+                user.setAcceptedAgeVerification(true);
+                usersRepo.save(user);
+
+                reqRes.setStatusCode(200);
+                reqRes.setMessage("Age verification accepted for user with ID: " + userId);
+            } else {
+                reqRes.setStatusCode(404);
+                reqRes.setMessage("User not found for accepting age verification");
+            }
+        } catch (Exception e) {
+            reqRes.setStatusCode(500);
+            reqRes.setMessage("Error occurred while accepting age verification: " + e.getMessage());
+        }
+        return reqRes;
     }
 
     public Optional<OurUsers> getUserByUsername(String username) {

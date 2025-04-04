@@ -22,9 +22,20 @@ public class ReqRes {
     private String username;
     private String password;
     private Date birthDate;
+
     private String role;
     private OurUsers ourUsers;
     private List<OurUsers> ourUsersList;
+    private boolean acceptedAgeVerification;
+
+    // Getters and Setters
+    public boolean isAcceptedAgeVerification() {
+        return acceptedAgeVerification;
+    }
+
+    public void setAcceptedAgeVerification(boolean acceptedAgeVerification) {
+        this.acceptedAgeVerification = acceptedAgeVerification;
+    }
 
     public int getStatusCode() {
         return statusCode;

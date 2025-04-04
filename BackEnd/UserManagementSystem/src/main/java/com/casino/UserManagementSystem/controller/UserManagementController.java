@@ -33,30 +33,30 @@ public class UserManagementController {
     @Autowired
     private UsersRepo usersRepo;
 
-    // Register user
+    @PostMapping("/auth/register")
     @Operation(summary = "Register New User", description = "Registers a new user in the system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "Successfully registered"),
             @ApiResponse(responseCode = "400", description = "Invalid registration data")
     })
-    @PostMapping("/auth/register")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<ReqRes> register(@RequestBody @Parameter(description = "User registration data") RegisterRequestDTO registerRequestDTO) {
         ReqRes response = usersManagementService.register(registerRequestDTO);
         return ResponseEntity.ok(response);
     }
 
-    // Login user
+
+    @PostMapping("/auth/login")
     @Operation(summary = "Login User", description = "Logs in the user and provides authentication token")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully logged in"),
             @ApiResponse(responseCode = "400", description = "Invalid login credentials")
     })
-    @PostMapping("/auth/login")
     public ResponseEntity<ReqRes> login(@RequestBody @Parameter(description = "User login credentials") LoginRequestDTO loginRequestDTO) {
         ReqRes response = usersManagementService.login(loginRequestDTO);
         return ResponseEntity.ok(response);
     }
+
 
     // Refresh Token
     @Operation(summary = "Refresh Authentication Token", description = "Refreshes the user's authentication token")
@@ -166,6 +166,33 @@ public class UserManagementController {
         usersManagementService.updateUserPassword(user);  // Új metódust kell hozzáadni a service rétegben
 
         return ResponseEntity.ok("Password updated successfully");
+    }
+    // Admin Only: Accept Age Verification
+    @Operation(summary = "Accept Age Verification", description = "Allows an admin to accept the age verification for a user")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Age verification accepted successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid user or age verification data"),
+            @ApiResponse(responseCode = "403", description = "Only admins can accept age verification")
+    })
+    @PutMapping("/admin/accept-age-verification/{userId}")
+    public ResponseEntity<ReqRes> acceptAgeVerification(
+            @PathVariable @Parameter(description = "User ID") Integer userId) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String role = authentication.getAuthorities().toString(); // Get the role of the authenticated user
+
+        if (!role.contains("ADMIN")) {
+            ReqRes errorResponse = new ReqRes();
+            errorResponse.setStatusCode(403);
+            errorResponse.setMessage("You do not have permission to accept age verification. Only admins can perform this action.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+        }
+
+
+
+        // Proceed with accepting the age verification
+        ReqRes response = usersManagementService.acceptAgeVerification(userId);
+        return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 }
 

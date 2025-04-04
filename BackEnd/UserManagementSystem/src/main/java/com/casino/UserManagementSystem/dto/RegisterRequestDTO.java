@@ -22,6 +22,17 @@ public class RegisterRequestDTO {
     @Schema(description = "Role of the user", required = true, example = "USER")
     private String role;
 
+//    private boolean acceptedAgeVerification;
+//
+//    // Getters and Setters
+//    public boolean isAcceptedAgeVerification() {
+//        return acceptedAgeVerification;
+//    }
+//
+//    public void setAcceptedAgeVerification(boolean acceptedAgeVerification) {
+//        this.acceptedAgeVerification = acceptedAgeVerification;
+//    }
+
     public String getEmail() {
         return email;
     }

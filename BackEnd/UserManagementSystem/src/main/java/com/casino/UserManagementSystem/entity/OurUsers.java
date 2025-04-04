@@ -21,6 +21,17 @@ public class OurUsers implements UserDetails {
     private Date birthDate;
     private String role;
 
+    private boolean acceptedAgeVerification;
+
+    // Getters and Setters
+    public boolean isAcceptedAgeVerification() {
+        return acceptedAgeVerification;
+    }
+
+    public void setAcceptedAgeVerification(boolean acceptedAgeVerification) {
+        this.acceptedAgeVerification = acceptedAgeVerification;
+    }
+
     public int getId() {
         return id;
     }
