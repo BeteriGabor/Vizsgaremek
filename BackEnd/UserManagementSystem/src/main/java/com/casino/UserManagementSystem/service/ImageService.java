@@ -43,6 +43,7 @@ public class ImageService {
         imageDTO.setFileName(savedImage.getFileName());
         imageDTO.setFileType(savedImage.getFileType());
         imageDTO.setId(savedImage.getId());
+        imageDTO.setUserId(savedImage.getUserId());
 
         imageDTO.setImageBase64(Base64.getEncoder().encodeToString(savedImage.getData())); // Base64 kódolás
 
