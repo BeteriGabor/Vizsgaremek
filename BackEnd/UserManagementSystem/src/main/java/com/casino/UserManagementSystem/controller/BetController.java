@@ -54,7 +54,7 @@ public class BetController {
             @ApiResponse(responseCode = "200", description = "Bet resolved successfully"),
             @ApiResponse(responseCode = "400", description = "Bet not found or invalid data")
     })
-    @PostMapping("/adminuser/resolve/{betId}")
+    @PostMapping("/api/resolve/{betId}")
     public ResponseEntity<String> resolveBet(@PathVariable Integer betId, @RequestParam boolean win, @RequestParam BigDecimal multiplier) {
         try {
             // Fogadás lekérése és státuszának frissítése

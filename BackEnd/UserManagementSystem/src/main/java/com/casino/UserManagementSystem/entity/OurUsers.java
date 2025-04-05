@@ -22,6 +22,17 @@ public class OurUsers implements UserDetails {
     private String role;
 
     private boolean acceptedAgeVerification;
+    @Lob
+    @Column(name = "id_card_image", columnDefinition = "LONGBLOB")
+    private byte[] idCardImage;
+
+    public byte[] getIdCardImage() {
+        return idCardImage;
+    }
+
+    public void setIdCardImage(byte[] idCardImage) {
+        this.idCardImage = idCardImage;
+    }
 
     // Getters and Setters
     public boolean isAcceptedAgeVerification() {
