@@ -1,12 +1,17 @@
 package com.casino.UserManagementSystem.service;
 
-import com.casino.UserManagementSystem.entity.*;
+import com.casino.UserManagementSystem.dto.TransactionDTO;
+import com.casino.UserManagementSystem.entity.OurUsers;
+import com.casino.UserManagementSystem.entity.Transaction;
+import com.casino.UserManagementSystem.entity.Wallet;
 import com.casino.UserManagementSystem.enums.TransactionType;
 import com.casino.UserManagementSystem.repository.TransactionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -31,5 +36,17 @@ public class TransactionService {
         walletService.updateBalance(wallet, adjustedAmount);
 
         return transaction;
+    }
+
+    public List<TransactionDTO> getAllTransactions() {
+        return transactionRepository.findAll().stream()
+                .map(tx -> new TransactionDTO(tx.getId(), tx.getAmount(), tx.getTimestamp(), tx.getTransactionType()))
+                .collect(Collectors.toList());
+    }
+
+    public List<TransactionDTO> getTransactionsByUser(OurUsers user) {
+        return transactionRepository.findByUser(user).stream()
+                .map(tx -> new TransactionDTO(tx.getId(), tx.getAmount(), tx.getTimestamp(), tx.getTransactionType()))
+                .collect(Collectors.toList());
     }
 }
