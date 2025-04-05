@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Base64;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ public class ImageService {
         image.setFileName(file.getOriginalFilename());
         image.setFileType(contentType);
         image.setData(file.getBytes());
+        image.setUploadedAt(LocalDateTime.now());
         image.setUserId(userId); // A userId beállítása
 
         // A fájl mentése az adatbázisba
@@ -41,6 +43,7 @@ public class ImageService {
         imageDTO.setFileName(savedImage.getFileName());
         imageDTO.setFileType(savedImage.getFileType());
         imageDTO.setId(savedImage.getId());
+
         imageDTO.setImageBase64(Base64.getEncoder().encodeToString(savedImage.getData())); // Base64 kódolás
 
         return imageDTO;
