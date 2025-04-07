@@ -66,6 +66,8 @@ function Sign_in() {
         });
 
         if (response.data.message === "Successfully logged in") {
+          const token = response.data.token;
+          localStorage.setItem('token', token);
           alert(response.data.message)
           navigate('/');
         } else {
@@ -130,7 +132,8 @@ function Sign_in() {
 
                       <Box sx={style3}>
                         <Link to="/register" className=" text-green-600">Register!</Link> 
-                        <Link to="/password_change" className="text-red-600">Change password!</Link>   
+                        <Link to="/password_change" className="text-red-600">Change password!</Link>
+                        <Link to="/upload_image" className="text-green-600">Upload Image!</Link>   
                       </Box>      
                     </FormControl>
                   </form> 

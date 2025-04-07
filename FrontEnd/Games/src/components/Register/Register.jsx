@@ -80,6 +80,8 @@ function Register(){
       
                   alert(response.data.message)
                   navigate('/sign_in');
+                  const userId = response.data.ourUsers.id;
+                  localStorage.setItem("userId", JSON.stringify(userId));
       
               } catch (error) {
                   console.error("There was an error registering!", error);
@@ -126,80 +128,80 @@ function Register(){
             </FormControl>
 
             <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
-                <InputLabel htmlFor="outlined-basic" required>Password again</InputLabel>
-                <OutlinedInput
-                    id="outlined-basic"
-                    type={showPassword ? 'text' : 'password'}
-                    onChange={(e) => {
-                        setPasswordHelp(e.target.value)
-                    }}
-                    endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label={
-                        showPassword ? 'hide the password' : 'display the password'
-                        }
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        onMouseUp={handleMouseUpPassword}
-                        edge="end"
-                      >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                </InputAdornment>
-                }
+              <InputLabel htmlFor="outlined-basic" required>Password again</InputLabel>
+              <OutlinedInput
+                  id="outlined-basic"
+                  type={showPassword ? 'text' : 'password'}
+                  onChange={(e) => {
+                      setPasswordHelp(e.target.value)
+                  }}
+                  endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label={
+                      showPassword ? 'hide the password' : 'display the password'
+                      }
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      onMouseUp={handleMouseUpPassword}
+                      edge="end"
+                    >
+                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                </IconButton>
+              </InputAdornment>
+              }
               />
             </FormControl>
 
             <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DemoContainer components={['DatePicker']}>
-                        <DatePicker
-                            views={['year', 'month', 'day']}
-                            minDate={dayjs().subtract(500, "years")}
-                            maxDate={dayjs().subtract(18, "years")}
-                            showDisabledMonthNavigation
-                            sx={{ width: '48ch' }}
-                            onChange={(newValue) => {
-                                const formattedDate = newValue.format("YYYY-MM-DD");
-                                setBirthDate(formattedDate);
-                            }}
-                            renderInput={(params) => <TextField {...params} />}
-                        />
-                    </DemoContainer>
-                </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={['DatePicker']}>
+                      <DatePicker
+                          views={['year', 'month', 'day']}
+                          minDate={dayjs().subtract(500, "years")}
+                          maxDate={dayjs().subtract(18, "years")}
+                          showDisabledMonthNavigation
+                          sx={{ width: '48ch' }}
+                          onChange={(newValue) => {
+                              const formattedDate = newValue.format("YYYY-MM-DD");
+                              setBirthDate(formattedDate);
+                          }}
+                          renderInput={(params) => <TextField {...params} />}
+                      />
+                  </DemoContainer>
+              </LocalizationProvider>
             </FormControl>
 
             <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
-                    <TextField
-                        required
-                        label="Email"
-                        value={email}
-                        onChange={(e) => {
-                            setEmail(e.target.value)
-                        }}
-                        error={emailError}
-                        helperText={emailError ? "Please enter a valid email" : ""}
-                        inputProps={{
-                        type: "email",
-                        }}
-                        autoComplete="off"
-                        />
-                    </FormControl>
+              <TextField
+                  required
+                  label="Email"
+                  value={email}
+                  onChange={(e) => {
+                      setEmail(e.target.value)
+                  }}
+                  error={emailError}
+                  helperText={emailError ? "Please enter a valid email" : ""}
+                  inputProps={{
+                  type: "email",
+                  }}
+                  autoComplete="off"
+                  />
+            </FormControl>
             
-                    <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
-                        <Box sx={style2}>
-                            <Button variant="contained" type="submit" color="success">Register</Button>
-                            <Link to="/sign_in">
-                                <Button variant="contained" type="submit" color="secondary">Back to Login page!</Button>
-                            </Link>
-                        </Box>         
-                        <p style={style3}>Be careful! The more you play the more chance you will become an addict!</p>
-                    </FormControl>
-               </form>
-            </Box>
-            </Fade>
-          </Modal>
+            <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
+              <Box sx={style2}>
+                <Button variant="contained" type="submit" color="success">Register</Button>
+                <Link to="/sign_in">
+                  <Button variant="contained" type="submit" color="secondary">Back to Login page!</Button>
+                </Link>
+              </Box>         
+              <p style={style3}>Be careful! The more you play the more chance you will become an addict!</p>
+            </FormControl>
+          </form>
+        </Box>
+      </Fade>
+    </Modal>
     )
 }
 

@@ -16,6 +16,7 @@ import OtherGames from './components/OtherGames/OtherGames';
 import Roulette from './components/Roulette/Roulette';
 import Deposit from './components/Deposit/Deposit';
 import Bank from './components/Bank/Bank';
+import UploadImage from './components/UploadImage/UploadImage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -34,6 +35,7 @@ root.render(
         <Route path='roulette' element={<Roulette/>}></Route>
         <Route path='deposit' element={<Deposit/>}></Route>
         <Route path='bank' element={<Bank/>}></Route>
+        <Route path='upload_image' element={<UploadImage/>}></Route>
       </Routes>
     </Router>
   </React.StrictMode>
