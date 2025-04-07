@@ -91,7 +91,7 @@ const SlotMachine = () => {
   return (
     <>
       <Navbar></Navbar>
-      <div className="min-w-screen h-screen bg-fixed bg-center bg-slotbg flex items-center relative font-sans pt-16">
+      <div className="w-screen h-screen bg-fixed bg-center bg-slotbg flex items-center relative font-sans pt-16">
         <div className="max-w-[20%] mx-auto text-center py-[20%]">
           <div className="flex justify-center gap-[70px] mb-[270px] mt-[-5%]">
             {slots.map((symbol, index) => (
