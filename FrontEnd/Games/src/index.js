@@ -14,7 +14,8 @@ import Aviator from './components/Aviator/Aviator';
 import ChickenGame from './components/Chicken/Chicken';
 import OtherGames from './components/OtherGames/OtherGames';
 import Roulette from './components/Roulette/Roulette';
-
+import Deposit from './components/Deposit/Deposit';
+import Bank from './components/Bank/Bank';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -31,6 +32,8 @@ root.render(
         <Route path='blackjack' element={<Blackjack/>}></Route>
         <Route path='othergames' element={<OtherGames/>}></Route>
         <Route path='roulette' element={<Roulette/>}></Route>
+        <Route path='deposit' element={<Deposit/>}></Route>
+        <Route path='bank' element={<Bank/>}></Route>
       </Routes>
     </Router>
   </React.StrictMode>
