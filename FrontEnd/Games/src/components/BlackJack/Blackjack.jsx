@@ -26,7 +26,7 @@ const Blackjack = () => {
     const [dealerHand, setDealerHand] = useState([]);
     const [gameOver, setGameOver] = useState(false);
     const [message, setMessage] = useState('');
-    const [bet, setBet] = useState(0); 
+    const [bet, setBet] = useState(10); 
     const [fade, setFade] = useState(false);
     const [gameActive, setGameActive]=useState(false)
 
@@ -166,8 +166,8 @@ const Blackjack = () => {
 
     return (
         <> 
-            <Navbar></Navbar> 
-            <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-blackjackbg mt-16">
+            <Navbar/>
+            <div className="flex flex-col items-center justify-center w-screen h-screen bg-blackjackbg bg-cover">
                 <div className="flex flex-wrap justify-center space-x-4 mb-4 w-full max-w-5xl px-4">
                     <div className="dealer-box p-4 border-2 border-gray-700 bg-green-950 rounded-xl shadow-lg w-full md:w-1/2 lg:w-1/3">
                         <h2 className="text-xl text-center text-white">Dealer's Hand:</h2>
@@ -235,7 +235,7 @@ const Blackjack = () => {
                             onChange={(e) => setBet(Number(e.target.value))}
                             className="w-full p-2 bg-white text-black rounded-lg shadow-md"
                         >
-                            {['', 10, 20, 50, 100].map((amount) => (
+                            {[10, 20, 50, 100].map((amount) => (
                                 <option key={amount} value={amount}>
                                     {amount} Credits
                                 </option>

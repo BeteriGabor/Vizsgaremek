@@ -99,7 +99,7 @@ const SlotMachine = () => {
                 key={index} 
                 className={`w-full h-[120px] rounded-xl flex items-center justify-center text-[60px] ${
                   winningPositions[index] 
-                    ? 'bg-green-500/30 border-3 border-green-500 animate-pulse' 
+                    ? 'bg-green-500/70 border-3 border-green-500 animate-pulse' 
                     : ''
                 }`}
               >

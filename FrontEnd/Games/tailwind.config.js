@@ -15,7 +15,8 @@ module.exports = {
         "chickencover":"url(./components/assets/chickencover.png)",
         "aviatorcover":"url(./components/assets/aviatorcover.png)",
         "bank":"url(./components/assets/bankbg.png)",
-
+        "aviatorgamebg":"url(./components/assets/aviatorgamebg.png)",
+        "aviatorbg":"url(./components/assets/aviatorbg.png)",
       },
       
       
