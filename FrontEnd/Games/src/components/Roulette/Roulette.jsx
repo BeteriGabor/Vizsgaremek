@@ -4,10 +4,11 @@ import Navbar from '../Navbar/Navbar';
 const Roulette = () => {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
-  const [betAmount, setBetAmount] = useState('');
+  const [betAmount, setBetAmount] = useState(10);
   const [betType, setBetType] = useState('number');
   const [betNumber, setBetNumber] = useState('');
   const [winningsMessage, setWinningsMessage] = useState({ text: '', type: '' });
+  const [availableCredits, setAvailableCredits] = useState(1000);
   const wheelRef = useRef(null);
 
   const numbers = [
@@ -23,11 +24,17 @@ const Roulette = () => {
   };
 
   const spinWheel = () => {
-    if (spinning) return;
+    const bet = parseInt(betAmount);
+    if (spinning || bet <= 0 || bet > availableCredits) {
+      setWinningsMessage({ text: "Invalid bet or not enough credits!", type: 'lose' });
+      return;
+    }
 
+    
+    setAvailableCredits(prev => prev - bet);
     setSpinning(true);
     setResult(null);
-    setWinningsMessage('');
+    setWinningsMessage({ text: '', type: '' });
 
     const fullRotations = 3 + Math.floor(Math.random() * 8);
     const randomIndex = Math.floor(Math.random() * numbers.length);
@@ -73,22 +80,20 @@ const Roulette = () => {
     }
 
     if (winnings > 0) {
+      setAvailableCredits(prev => prev + winnings);
       setWinningsMessage({ text: `You won ${winnings} credits!`, type: 'win' });
     } else {
       setWinningsMessage({ text: 'You lost', type: 'lose' });
     }
-    
-
-    Navbar.setCredits = Navbar.credits + winnings;
   };
 
   return (
     <>
       <Navbar />
+      <div className="flex flex-col items-center p-5 bg-blackjackbg h-screen pt-[10%]">
       <div className="flex flex-col items-center p-5">
         <div className="relative w-[300px] h-[300px] mb-8">
           <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[10px] border-r-[10px] border-t-[20px] border-l-transparent border-r-transparent border-t-red-500 z-10"></div>
-
           <div
             ref={wheelRef}
             className={`relative w-[300px] h-[300px] rounded-full bg-roulette bg-cover ${spinning ? '' : 'transition-none'}`}
@@ -114,7 +119,7 @@ const Roulette = () => {
           <button
             onClick={spinWheel}
             disabled={spinning}
-            className={`px-5 py-2.5 ${spinning ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 cursor-pointer'} text-white rounded mb-4 font-medium`}
+            className={`px-5 py-2.5 ${spinning ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded mb-4 font-medium`}
           >
             {spinning ? 'Spinning...' : 'Spin'}
           </button>
@@ -125,46 +130,47 @@ const Roulette = () => {
             </div>
           )}
           {winningsMessage.text && (
-            <div
-              className={`mt-4 px-6 py-4 rounded-xl text-white text-xl font-bold shadow-lg transition-all duration-500
-              ${winningsMessage.type === 'win' ? 'bg-green-600' : 'bg-red-600'}`}
-            >
+            <div className={`mt-4 px-6 py-4 rounded-xl text-white text-xl font-bold shadow-lg transition-all duration-500 ${winningsMessage.type === 'win' ? 'bg-green-600' : 'bg-red-600'}`}>
               {winningsMessage.text}
             </div>
           )}
+          
+        </div>
+
+        <div className="bg-gray-800 p-4 rounded-md shadow-md mt-5 flex flex-wrap items-center justify-center">
+          <select
+            value={betAmount}
+            onChange={(e) => setBetAmount(Number(e.target.value))}
+            disabled={spinning}
+            className="p-2 bg-white text-black rounded-lg shadow-md text-sm font-bold"
+          >
+            {[10, 20, 50, 100, 200, 500].map(amount => (
+              <option key={amount} value={amount}>{amount} Credits</option>
+            ))}
+          </select>
+
+          <select onChange={(e) => setBetType(e.target.value)} className="ml-3 p-2 text-black rounded mb-2 md:mb-0">
+            <option value="number">Specific Number</option>
+            <option value="red">Red</option>
+            <option value="black">Black</option>
+            <option value="even">Even</option>
+            <option value="odd">Odd</option>
+            <option value="high">19-36</option>
+            <option value="low">1-18</option>
+          </select>
+
+          {betType === 'number' && (
+            <input
+              type="number"
+              placeholder="Number (0-36)"
+              value={betNumber}
+              onChange={(e) => setBetNumber(e.target.value)}
+              className="ml-3 p-2 text-black rounded"
+            />
+          )}
         </div>
       </div>
-
-      <div className="bg-gray-800 p-4 rounded-md shadow-md mb-5 flex flex-wrap items-center justify-center">
-        <input
-          type="number"
-          placeholder="Bet Amount"
-          value={betAmount}
-          onChange={(e) => setBetAmount(e.target.value)}
-          className="p-2 rounded text-black mb-2 md:mb-0"
-        />
-
-        <select onChange={(e) => setBetType(e.target.value)} className="ml-3 p-2 text-black rounded mb-2 md:mb-0">
-          <option value="number">Specific Number</option>
-          <option value="red">Red</option>
-          <option value="black">Black</option>
-          <option value="even">Even</option>
-          <option value="odd">Odd</option>
-          <option value="high">19-36</option>
-          <option value="low">1-18</option>
-        </select>
-
-        {betType === 'number' && (
-          <input
-            type="number"
-            placeholder="Number (0-36)"
-            value={betNumber}
-            onChange={(e) => setBetNumber(e.target.value)}
-            className="ml-3 p-2 text-black rounded"
-          />
-        )}
       </div>
-      
     </>
   );
 };

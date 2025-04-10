@@ -133,7 +133,7 @@ const Aviator = () => {
 
                     
                 </div>
-                <select
+                    <select
                         value={bet}
                         onChange={(e) => setBet(Number(e.target.value))}
                         disabled={gameStarted}
