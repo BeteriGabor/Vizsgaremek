@@ -20,6 +20,7 @@ function Register(){
         const [birthDate, setBirthDate] = useState(null)
         const [emailError, setEmailError] = useState("");
         const [passwordHelp , setPasswordHelp] = useState("")
+        const [file , setFile] = useState(null);
 
         const navigate = useNavigate();
 
@@ -59,6 +60,12 @@ function Register(){
           color: 'black'
         }
 
+        const handleFileChange = (e) => {
+          if (e.target.files) {
+            setFile(e.target.files[0]);
+          }
+        };
+
         const handleSubmit = async (event) => {
           event.preventDefault(); 
           const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -77,14 +84,22 @@ function Register(){
                     role: 'user', 
                     birthDate: dayjs(birthDate).format("YYYY-MM-DD"),
                   });
-      
+                  const userID = response.data.ourUsers.id;
+                  const formData = new FormData();
+                  formData.append('userId', userID);
+                  formData.append('file', file);
+                  try {
+                    const response = await axios.post(`http://localhost:1010/api/images/upload`, formData, {
+                      userId: formData.get('userId'),
+                      file: formData.get('file'),
+                    });
+                  }
+                  catch (error) {
+                    alert('Error uploading image:', error);
+                  }
                   alert(response.data.message)
                   navigate('/sign_in');
-                  const userId = response.data.ourUsers.id;
-                  localStorage.setItem("userId", JSON.stringify(userId));
-      
               } catch (error) {
-                  console.error("There was an error registering!", error);
                   alert("Registration failed! Please try again.");
               }
           }
@@ -187,6 +202,10 @@ function Register(){
                   }}
                   autoComplete="off"
                   />
+            </FormControl>
+
+            <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
+              <input type="file" name="pic" id="picture" onChange={handleFileChange}/>
             </FormControl>
             
             <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
