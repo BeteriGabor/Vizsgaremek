@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../Navbar/Navbar';
 
 const Bank = () => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ const Bank = () => {
 
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-bank bg-center">
-
+      <Navbar/>
       <video
         autoPlay
         muted

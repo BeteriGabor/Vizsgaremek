@@ -6,7 +6,7 @@ import axios from 'axios';
 
 function Deposit(){
     const [open, setOpen] = useState(true)
-    const [amount, setAmount] = useState(0);
+    const [amounta, setAmounta] = useState(0);
     const navigate = useNavigate();
     const style = {
         width: '470px',
@@ -22,17 +22,43 @@ function Deposit(){
         outline: 'none'
     };
 
+    const handleChange = (e) => {
+      const value = e.target.value;
+      if (!isNaN(value) && value.trim() !== '') {
+            setAmounta(parseInt(value));
+          } else {
+          setAmounta(0);
+      }
+  };
+
     function handleClose(){
-        setOpen(false);
+        setOpen(true);
     }
 
-    const handleSubmit = () => {
-        try {
-           // await axios.post('http://localhost:1010/auth/deposit')
-        }
-        catch (error){
-            alert()
-        }
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      try {
+        console.log(amounta)
+        console.log(localStorage.getItem('token'))
+        const token = localStorage.getItem('token');
+        const response = await axios.post(`http://localhost:1010/auth/wallet/deposit`, {
+            amount: amounta,
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+        if (response.status === 200) {
+          alert("Deposit was successful!");
+          navigate('/bank');
+      } else {
+          alert("Something went wrong! Try again later!");
+      }
+      }
+      catch (error){
+          alert("Something went wrong during deposit! Try again later!" , error);
+          console.error(error);
+      }
     }
 
     return(
@@ -51,14 +77,18 @@ function Deposit(){
               <Box sx={style} >
                 <h2 className="text-xl">Deposit or withdraw your money!</h2>
                   <form onSubmit={handleSubmit}>
-                    <input type="text" name="Deposit" id="deposit" />
                     <select name="DepositAmount" id="depositamount">
                         <option value="1000">1000</option>
                         <option value="2500">2500</option>
                         <option value="5000">5000</option>
-                        <input type="text" name="dep" id="dep" onChange={(e) => setAmount(e.target.value)}/>
                     </select>
+                    <input type="text" name="dep" id="dep" onChange={handleChange} placeholder="Enter amount" />
+
+                    <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={handleSubmit}>Deposit</button>
+                    <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={() => navigate('/bank')}>Cancel</button>
                   </form> 
+
+                  
               </Box>
             </Fade> 
           </Modal>
