@@ -1,0 +1,7 @@
+{
+  "name": "admin-casino",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
