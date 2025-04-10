@@ -67,6 +67,7 @@ function Sign_in() {
 
         if (response.data.message === "Successfully logged in") {
           const token = response.data.token;
+          localStorage.clear()
           localStorage.setItem('token', token);
           alert(response.data.message)
           navigate('/');

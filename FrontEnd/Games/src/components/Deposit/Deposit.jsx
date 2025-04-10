@@ -32,22 +32,24 @@ function Deposit(){
   };
 
     function handleClose(){
-        setOpen(true);
+        setOpen(false);
     }
 
     const handleSubmit = async (e) => {
       e.preventDefault();
       try {
-        console.log(amounta)
-        console.log(localStorage.getItem('token'))
         const token = localStorage.getItem('token');
-        const response = await axios.post(`http://localhost:1010/auth/wallet/deposit`, {
-            amount: amounta,
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        });
+        const formData = new FormData();
+        formData.append('amount', amounta);
+        
+        const response = await axios.post(`http://localhost:1010/auth/wallet/deposit`, formData, {
+          amount: formData.get('amount'),
+          headers: {
+            authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          }
+        })
+
         if (response.status === 200) {
           alert("Deposit was successful!");
           navigate('/bank');
@@ -75,17 +77,17 @@ function Deposit(){
           >
             <Fade in={open} timeout={2000}>
               <Box sx={style} >
-                <h2 className="text-xl">Deposit or withdraw your money!</h2>
+                <h2 className="text-xl">Deposit!</h2>
                   <form onSubmit={handleSubmit}>
-                    <select name="DepositAmount" id="depositamount">
+                    <select name="DepositAmount" id="depositamount" nChange={(e) => setAmounta(parseInt(e.target.value))}>
                         <option value="1000">1000</option>
                         <option value="2500">2500</option>
                         <option value="5000">5000</option>
                     </select>
                     <input type="text" name="dep" id="dep" onChange={handleChange} placeholder="Enter amount" />
 
-                    <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={handleSubmit}>Deposit</button>
-                    <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={() => navigate('/bank')}>Cancel</button>
+                    <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded" onClick={handleSubmit}>Deposit</button>
+                    <button type="button" className="bg-red-500 text-white px-4 py-2 rounded" onClick={() => navigate('/bank')}>Cancel</button>
                   </form> 
 
                   
