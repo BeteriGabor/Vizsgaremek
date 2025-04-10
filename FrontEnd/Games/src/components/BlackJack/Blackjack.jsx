@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../Navbar/Navbar';
 
 const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
+const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '1'];
 
 const createDeck = () => {
     const deck = [];
@@ -15,8 +15,8 @@ const createDeck = () => {
 };
 
 const getCardValue = (card) => {
-    if (['Jack', 'Queen', 'King'].includes(card.rank)) return 10;
-    if (card.rank === 'Ace') return 11; 
+    if (['11', '12', '13'].includes(card.rank)) return 10;
+    if (card.rank === '1') return 11; 
     return parseInt(card.rank);
 };
 
@@ -42,19 +42,19 @@ const Blackjack = () => {
     }, [message]);
 
     const isBlackjack = (hand) => {
-        return (hand[0].rank === 'Ace' && hand[1].rank === 'Jack') || 
-                (hand[0].rank === 'Ace' && hand[1].rank === 'King') || 
-                (hand[0].rank === 'Ace' && hand[1].rank === 'Queen') || 
-                (hand[0].rank === 'Ace' && hand[1].rank === '10') || 
-                (hand[0].rank === 'Jack' && hand[1].rank === 'Ace') || 
-                (hand[0].rank === 'King' && hand[1].rank === 'Ace') || 
-                (hand[0].rank === 'Queen' && hand[1].rank === 'Ace') || 
-                (hand[0].rank === '10' && hand[1].rank === 'Ace');
+        return (hand[0].rank === '1' && hand[1].rank === '11') || 
+                (hand[0].rank === '1' && hand[1].rank === '13') || 
+                (hand[0].rank === '1' && hand[1].rank === '12') || 
+                (hand[0].rank === '1' && hand[1].rank === '10') || 
+                (hand[0].rank === '11' && hand[1].rank === '1') || 
+                (hand[0].rank === '13' && hand[1].rank === '1') || 
+                (hand[0].rank === '12' && hand[1].rank === '1') || 
+                (hand[0].rank === '10' && hand[1].rank === '1');
     };
 
     const calculateScore = (hand, forceAceAsEleven = false) => {
         let score = hand.reduce((total, card) => total + getCardValue(card), 0);
-        let aces = hand.filter(card => card.rank === 'Ace').length;
+        let aces = hand.filter(card => card.rank === '1').length;
     
         if (forceAceAsEleven && score <= 21) {
             score += aces; 
@@ -161,7 +161,7 @@ const Blackjack = () => {
     };
 
     const getCardImage = (rank, suit) => {
-        return require(`../assets/cards/${rank.toLowerCase()}_of_${suit.toLowerCase()}.png`);
+        return require(`../assets/cards/${suit} ${rank}.png`);
     };
 
     return (
@@ -174,12 +174,12 @@ const Blackjack = () => {
                         <div className="flex justify-center flex-wrap gap-2">
                         {dealerHand.map((card, index) => (
                             gameOver ? (
-                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} className="w-20 h-32" />
+                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.suit} ${card.rank}`} className="w-20 h-32" />
                             ) : (
                                 index === 0 ? (
-                                    <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} className="w-20 h-32" />
+                                    <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.suit} ${card.rank}`} className="w-20 h-32" />
                                 ) : (
-                                    <img key={index} src={require('../assets/cards/back_of_card.png')} alt="Card Back" className="w-20 h-32" />
+                                    <img key={index} src={require('../assets/cards/Card Back 3.png')} alt="Card Back" className="w-20 h-32" />
                                 )
                             )
                         ))}
@@ -193,7 +193,7 @@ const Blackjack = () => {
                         <h2 className="text-xl text-center text-white">Your Hand:</h2>
                         <div className="flex justify-center flex-wrap gap-2">
                             {playerHand.map((card, index) => (
-                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.rank} of ${card.suit}`} className="w-20 h-32" />
+                                <img key={index} src={getCardImage(card.rank, card.suit)} alt={`${card.suit} ${card.rank}`} className="w-20 h-32" />
                             ))}
                         </div>
                         <p className="text-xl text-center text-white">Your Score: {calculateScore(playerHand)}</p>
