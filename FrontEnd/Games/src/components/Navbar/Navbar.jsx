@@ -47,7 +47,7 @@ const Navbar = forwardRef(({ children }, ref) => {
   const pathName = window.location.pathname.split("/").pop();
   const pageName = pathName
     ? pathName.charAt(0).toUpperCase() + pathName.slice(1)
-    : "Kezdőlap";
+    : "HomePage";
 
   return (
     <div className="fixed top-0 left-0 right-0 flex justify-between items-center bg-gray-800 text-white p-4 z-10 shadow-md">
@@ -55,7 +55,7 @@ const Navbar = forwardRef(({ children }, ref) => {
         onClick={exit}
         className="absolute left-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg text-lg"
       >
-        Kilépés
+        Exit
       </button>
 
       <img className="h-10 absolute left-1/3" src="logo.png" alt="Logo" />
@@ -64,10 +64,10 @@ const Navbar = forwardRef(({ children }, ref) => {
 
       <div className="absolute right-4 text-lg">
         {loading
-          ? "Betöltés..."
+          ? "Loading..."
           : error
-          ? `Hiba: ${error}`
-          : `Egyenleg: ${credits} Ft`}
+          ? `Error: ${error}`
+          : `Balance: ${credits}`}
       </div>
     </div>
   );

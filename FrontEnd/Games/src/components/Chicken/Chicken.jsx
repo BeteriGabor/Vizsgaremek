@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Navbar from '../Navbar/Navbar';
+import axios from "axios";
 
 const ChickenGame = () => {
   const [position, setPosition] = useState(0);
@@ -8,9 +9,13 @@ const ChickenGame = () => {
   const [carVisible, setCarVisible] = useState(false);
   const [bet, setBet] = useState(10);
   const [message, setMessage] = useState('');
+  const [availableCredits, setAvailableCredits] = useState(1000);
   const [gameStarted, setGameStarted] = useState(false);
   const [multiplier, setMultiplier] = useState(1);
   const [playerWon, setPlayerWon] = useState(false);
+  const [betId, setBetId] = useState(null);
+
+  const navbarRef = useRef();
 
   useEffect(() => {
     if (gameStarted && !gameOver) {
@@ -18,15 +23,39 @@ const ChickenGame = () => {
     }
   }, [position, gameStarted, gameOver]);
 
-  const startGame = () => {
-    if (bet <= 0 || bet > Navbar.credits) {
-      setMessage("Please place a valid bet.");
+  const placeBet = async () => {
+    if (bet <= 0 || bet > availableCredits) {
+      setMessage("Invalid bet amount!");
       return;
     }
 
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.post(
+        `http://localhost:1010/auth/place`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            amount: bet,
+          },
+        }
+      );
+      navbarRef.current?.refreshCredits();
+
+      const match = response.data.match(/Bet ID: (\d+)/);
+      const id = match ? parseInt(match[1]) : null;
+      if (id) setBetId(id);
+
+      setAvailableCredits((prev) => prev - bet);
     resetGame();
     setGameStarted(true);
-    Navbar.setCredits = Navbar.credits - bet;
+    }catch (error) {
+      console.error("Hiba a fogadás elküldésekor:", error);
+      setMessage("Bet failed.");
+    }
   };
 
   const nextStep = () => {
@@ -111,7 +140,7 @@ const ChickenGame = () => {
           <div className="flex space-x-4">
             <button
               className="bg-blue-500 text-white px-6 py-3 rounded-lg text-xl font-bold hover:bg-blue-600 transition-colors"
-              onClick={startGame}
+              onClick={placeBet}
               disabled={gameStarted && !gameOver}
             >
               New Game
@@ -141,6 +170,7 @@ const ChickenGame = () => {
                 </option>
               ))}
             </select>
+            {message}
           </div>
         </div>
 
