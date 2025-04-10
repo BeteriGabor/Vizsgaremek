@@ -9,7 +9,6 @@ const ChickenGame = () => {
   const [carVisible, setCarVisible] = useState(false);
   const [bet, setBet] = useState(10);
   const [message, setMessage] = useState("");
-  const [availableCredits, setAvailableCredits] = useState(1000);
   const [gameStarted, setGameStarted] = useState(false);
   const [multiplier, setMultiplier] = useState(1);
   const [playerWon, setPlayerWon] = useState(false);
@@ -24,7 +23,7 @@ const ChickenGame = () => {
   }, [position, gameStarted, gameOver]);
 
   const placeBet = async () => {
-    if (bet <= 0 || bet > availableCredits) {
+    if (bet <= 0) {
       setMessage("Invalid bet amount!");
       return;
     }
@@ -43,13 +42,13 @@ const ChickenGame = () => {
           },
         }
       );
+
       if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
 
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
       if (id) setBetId(id);
 
-      setAvailableCredits((prev) => prev - bet);
       resetGame();
       setGameStarted(true);
       setMessage("");
@@ -147,11 +146,12 @@ const ChickenGame = () => {
 
         {gameOver && (
           <p
-            className={`z-50 absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold ${
+            className={`text-center z-50 absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold ${
               playerWon ? "text-green-600" : "text-red-600"
             }`}
           >
             {playerWon ? "You Won!" : "Game Over!"}
+            <p className="text-white font-bold mt-2 text-4xl">{message}</p>
           </p>
         )}
 
@@ -197,7 +197,7 @@ const ChickenGame = () => {
                 </option>
               ))}
             </select>
-            {message}
+            
           </div>
         </div>
 

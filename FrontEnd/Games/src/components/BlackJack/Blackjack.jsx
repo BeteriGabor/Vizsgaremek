@@ -137,6 +137,17 @@ const Blackjack = () => {
     setDeck(newDeck);
     setGameOver(false);
     setGameActive(true);
+    if (isBlackjack(playerCards)) {
+        setMessage('You got a Blackjack! You win!');
+        Navbar.credits=(prevCredits => prevCredits + bet * 1.5); 
+        setGameOver(true);
+        setGameActive(false)
+    } else if (isBlackjack(dealerCards)) {
+        setMessage('Dealer got a Blackjack! You lose!');
+        Navbar.credits=(prevCredits => prevCredits - bet);
+        setGameOver(true);
+        setGameActive(false)
+    }
   };
 
   const hit = () => {

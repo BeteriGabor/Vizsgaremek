@@ -9,7 +9,6 @@ const Aviator = () => {
   const [positions, setPositions] = useState([]);
   const [isVisible, setIsVisible] = useState(true);
   const [bet, setBet] = useState(10);
-  const [availableCredits, setAvailableCredits] = useState(1000);
   const [gameStarted, setGameStarted] = useState(false);
   const [betId, setBetId] = useState(null);
 
@@ -38,19 +37,18 @@ const Aviator = () => {
           setIsFlying(false);
           setGameStarted(false);
           resolveBet(false, multiplier);
-          setStatusMessage("The plane crashed! You lost your bet.");
+          setStatusMessage("The plane crashed!");
         }
       }, 100);
 
-      const randomFlightDuration =
-        Math.floor(Math.random() * (12000 - 0 + 1)) + 0;
+      const randomFlightDuration = Math.floor(Math.random() * 12000);
 
       setTimeout(() => {
         clearInterval(flightInterval);
         setIsFlying(false);
         setGameStarted(false);
         resolveBet(false, multiplier);
-        setStatusMessage("The plane crashed! You lost your bet.");
+        setStatusMessage("The plane crashed!");
       }, randomFlightDuration);
     } else {
       setPositions([]);
@@ -60,7 +58,7 @@ const Aviator = () => {
   }, [isFlying]);
 
   const placeBet = async () => {
-    if (bet <= 0 || bet > availableCredits) {
+    if (bet <= 0) {
       setStatusMessage("Invalid bet amount!");
       return;
     }
@@ -79,18 +77,17 @@ const Aviator = () => {
           },
         }
       );
-      navbarRef.current?.refreshCredits();
 
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
       if (id) setBetId(id);
 
-      setAvailableCredits((prev) => prev - bet);
+      navbarRef.current?.refreshCredits();
       setIsFlying(true);
       setIsVisible(true);
       setGameStarted(true);
     } catch (error) {
-      console.error("Hiba a fogadás elküldésekor:", error);
+      console.error("Error:", error);
       setStatusMessage("Bet failed.");
     }
   };
@@ -116,15 +113,13 @@ const Aviator = () => {
         navbarRef.current.refreshCredits();
       }
     } catch (error) {
-      console.error("Hiba a resolveBet közben:", error);
+      console.error("ResolveBet error:", error);
     }
   };
 
   const cashOut = () => {
     if (isFlying) {
       const winnings = Math.floor(bet * multiplier);
-      setAvailableCredits((prev) => prev + winnings);
-      setIsFlying(false);
       setGameStarted(false);
       setStatusMessage(
         `Cashed out: ${multiplier.toFixed(2)}x, You won ${winnings.toFixed(
@@ -149,7 +144,7 @@ const Aviator = () => {
       <Navbar ref={navbarRef} />
       <div className="min-h-screen flex flex-col items-center justify-center bg-aviatorbg font-['Press Start 2P'] text-white px-4">
         <div className="flex flex-col items-center justify-center p-10 backdrop-blur-lg rounded-3xl">
-          <div className="relative w-[300px] h-[400px] bg-aviatorgamebg bg-opacity-0 rounded-xl  overflow-hidden border-4 border-slate-800 mb-6">
+          <div className="relative w-[300px] h-[400px] bg-aviatorgamebg bg-opacity-0 rounded-xl overflow-hidden border-4 border-slate-800 mb-6">
             <svg className="absolute w-full h-full">
               <path
                 d={pathData}
@@ -166,9 +161,7 @@ const Aviator = () => {
                 }`}
                 onAnimationEnd={() => setIsVisible(false)}
                 style={{
-                  left: `${
-                    positions[positions.length - 1]?.x - rotation / 3
-                  }px`,
+                  left: `${positions[positions.length - 1]?.x - rotation / 3}px`,
                   bottom: `${positions[positions.length - 1]?.y}px`,
                   transform: `rotate(-${rotation}deg)`,
                   transformOrigin: "center",
@@ -194,7 +187,7 @@ const Aviator = () => {
 
             <button
               onClick={cashOut}
-              disabled={!isFlying}
+              disabled={!isFlying || !gameStarted}
               className={`px-6 py-2 rounded-lg text-white font-semibold transition-transform duration-300 ${
                 !isFlying
                   ? "bg-gray-400 cursor-not-allowed"
@@ -204,6 +197,7 @@ const Aviator = () => {
               Cash Out
             </button>
           </div>
+
           <select
             value={bet}
             onChange={(e) => setBet(Number(e.target.value))}
@@ -216,6 +210,7 @@ const Aviator = () => {
               </option>
             ))}
           </select>
+
           <div className="text-xl sm:text-2xl font-bold text-white drop-shadow">
             Multiplier: <span>{multiplier.toFixed(2)}x</span>
           </div>
@@ -226,16 +221,14 @@ const Aviator = () => {
 
           <style>
             {`
-                    @keyframes fall {
-                        from { transform: translateY(${
-                          positions[positions.length - 1]?.y
-                        }px); }
-                        to { transform: translateY(1000px); }
-                    }
-                    .animate-fall {
-                        animation: fall 0.4s linear forwards;
-                    }
-                `}
+              @keyframes fall {
+                from { transform: translateY(${positions[positions.length - 1]?.y}px); }
+                to { transform: translateY(1000px); }
+              }
+              .animate-fall {
+                animation: fall 0.4s linear forwards;
+              }
+            `}
           </style>
         </div>
       </div>
