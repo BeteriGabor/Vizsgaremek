@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 
@@ -11,6 +11,9 @@ const Aviator = () => {
   const [bet, setBet] = useState(10);
   const [availableCredits, setAvailableCredits] = useState(1000);
   const [gameStarted, setGameStarted] = useState(false);
+  const [betId, setBetId] = useState(null);
+
+  const navbarRef = useRef();
 
   useEffect(() => {
     let flightInterval;
@@ -34,7 +37,8 @@ const Aviator = () => {
           clearInterval(flightInterval);
           setIsFlying(false);
           setGameStarted(false);
-          setStatusMessage("You won!");
+          resolveBet(false, multiplier);
+          setStatusMessage("The plane crashed! You lost your bet.");
         }
       }, 100);
 
@@ -45,6 +49,7 @@ const Aviator = () => {
         clearInterval(flightInterval);
         setIsFlying(false);
         setGameStarted(false);
+        resolveBet(false, multiplier);
         setStatusMessage("The plane crashed! You lost your bet.");
       }, randomFlightDuration);
     } else {
@@ -60,8 +65,8 @@ const Aviator = () => {
       return;
     }
 
+    const token = localStorage.getItem("token");
     try {
-      const token = localStorage.getItem("token");
       const response = await axios.post(
         `http://localhost:1010/auth/place`,
         {},
@@ -74,8 +79,12 @@ const Aviator = () => {
           },
         }
       );
+      navbarRef.current?.refreshCredits();
 
-      console.log("Bet placed:", response.data);
+      const match = response.data.match(/Bet ID: (\d+)/);
+      const id = match ? parseInt(match[1]) : null;
+      if (id) setBetId(id);
+
       setAvailableCredits((prev) => prev - bet);
       setIsFlying(true);
       setIsVisible(true);
@@ -83,6 +92,31 @@ const Aviator = () => {
     } catch (error) {
       console.error("Hiba a fogadás elküldésekor:", error);
       setStatusMessage("Bet failed.");
+    }
+  };
+
+  const resolveBet = async (win, multiplierValue) => {
+    if (!betId) return;
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        `http://localhost:1010/api/resolve/${betId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            win: win,
+            multiplier: multiplierValue,
+          },
+        }
+      );
+      if (navbarRef.current?.refreshCredits) {
+        navbarRef.current.refreshCredits();
+      }
+    } catch (error) {
+      console.error("Hiba a resolveBet közben:", error);
     }
   };
 
@@ -97,6 +131,7 @@ const Aviator = () => {
           2
         )} credits!`
       );
+      resolveBet(true, multiplier);
       setMultiplier(1.0);
       setPositions([]);
     } else {
@@ -111,7 +146,7 @@ const Aviator = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar ref={navbarRef} />
       <div className="min-h-screen flex flex-col items-center justify-center bg-aviatorbg font-['Press Start 2P'] text-white px-4">
         <div className="flex flex-col items-center justify-center p-10 backdrop-blur-lg rounded-3xl">
           <div className="relative w-[300px] h-[400px] bg-aviatorgamebg bg-opacity-0 rounded-xl  overflow-hidden border-4 border-slate-800 mb-6">
