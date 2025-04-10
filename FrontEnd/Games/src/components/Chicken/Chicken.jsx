@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import Navbar from '../Navbar/Navbar';
+import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 
 const ChickenGame = () => {
@@ -8,7 +8,7 @@ const ChickenGame = () => {
   const [gameOver, setGameOver] = useState(false);
   const [carVisible, setCarVisible] = useState(false);
   const [bet, setBet] = useState(10);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [availableCredits, setAvailableCredits] = useState(1000);
   const [gameStarted, setGameStarted] = useState(false);
   const [multiplier, setMultiplier] = useState(1);
@@ -43,18 +43,43 @@ const ChickenGame = () => {
           },
         }
       );
-      navbarRef.current?.refreshCredits();
+      if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
 
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
       if (id) setBetId(id);
 
       setAvailableCredits((prev) => prev - bet);
-    resetGame();
-    setGameStarted(true);
-    }catch (error) {
+      resetGame();
+      setGameStarted(true);
+      setMessage("");
+      setPlayerWon(false);
+    } catch (error) {
       console.error("Hiba a fogadás elküldésekor:", error);
       setMessage("Bet failed.");
+    }
+  };
+
+  const resolveBet = async (win, multiplierValue) => {
+    if (!betId) return;
+    const token = localStorage.getItem("token");
+    try {
+      await axios.post(
+        `http://localhost:1010/api/resolve/${betId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          params: {
+            win: win,
+            multiplier: multiplierValue,
+          },
+        }
+      );
+      if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
+    } catch (error) {
+      console.error("Hiba a resolveBet közben:", error);
     }
   };
 
@@ -67,11 +92,11 @@ const ChickenGame = () => {
         setGameOver(true);
         setCarVisible(true);
         setPlayerWon(false);
+        resolveBet(false, multiplier);
       } else if (newPosition === 11) {
         setGameOver(true);
         setPlayerWon(true);
-        const winnings = bet * multiplier * 1.5;
-        Navbar.setCredits = Navbar.credits + winnings;
+        resolveBet(true, multiplier * 1.5);
       }
     }
   };
@@ -86,38 +111,30 @@ const ChickenGame = () => {
   };
 
   const stand = () => {
-    if (!gameStarted || gameOver) {
-      return;
-    }
-    const winnings = bet * multiplier;
-    Navbar.setCredits = Navbar.credits + winnings;
-    setMessage(`You cashed out with ${winnings} credits!`);
+    if (!gameStarted || gameOver) return;
+    setMessage(`You cashed out with ${(bet * multiplier).toFixed(2)} credits!`);
     setPlayerWon(true);
     setGameStarted(false);
     setGameOver(true);
+    resolveBet(true, multiplier);
   };
 
   return (
     <>
-      
-
-      <div className="w-screen h-screen relative  bg-slate-600">
+      <div className="w-screen h-screen relative bg-slate-600">
         <div
           className="absolute top-0 left-[45%] h-full w-[2000px] bg-chickenmap transition-transform duration-300 ease-in-out"
-          style={{
-            transform: `translateX(-${position * 10}rem)`,
-          }}
-        >
-          
-        </div>
-        <Navbar/>
+          style={{ transform: `translateX(-${position * 10}rem)` }}
+        ></div>
+        <Navbar ref={navbarRef} />
+
         {carVisible && (
-            <img
-              className="absolute -top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-36 h-36 animate-carFall"
-              src="car.png"
-              alt="Car"
-            />
-          )}
+          <img
+            className="absolute -top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-36 h-36 animate-carFall"
+            src="car.png"
+            alt="Car"
+          />
+        )}
 
         {!gameOver && (
           <img
@@ -129,14 +146,19 @@ const ChickenGame = () => {
         )}
 
         {gameOver && (
-          <p className={`z-50 absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold ${playerWon ? 'text-green-600' : 'text-red-600'}`}>
-            {playerWon ? 'You Won!' : 'Game Over!'}
+          <p
+            className={`z-50 absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold ${
+              playerWon ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {playerWon ? "You Won!" : "Game Over!"}
           </p>
         )}
 
-
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col space-y-4 items-center bg-slate-500 p-5 rounded-xl z-20">
-          <div className="text-white text-2xl font-bold">Current multiplier: {multiplier.toFixed(2)}x</div>
+          <div className="text-white text-2xl font-bold">
+            Current multiplier: {multiplier.toFixed(2)}x
+          </div>
           <div className="flex space-x-4">
             <button
               className="bg-blue-500 text-white px-6 py-3 rounded-lg text-xl font-bold hover:bg-blue-600 transition-colors"
@@ -156,7 +178,12 @@ const ChickenGame = () => {
           </div>
 
           <div className="form-control w-full max-w-xs">
-            <label htmlFor="bet-amount" className="block text-white mb-2 text-xl">Bet Amount</label>
+            <label
+              htmlFor="bet-amount"
+              className="block text-white mb-2 text-xl"
+            >
+              Bet Amount
+            </label>
             <select
               id="bet-amount"
               value={bet}
