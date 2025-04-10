@@ -5,7 +5,7 @@ function App() {
   
   return(
     <>
-      <iframe src="http://localhost:3000?token=5" frameborder="0" style={{width:'100vw' , height:'100vh'}}></iframe>
+      <iframe src="http://localhost:3000" frameborder="0" style={{width:'100vw' , height:'100vh'}}></iframe>
     </>
   );
 }

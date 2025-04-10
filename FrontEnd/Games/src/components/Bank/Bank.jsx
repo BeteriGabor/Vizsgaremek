@@ -11,8 +11,10 @@ const Bank = () => {
   const handleNavigateToWithdraw = () => navigate('/withdraw');
 
   return (
+    <>
+    <Navbar/>
     <div className="relative h-screen w-screen overflow-hidden bg-bank bg-center">
-      <Navbar/>
+      
       <video
         autoPlay
         muted
@@ -56,6 +58,7 @@ const Bank = () => {
         </button>
       </div>
     </div>
+    </>
   );
 }
 export default Bank
