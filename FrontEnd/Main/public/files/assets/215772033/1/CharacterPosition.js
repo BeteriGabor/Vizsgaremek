@@ -24,7 +24,7 @@ CharacterPosition.prototype.update = function(dt) {
         
         if (inZone && !target.inside) { 
             
-            window.location.href = target.url;
+            window.open(target.url, '_blank');
             target.inside = true;
         } 
         

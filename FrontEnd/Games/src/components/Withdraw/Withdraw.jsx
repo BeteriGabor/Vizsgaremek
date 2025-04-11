@@ -79,7 +79,7 @@ function Withdraw(){
               <Box sx={style} >
                 <h2 className="text-xl">Withdraw your money!</h2>
                   <form onSubmit={handleSubmit}>
-                    <select name="DepositAmount" id="depositamount" nChange={(e) => setAmounta(parseInt(e.target.value))}>
+                    <select name="DepositAmount" id="depositamount" onChange={(e) => setAmounta(parseInt(e.target.value))}>
                         <option value="1000">1000</option>
                         <option value="2500">2500</option>
                         <option value="5000">5000</option>
