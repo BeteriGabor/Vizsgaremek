@@ -7,7 +7,7 @@ import React, {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Navbar = forwardRef(({ children }, ref) => {
+const Navbar = forwardRef((_, ref) => {
   const navigate = useNavigate();
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -50,9 +50,9 @@ const Navbar = forwardRef(({ children }, ref) => {
     : "HomePage";
 
   return (
-    <div className="fixed top-0 left-0 right-0 bg-gray-900 text-white z-10 shadow-lg border-b border-gray-700 px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-y-2">
+    <div className="fixed top-0 left-0 right-0 bg-gray-900 text-white z-50 shadow-lg border-b border-gray-700 px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-y-2">
       
-      {/* Left: Exit + Icons (only show icons on desktop) */}
+      {/* Exit + icons (only on desktop) */}
       <div className="flex items-center justify-start w-full sm:w-auto gap-3">
         <button
           onClick={exit}
@@ -62,15 +62,15 @@ const Navbar = forwardRef(({ children }, ref) => {
         </button>
 
         <div className="hidden sm:flex gap-2">
-          <img src="chicken.png" alt="Chicken" title="Chicken Run" className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition" />
-          <img src="airplane.png" alt="Airplane" title="Jet Crash" className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition" />
-          <img src="casinoicon.png" alt="Casino" title="Slot Machine" className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition" />
-          <img src="roulette.png" alt="Roulette" title="Roulette" className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition" />
-          <img src="bj.png" alt="Blackjack" title="Blackjack" className="h-6 sm:h-7 hover:scale-110 transition" />
+          <img src="chicken.png" alt="Chicken" title="Chicken Run" onClick={() => navigate("/chicken")} className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer" />
+          <img src="airplane.png" alt="Airplane" title="Jet Crash" onClick={() => navigate("/aviator")} className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer" />
+          <img src="casinoicon.png" alt="Casino" title="Slot Machine" onClick={() => navigate("/slot")} className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer" />
+          <img src="roulette.png" alt="Roulette" title="Roulette" onClick={() => navigate("/roulette")} className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer" />
+          <img src="bj.png" alt="Blackjack" title="Blackjack" onClick={() => navigate("/blackjack")} className="h-6 sm:h-7 hover:scale-110 transition cursor-pointer" />
         </div>
       </div>
 
-      {/* Center: Logo + Page Name (desktop only) */}
+      {/* Logo + page name (desktop only) */}
       <div className="hidden sm:flex items-center justify-center gap-2 mx-auto">
         <img src="logo.png" alt="Logo" className="h-6 sm:h-8" />
         <div className="text-yellow-300 font-bold text-base sm:text-lg tracking-wide">
@@ -78,7 +78,7 @@ const Navbar = forwardRef(({ children }, ref) => {
         </div>
       </div>
 
-      {/* Right: Balance */}
+      {/* Balance */}
       <div className="flex justify-end w-full sm:w-auto">
         <div className="text-sm sm:text-base font-medium text-right sm:text-left">
           {loading ? (

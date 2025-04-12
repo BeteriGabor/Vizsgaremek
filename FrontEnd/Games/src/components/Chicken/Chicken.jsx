@@ -1,8 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import Navbar from "../Navbar/Navbar";
 import axios from "axios";
+import useSound from "use-sound";
+import coinSound from '../assets/sounds/coin.wav';
+import winSound from '../assets/sounds/win.mp3';
+import loseSound from '../assets/sounds/lose.mp3';
 
 const ChickenGame = () => {
+  const [playCoin] = useSound(coinSound);
+  const [playWin] = useSound(winSound);
+  const [playLose] = useSound(loseSound);
   const [position, setPosition] = useState(0);
   const [obstacle, setObstacle] = useState(Math.floor(Math.random() * 10) + 1);
   const [gameOver, setGameOver] = useState(false);
@@ -44,6 +51,7 @@ const ChickenGame = () => {
       );
 
       if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
+      playCoin();
 
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
@@ -77,6 +85,14 @@ const ChickenGame = () => {
         }
       );
       if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
+      if (win) {
+        playWin();
+        setMessage(`You won ${(bet * multiplierValue).toFixed(2)} credits!`);
+      } else {
+        playLose();
+        setMessage(`You lost your bet of ${bet} credits.`);
+      }
+      
     } catch (error) {
       console.error("Hiba a resolveBet közben:", error);
     }

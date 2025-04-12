@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from '../Navbar/Navbar';
+import useSound from 'use-sound';
+import coinSound from '../assets/sounds/coin.wav';
+import winSound from '../assets/sounds/win.mp3';
+import loseSound from '../assets/sounds/lose.mp3';
 import axios from 'axios';
 
 const SYMBOLS = ['🍎', '🍋', '🍇', '🍒', '💎', '7️⃣'];
 const BET_AMOUNTS = [10, 20, 50, 100];
 
 const SlotMachine = () => {
+  const [playCoin] = useSound(coinSound);
+  const [playWin] = useSound(winSound);
+  const [playLose] = useSound(loseSound);
   const [isSpinning, setIsSpinning] = useState(false);
   const [slots, setSlots] = useState(['🍎', '🍋', '🍇']);
   const [currentBet, setCurrentBet] = useState(BET_AMOUNTS[0]);
@@ -13,9 +20,7 @@ const SlotMachine = () => {
   const navbarRef = useRef();
   const [betId, setBetId] = useState(null);
 
-  const getRandomSymbol = () => {
-    return SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
-  };
+  const getRandomSymbol = () => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
 
   const checkWin = (results) => {
     const newWinningPositions = [false, false, false];
@@ -50,18 +55,15 @@ const SlotMachine = () => {
         `http://localhost:1010/auth/place`,
         {},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            amount: currentBet,
-          },
+          headers: { Authorization: `Bearer ${token}` },
+          params: { amount: currentBet },
         }
       );
-      navbarRef.current?.refreshCredits();  
+      navbarRef.current?.refreshCredits();
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
       if (id) setBetId(id);
+      playCoin();
     } catch (err) {
       console.error("Failed to place bet", err);
     }
@@ -79,7 +81,8 @@ const SlotMachine = () => {
           params: { win, multiplier },
         }
       );
-      if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
+      navbarRef.current?.refreshCredits();
+      win ? playWin() : playLose();
     } catch (err) {
       console.error("Resolve bet error", err);
     }

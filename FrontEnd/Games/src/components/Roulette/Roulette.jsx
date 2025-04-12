@@ -1,8 +1,17 @@
 import React, { useState, useRef } from 'react';
 import Navbar from '../Navbar/Navbar';
 import axios from 'axios';
+import useSound from 'use-sound';
+import coinSound from '../assets/sounds/coin.wav';
+import winSound from '../assets/sounds/win.mp3';
+import loseSound from '../assets/sounds/lose.mp3';
+
+
 
 const Roulette = () => {
+  const [playCoin] = useSound(coinSound);
+  const [playWin] = useSound(winSound);
+  const [playLose] = useSound(loseSound);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
   const [betAmount, setBetAmount] = useState(10);
@@ -47,6 +56,7 @@ const Roulette = () => {
     } catch (err) {
       console.error("Failed to place bet", err);
     }
+    playCoin();
   };
 
   const resolveBet = async (win, multiplier = 1) => {
@@ -62,6 +72,7 @@ const Roulette = () => {
         }
       );
       if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
+      
     } catch (err) {
       console.error("Resolve bet error", err);
     }
@@ -123,15 +134,20 @@ const Roulette = () => {
     resolveBet(winnings > 0, winnings / bet);
 
     if (winnings > 0) {
+      playWin();
       setWinningsMessage({ text: `You won ${winnings} credits!`, type: 'win' });
+      
     } else {
+      playLose();
       setWinningsMessage({ text: 'You lost', type: 'lose' });
+      
     }
   };
 
   return (
     <>
       <Navbar ref={navbarRef} />
+      
       <div className="flex flex-col items-center p-5 bg-blackjackbg h-screen pt-[10%]">
         <div className="flex flex-col items-center p-5">
           <div className="relative w-[300px] h-[300px] mb-8">
@@ -140,6 +156,7 @@ const Roulette = () => {
               ref={wheelRef}
               className={`relative w-[300px] h-[300px] rounded-full bg-roulette bg-cover ${spinning ? '' : 'transition-none'}`}
             >
+              
               {numbers.map((number, index) => {
                 const rotation = index * (360 / numbers.length);
                 return (

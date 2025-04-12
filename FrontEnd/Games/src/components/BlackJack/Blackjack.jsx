@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
+import useSound from "use-sound";
+import coinSound from "../assets/sounds/coin.wav";
+import winSound from "../assets/sounds/win.mp3";
+import loseSound from "../assets/sounds/lose.mp3";
 import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 
@@ -36,6 +40,9 @@ const getCardValue = (card) => {
 };
 
 const Blackjack = () => {
+  const [playCoin] = useSound(coinSound);
+  const [playWin] = useSound(winSound);
+  const [playLose] = useSound(loseSound);
   const [deck, setDeck] = useState(createDeck());
   const [playerHand, setPlayerHand] = useState([]);
   const [dealerHand, setDealerHand] = useState([]);
@@ -96,6 +103,7 @@ const Blackjack = () => {
         }
       );
       navbarRef.current?.refreshCredits();
+      playCoin();
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
       if (id) setBetId(id);
@@ -117,6 +125,11 @@ const Blackjack = () => {
         }
       );
       if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
+      if (win) {
+        playWin();
+      } else {
+        playLose();
+      }
     } catch (err) {
       console.error("Resolve bet error", err);
     }
