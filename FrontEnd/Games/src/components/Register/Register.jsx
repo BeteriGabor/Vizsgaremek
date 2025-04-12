@@ -1,227 +1,182 @@
-import React, { useState}from "react";
-import { Modal , Button , Box , FormControl , InputLabel, OutlinedInput , InputAdornment , IconButton , TextField , Fade }from "@mui/material"
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Link , useNavigate } from 'react-router-dom';
-import dayjs from 'dayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import dayjs from 'dayjs';
 
-function Register(){
-        const [open, setOpen] = useState(true)
-        const [showPassword, setShowPassword] = useState(false)
-        const handleClickShowPassword = () => setShowPassword((show) => !show);
-        const [email, setEmail] = useState("");
-        const [username, setUsername] = useState("")
-        const [password, setPassword] = useState("")
-        const [birthDate, setBirthDate] = useState(null)
-        const [emailError, setEmailError] = useState("");
-        const [passwordHelp , setPasswordHelp] = useState("")
-        const [file , setFile] = useState(null);
+function Register() {
+  const [open, setOpen] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordHelp, setPasswordHelp] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [file, setFile] = useState(null);
 
-        const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    
-        const handleMouseDownPassword = (event) => {
-          event.preventDefault();
-        };
-      
-        const handleMouseUpPassword = (event) => {
-          event.preventDefault();
-        };
-    
-        function handleClose(){
-          setOpen(true);
-        }
+  useEffect(() => {
+    setOpen(true);
+  }, []);
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-        const style = {
-            width: '470px',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            bgcolor: 'background.paper',
-            border: '2px solid #000',
-            boxShadow: 48,
-            p: 4,
-            borderRadius: '8px'
-        };
-    
-        const style2 = {
-          display: 'flex',
-          justifyContent: 'space-between'
-        }
+    if (password !== passwordHelp) {
+      alert("❌ Passwords do not match!");
+      return;
+    }
 
-        const style3 = {
-          color: 'black'
-        }
+    if (!emailPattern.test(email)) {
+      setEmailError("Invalid email format!");
+      return;
+    }
 
-        const handleFileChange = (e) => {
-          if (e.target.files) {
-            setFile(e.target.files[0]);
-          }
-        };
+    try {
+      const response = await axios.post('http://localhost:1010/auth/register', {
+        username,
+        email,
+        password,
+        role: 'user',
+        birthDate
+      });
 
-        const handleSubmit = async (event) => {
-          event.preventDefault(); 
-          const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-          
-          if (password !== passwordHelp) {
-              alert("Passwords are not the same!");
-          } else if (!emailPattern.test(email)) {
-              alert("Your email is incorrect!");
-              setEmailError("Your email is incorrect!");
-          } else {
-              try {
-                  const response = await axios.post('http://localhost:1010/auth/register', {
-                    username: username,
-                    email: email,
-                    password: password,
-                    role: 'user', 
-                    birthDate: dayjs(birthDate).format("YYYY-MM-DD"),
-                  });
-                  const userID = response.data.ourUsers.id;
-                  const formData = new FormData();
-                  formData.append('userId', userID);
-                  formData.append('file', file);
-                  try {
-                    const response = await axios.post(`http://localhost:1010/api/images/upload`, formData, {
-                      userId: formData.get('userId'),
-                      file: formData.get('file'),
-                    });
-                  }
-                  catch (error) {
-                    alert('Error uploading image:', error);
-                  }
-                  alert(response.data.message)
-                  navigate('/sign_in');
-              } catch (error) {
-                  alert("Registration failed! Please try again.");
-              }
-          }
-      };
+      const userID = response.data.ourUsers.id;
 
-    return(
-        <Modal className="bg-defbg" open={open} onClose={handleClose} disableEscapeKeyDown BackdropProps={{
-                timeout: 2500,
-            }}
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
-            <Fade in={open} timeout={2000}>
-            <Box sx={style}>
-              <h2>Register!</h2>
-               <form onSubmit={handleSubmit}>
-               <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined" >
-                <TextField id="outlined-basic" label="Username" variant="outlined" onChange={(e) => {setUsername(e.target.value)}} required/>
-              </FormControl>
-  
-              <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
-                <InputLabel htmlFor="outlined-basic" required>Password</InputLabel>
-                <OutlinedInput
-                    id="outlined-basic"
-                    type={showPassword ? 'text' : 'password'}
-                    onChange={(e) => {setPassword(e.target.value)}}
-                    endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label={
-                        showPassword ? 'hide the password' : 'display the password'
-                        }
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        onMouseUp={handleMouseUpPassword}
-                        edge="end"
-                      >
-                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                </InputAdornment>
-                }
-              />
-            </FormControl>
+      const formData = new FormData();
+      formData.append('userId', userID);
+      formData.append('file', file);
 
-            <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
-              <InputLabel htmlFor="outlined-basic" required>Password again</InputLabel>
-              <OutlinedInput
-                  id="outlined-basic"
-                  type={showPassword ? 'text' : 'password'}
-                  onChange={(e) => {
-                      setPasswordHelp(e.target.value)
-                  }}
-                  endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label={
-                      showPassword ? 'hide the password' : 'display the password'
-                      }
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      onMouseUp={handleMouseUpPassword}
-                      edge="end"
-                    >
-                  {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                </IconButton>
-              </InputAdornment>
-              }
-              />
-            </FormControl>
+      try {
+        await axios.post(`http://localhost:1010/api/images/upload`, formData);
+      } catch (error) {
+        alert('⚠️ Error uploading image.');
+      }
 
-            <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={['DatePicker']}>
-                      <DatePicker
-                          views={['year', 'month', 'day']}
-                          minDate={dayjs().subtract(500, "years")}
-                          maxDate={dayjs().subtract(18, "years")}
-                          showDisabledMonthNavigation
-                          sx={{ width: '48ch' }}
-                          onChange={(newValue) => {
-                              const formattedDate = newValue.format("YYYY-MM-DD");
-                              setBirthDate(formattedDate);
-                          }}
-                          renderInput={(params) => <TextField {...params} />}
-                      />
-                  </DemoContainer>
-              </LocalizationProvider>
-            </FormControl>
+      alert("✅ Registration successful!");
+      navigate('/sign_in');
+    } catch (error) {
+      alert("❌ Registration failed! Please try again.");
+    }
+  };
 
-            <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
-              <TextField
+  return (
+    <>
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-defbg px-4">
+          <div className="bg-gray-800 text-white rounded-2xl p-8 w-full max-w-xl shadow-2xl border border-gray-700">
+            <h2 className="text-3xl font-bold mb-6 text-center text-green-400">🎰 Create Your Account</h2>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="text-sm mb-1 block">Username</label>
+                <input
+                  type="text"
                   required
-                  label="Email"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Enter your username"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm mb-1 block">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full p-3 pr-10 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl"
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm mb-1 block">Repeat Password</label>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={passwordHelp}
+                  onChange={(e) => setPasswordHelp(e.target.value)}
+                  className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Repeat your password"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm mb-1 block">Birthdate</label>
+                <input
+                  type="date"
+                  required
+                  max={dayjs().subtract(18, 'year').format("YYYY-MM-DD")}
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm mb-1 block">Email</label>
+                <input
+                  type="email"
+                  required
                   value={email}
                   onChange={(e) => {
-                      setEmail(e.target.value)
+                    setEmail(e.target.value);
+                    setEmailError("");
                   }}
-                  error={emailError}
-                  helperText={emailError ? "Please enter a valid email" : ""}
-                  inputProps={{
-                  type: "email",
-                  }}
-                  autoComplete="off"
-                  />
-            </FormControl>
+                  className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="your@email.com"
+                />
+                {emailError && <p className="text-red-500 text-sm mt-1">{emailError}</p>}
+              </div>
 
-            <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
-              <input type="file" name="pic" id="picture" onChange={handleFileChange}/>
-            </FormControl>
-            
-            <FormControl sx={{ m: 1, width: '44ch' }} variant="outlined">
-              <Box sx={style2}>
-                <Button variant="contained" type="submit" color="success">Register</Button>
-                <Link to="/sign_in">
-                  <Button variant="contained" type="submit" color="secondary">Back to Login page!</Button>
+              <div>
+                <label className="text-sm mb-1 block">Upload your profile image</label>
+                <input
+                  type="file"
+                  onChange={(e) => setFile(e.target.files[0])}
+                  className="text-white"
+                />
+              </div>
+
+              <div className="flex justify-between gap-3 pt-4">
+                <button
+                  type="submit"
+                  className="bg-green-600 hover:bg-green-700 transition-all duration-200 text-white font-semibold px-6 py-3 rounded-lg w-full"
+                >
+                  Create Account
+                </button>
+                <Link
+                  to="/sign_in"
+                  className="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-6 py-3 rounded-lg w-full text-center"
+                >
+                  Back to Login
                 </Link>
-              </Box>         
-              <p style={style3}>Be careful! The more you play the more chance you will become an addict!</p>
-            </FormControl>
-          </form>
-        </Box>
-      </Fade>
-    </Modal>
-    )
+              </div>
+
+              <p className="text-xs text-center mt-4 text-gray-400">
+                ⚠️ Gambling can be addictive. Play responsibly.
+              </p>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
 export default Register;

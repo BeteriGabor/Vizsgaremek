@@ -129,7 +129,7 @@ const ChickenGame = () => {
 
         {carVisible && (
           <img
-            className="absolute -top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-36 h-36 animate-carFall"
+            className="absolute -top-10 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-28 h-28 animate-carFall"
             src="car.png"
             alt="Car"
           />
@@ -137,7 +137,7 @@ const ChickenGame = () => {
 
         {!gameOver && (
           <img
-            className="w-36 h-36 absolute top-2/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10"
+            className="w-28 h-28 absolute top-2/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10"
             onClick={nextStep}
             src="chicken.png"
             alt="Chicken"
@@ -146,22 +146,22 @@ const ChickenGame = () => {
 
         {gameOver && (
           <p
-            className={`text-center z-50 absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-8xl font-bold ${
+            className={`text-center z-50 absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl font-bold ${
               playerWon ? "text-green-600" : "text-red-600"
             }`}
           >
             {playerWon ? "You Won!" : "Game Over!"}
-            <p className="text-white font-bold mt-2 text-4xl">{message}</p>
+            <p className="text-white font-bold mt-2 text-xl">{message}</p>
           </p>
         )}
 
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col space-y-4 items-center bg-slate-500 p-5 rounded-xl z-20">
-          <div className="text-white text-2xl font-bold">
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col space-y-4 items-center bg-slate-500 p-4 rounded-xl z-20 w-[90%] max-w-md">
+          <div className="text-white text-lg font-bold">
             Current multiplier: {multiplier.toFixed(2)}x
           </div>
-          <div className="flex space-x-4">
+          <div className="flex flex-wrap justify-center space-x-4">
             <button
-              className="bg-blue-500 text-white px-6 py-3 rounded-lg text-xl font-bold hover:bg-blue-600 transition-colors"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg text-base font-bold hover:bg-blue-600 transition-colors"
               onClick={placeBet}
               disabled={gameStarted && !gameOver}
             >
@@ -169,7 +169,7 @@ const ChickenGame = () => {
             </button>
 
             <button
-              className="bg-green-700 text-white px-6 py-3 rounded-lg text-xl font-bold hover:bg-green-800 transition-colors"
+              className="bg-green-700 text-white px-4 py-2 rounded-lg text-base font-bold hover:bg-green-800 transition-colors"
               onClick={stand}
               disabled={!gameStarted || gameOver}
             >
@@ -177,10 +177,10 @@ const ChickenGame = () => {
             </button>
           </div>
 
-          <div className="form-control w-full max-w-xs">
+          <div className="form-control w-full">
             <label
               htmlFor="bet-amount"
-              className="block text-white mb-2 text-xl"
+              className="block text-white mb-2 text-base"
             >
               Bet Amount
             </label>
@@ -188,7 +188,7 @@ const ChickenGame = () => {
               id="bet-amount"
               value={bet}
               onChange={(e) => setBet(Number(e.target.value))}
-              className="w-full p-2 bg-white text-black rounded-lg shadow-md text-xl"
+              className="w-full p-2 bg-white text-black rounded-lg shadow-md text-base"
               disabled={gameStarted && !gameOver}
             >
               {[10, 20, 50, 100].map((amount) => (
@@ -197,7 +197,6 @@ const ChickenGame = () => {
                 </option>
               ))}
             </select>
-            
           </div>
         </div>
 

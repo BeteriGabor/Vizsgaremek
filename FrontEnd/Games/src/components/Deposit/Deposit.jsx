@@ -1,102 +1,142 @@
-import React ,{ useState, Backdrop } from "react";
-import { Modal , Box , Fade }from "@mui/material"
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+function Deposit() {
+  const [open, setOpen] = useState(false);
+  const [amounta, setAmounta] = useState(0);
+  const [customAmount, setCustomAmount] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-function Deposit(){
-    const [open, setOpen] = useState(true)
-    const [amounta, setAmounta] = useState(0);
-    const navigate = useNavigate();
-    const style = {
-        width: '470px',
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        bgcolor: 'background.paper',
-        border: '2px solid #000',
-        boxShadow: 48,
-        borderRadius: '8px', 
-        p: 4,
-        outline: 'none'
-    };
+  useEffect(() => {
+    setOpen(true);
+  }, []);
 
-    const handleChange = (e) => {
-      const value = e.target.value;
-      if (!isNaN(value) && value.trim() !== '') {
-            setAmounta(parseInt(value));
-          } else {
-          setAmounta(0);
-      }
+  const handleSelectChange = (e) => {
+    const value = parseInt(e.target.value);
+    setAmounta(value);
+    setCustomAmount(''); // töröljük az egyedi mezőt, ha kiválasztás történt
   };
 
-    function handleClose(){
-        setOpen(false);
+  const handleCustomChange = (e) => {
+    setCustomAmount(e.target.value);
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value > 0) {
+      setAmounta(value);
+    } else {
+      setAmounta(0);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (amounta <= 0) {
+      setError("Please select or enter a valid amount.");
+      return;
     }
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const token = localStorage.getItem('token');
-        const formData = new FormData();
-        formData.append('amount', amounta);
-        
-        const response = await axios.post(`http://localhost:1010/auth/wallet/deposit`, formData, {
-          amount: formData.get('amount'),
-          headers: {
-            authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          }
-        })
+    setError('');
+    setLoading(true);
 
-        if (response.status === 200) {
-          alert("Deposit was successful!");
-          navigate('/bank');
+    try {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('amount', amounta);
+
+      const response = await axios.post(`http://localhost:1010/auth/wallet/deposit`, formData, {
+        headers: {
+          authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+
+      if (response.status === 200) {
+        alert("✅ Deposit was successful!");
+        navigate('/bank');
       } else {
-          alert("Something went wrong! Try again later!");
+        setError("Something went wrong. Please try again.");
       }
-      }
-      catch (error){
-          alert("Something went wrong during deposit! Try again later!" , error);
-          console.error(error);
-      }
+    } catch (error) {
+      setError("Something went wrong during the deposit.");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return(
-        <>
-          <Modal open={open} 
-          onClose={handleClose} disableEscapeKeyDown BackdropComponent={Backdrop}
-          BackdropProps={{
-              timeout: 2500, 
-          }}
-          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} 
-          aria-labelledby="modal-modal-title" 
-          aria-describedby="modal-modal-description"
-          className="bg-defbg"
-          >
-            <Fade in={open} timeout={2000}>
-              <Box sx={style} >
-                <h2 className="text-xl">Deposit!</h2>
-                  <form onSubmit={handleSubmit}>
-                    <select name="DepositAmount" id="depositamount" onChange={(e) => setAmounta(parseInt(e.target.value))}>
-                        <option value="1000">1000</option>
-                        <option value="2500">2500</option>
-                        <option value="5000">5000</option>
-                    </select>
-                    <input type="text" name="dep" id="dep" onChange={handleChange} placeholder="Enter amount" />
+  return (
+    <>
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
+          <div className="bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg p-6 w-full max-w-md shadow-lg">
+            <h2 className="text-2xl font-bold mb-4 text-center">Deposit Funds</h2>
 
-                    <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded" onClick={handleSubmit}>Deposit</button>
-                    <button type="button" className="bg-red-500 text-white px-4 py-2 rounded" onClick={() => navigate('/bank')}>Cancel</button>
-                  </form> 
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="depositamount" className="block mb-1 font-medium">
+                  Select amount:
+                </label>
+                <select
+                  name="DepositAmount"
+                  id="depositamount"
+                  className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800 dark:text-white"
+                  onChange={handleSelectChange}
+                  value={amounta && !customAmount ? amounta : ''}
+                >
+                  <option value="">Choose an amount...</option>
+                  <option value="1000">1000 Ft</option>
+                  <option value="2500">2500 Ft</option>
+                  <option value="5000">5000 Ft</option>
+                </select>
+              </div>
 
-                  
-              </Box>
-            </Fade> 
-          </Modal>
-          
-        </>
-    )
+              <div>
+                <label htmlFor="dep" className="block mb-1 font-medium">
+                  Or enter custom amount:
+                </label>
+                <input
+                  type="text"
+                  name="dep"
+                  id="dep"
+                  value={customAmount}
+                  onChange={handleCustomChange}
+                  placeholder="e.g., 1234"
+                  className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800 dark:text-white"
+                />
+              </div>
+
+              {error && <p className="text-red-500 text-sm">{error}</p>}
+
+              <div className="flex justify-end space-x-2 mt-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`${
+                    loading ? 'bg-green-400' : 'bg-green-600 hover:bg-green-700'
+                  } text-white px-4 py-2 rounded`}
+                >
+                  {loading ? 'Processing...' : 'Deposit'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    navigate('/bank');
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
 export default Deposit;
