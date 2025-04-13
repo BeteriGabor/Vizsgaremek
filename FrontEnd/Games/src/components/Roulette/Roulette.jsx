@@ -6,12 +6,11 @@ import coinSound from '../assets/sounds/coin.wav';
 import winSound from '../assets/sounds/win.mp3';
 import loseSound from '../assets/sounds/lose.mp3';
 
-
-
 const Roulette = () => {
   const [playCoin] = useSound(coinSound);
   const [playWin] = useSound(winSound);
   const [playLose] = useSound(loseSound);
+
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
   const [betAmount, setBetAmount] = useState(10);
@@ -41,22 +40,18 @@ const Roulette = () => {
         `http://localhost:1010/auth/place`,
         {},
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            amount: betAmount,
-          },
+          headers: { Authorization: `Bearer ${token}` },
+          params: { amount: betAmount },
         }
       );
       navbarRef.current?.refreshCredits();
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
       if (id) setBetId(id);
+      playCoin();
     } catch (err) {
       console.error("Failed to place bet", err);
     }
-    playCoin();
   };
 
   const resolveBet = async (win, multiplier = 1) => {
@@ -71,8 +66,7 @@ const Roulette = () => {
           params: { win, multiplier },
         }
       );
-      if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
-      
+      navbarRef.current?.refreshCredits?.();
     } catch (err) {
       console.error("Resolve bet error", err);
     }
@@ -80,8 +74,13 @@ const Roulette = () => {
 
   const spinWheel = async () => {
     const bet = parseInt(betAmount);
-    if (spinning || bet <= 0) {
-      setWinningsMessage({ text: "Invalid bet!", type: 'lose' });
+
+    if (
+      spinning ||
+      bet <= 0 ||
+      (betType === 'number' && (betNumber === '' || betNumber < 0 || betNumber > 36))
+    ) {
+      setWinningsMessage({ text: "Please select a valid bet and number!", type: 'lose' });
       return;
     }
 
@@ -136,18 +135,16 @@ const Roulette = () => {
     if (winnings > 0) {
       playWin();
       setWinningsMessage({ text: `You won ${winnings} credits!`, type: 'win' });
-      
     } else {
       playLose();
       setWinningsMessage({ text: 'You lost', type: 'lose' });
-      
     }
   };
 
   return (
     <>
       <Navbar ref={navbarRef} />
-      
+
       <div className="flex flex-col items-center p-5 bg-blackjackbg h-screen pt-[10%]">
         <div className="flex flex-col items-center p-5">
           <div className="relative w-[300px] h-[300px] mb-8">
@@ -156,7 +153,6 @@ const Roulette = () => {
               ref={wheelRef}
               className={`relative w-[300px] h-[300px] rounded-full bg-roulette bg-cover ${spinning ? '' : 'transition-none'}`}
             >
-              
               {numbers.map((number, index) => {
                 const rotation = index * (360 / numbers.length);
                 return (
@@ -177,7 +173,10 @@ const Roulette = () => {
           <div className="mt-5 flex flex-col items-center">
             <button
               onClick={spinWheel}
-              disabled={spinning}
+              disabled={
+                spinning || 
+                (betType === 'number' && (betNumber === '' || betNumber < 0 || betNumber > 36))
+              }
               className={`px-5 py-2.5 ${spinning ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded mb-4 font-medium`}
             >
               {spinning ? 'Spinning...' : 'Spin'}
