@@ -1,6 +1,5 @@
 package com.casino.UserManagementSystem.entity;
 
-import com.casino.UserManagementSystem.enums.BetStatus;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
@@ -18,12 +17,11 @@ public class Bet {
 
     private BigDecimal amount; // Fogadott összeg
     private BigDecimal multiplier; // Szorzó
-    @Enumerated(EnumType.STRING)
-    private BetStatus status; // PENDING, WIN, LOSE
+    private String status; // PENDING, WIN, LOSE
 
     public Bet() {}
 
-    public Bet(OurUsers user, BigDecimal amount, BigDecimal multiplier, BetStatus status) {
+    public Bet(OurUsers user, BigDecimal amount, BigDecimal multiplier, String status) {
         this.user = user;
         this.amount = amount;
         this.multiplier = multiplier;
@@ -46,7 +44,7 @@ public class Bet {
         return multiplier;
     }
 
-    public BetStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
@@ -62,7 +60,7 @@ public class Bet {
         this.multiplier = multiplier;
     }
 
-    public void setStatus(BetStatus status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }

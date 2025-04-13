@@ -4,7 +4,6 @@ import com.casino.UserManagementSystem.entity.Bet;
 import com.casino.UserManagementSystem.entity.OurUsers;
 import com.casino.UserManagementSystem.entity.Transaction;
 import com.casino.UserManagementSystem.entity.Wallet;
-import com.casino.UserManagementSystem.enums.BetStatus;
 import com.casino.UserManagementSystem.enums.TransactionType;
 import com.casino.UserManagementSystem.repository.BetRepository;
 import com.casino.UserManagementSystem.repository.TransactionRepo;
@@ -44,7 +43,7 @@ public class BetService {
         Bet bet = new Bet();
         bet.setUser(user);
         bet.setAmount(amount);
-        bet.setStatus(BetStatus.PENDING); // Kezdeti státusz
+        bet.setStatus("PENDING"); // Kezdeti státusz
 
         // Csökkentjük a felhasználó egyenlegét
         wallet.setBalance(balance.subtract(amount));
@@ -75,10 +74,10 @@ public class BetService {
             walletRepository.save(wallet);
 
             // A fogadás státuszának frissítése
-            bet.setStatus(BetStatus.WIN);
+            bet.setStatus("WIN");
         } else {
             // Ha veszít, a fogadás státuszának frissítése
-            bet.setStatus(BetStatus.LOSE);
+            bet.setStatus("LOSE");
         }
 
         // A tranzakció rögzítése a "transaction" táblában (a tranzakciók rögzítésére is szükség van)

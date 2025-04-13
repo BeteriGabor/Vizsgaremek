@@ -27,7 +27,7 @@ function Sign_in() {
         localStorage.clear();
         localStorage.setItem('token', token);
         alert(response.data.message);
-        navigate('/');
+        window.close();
       } else {
         alert("❌ Login failed! Please check your credentials.");
       }
