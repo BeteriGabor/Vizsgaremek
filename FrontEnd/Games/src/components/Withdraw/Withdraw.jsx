@@ -69,6 +69,7 @@ function Withdraw() {
 
   return (
     <>
+    <div className="bg-gray-700 w-sceen h-screen bg-withdrawbg">
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
           <div className="bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg p-6 w-full max-w-md shadow-lg">
@@ -124,7 +125,7 @@ function Withdraw() {
                   type="button"
                   onClick={() => {
                     setOpen(false);
-                    navigate('/bank');
+                    navigate('/wallet');
                   }}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
                 >
@@ -134,7 +135,9 @@ function Withdraw() {
             </form>
           </div>
         </div>
+        
       )}
+      </div>
     </>
   );
 }

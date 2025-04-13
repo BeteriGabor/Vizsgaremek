@@ -48,12 +48,12 @@ const Navbar = forwardRef((_, ref) => {
   const pageName = pathName
     ? pathName.charAt(0).toUpperCase() + pathName.slice(1)
     : "HomePage";
-
+  const isActive = (path) => pathName.toLowerCase() === path.toLowerCase();
   return (
-    <div className="fixed top-0 left-0 right-0 bg-gray-900 text-white z-50 shadow-lg border-b border-gray-700 px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-y-2">
+    <div className="fixed top-0 left-0 right-0 bg-gray-900 text-white z-50 shadow-lg border-b border-gray-700 px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-y-2 h-10">
       
       {/* Exit + icons (only on desktop) */}
-      <div className="flex items-center justify-start w-full sm:w-auto gap-3">
+      <div className="flex items-center justify-start w-full sm:w-auto gap-3 absolute">
         <button
           onClick={exit}
           className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs sm:text-sm"
@@ -62,11 +62,11 @@ const Navbar = forwardRef((_, ref) => {
         </button>
 
         <div className="hidden sm:flex gap-2">
-          <img src="chicken.png" alt="Chicken" title="Chicken Run" onClick={() => navigate("/chicken")} className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer" />
-          <img src="airplane.png" alt="Airplane" title="Jet Crash" onClick={() => navigate("/aviator")} className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer" />
-          <img src="casinoicon.png" alt="Casino" title="Slot Machine" onClick={() => navigate("/slot")} className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer" />
-          <img src="roulette.png" alt="Roulette" title="Roulette" onClick={() => navigate("/roulette")} className="w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer" />
-          <img src="bj.png" alt="Blackjack" title="Blackjack" onClick={() => navigate("/blackjack")} className="h-6 sm:h-7 hover:scale-110 transition cursor-pointer" />
+          <img src="chicken.png" alt="Chicken" title="Chicken Run" onClick={() => navigate("/chicken")} className={`w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer ${isActive("Chicken")?"border-b-2 border-red-600" : ""}`} />
+          <img src="aviator.png" alt="Airplane" title="Aviator" onClick={() => navigate("/aviator")} className={`w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer ${isActive("Aviator")?"border-b-2 border-red-600" : ""}`} />
+          <img src="casinoicon.png" alt="Casino" title="Slot Machine" onClick={() => navigate("/slot")} className={`w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer ${isActive("Slot")?"border-b-2 border-red-600" : ""}`}/>
+          <img src="roulette.png" alt="Roulette" title="Roulette" onClick={() => navigate("/roulette")} className={`w-6 h-6 sm:w-7 sm:h-7 hover:scale-110 transition cursor-pointer ${isActive("Roulette")?"border-b-2 border-red-600" : ""}`} />
+          <img src="bj.png" alt="Blackjack" title="Blackjack" onClick={() => navigate("/blackjack")} className={`h-6 sm:h-7 hover:scale-110 transition cursor-pointer ${isActive("Blackjack")?"border-b-2 border-red-600" : ""}`} />
         </div>
       </div>
 
@@ -79,7 +79,8 @@ const Navbar = forwardRef((_, ref) => {
       </div>
 
       {/* Balance */}
-      <div className="flex justify-end w-full sm:w-auto">
+      <div className="absolute right-0 flex justify-end w-full sm:w-auto">
+      <img src="wallet.png" alt="Wallet" title="Wallet" onClick={() => navigate("/wallet")} className={`h-6 sm:h-7 hover:scale-110 transition cursor-pointer mr-4 ${isActive("Wallet")?"border-b-2 border-red-600" : ""}`} />
         <div className="text-sm sm:text-base font-medium text-right sm:text-left">
           {loading ? (
             <span className="animate-pulse text-gray-400">Loading...</span>

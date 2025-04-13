@@ -8,7 +8,7 @@ CharacterPosition.prototype.initialize = function() {
         { x: 19, z: 4, url: "http://localhost:3001/othergames", inside: false },
         { x: 23, z: -14, url:"http://localhost:3001/roulette", inside: false},
         { x: -21, z: -14, url:"http://localhost:3001/blackjack", inside: false},
-        { x: -0, z: -30, url:"http://localhost:3001/bank", inside: false},
+        { x: -0, z: -30, url:"http://localhost:3001/wallet", inside: false},
     ];
 };
 

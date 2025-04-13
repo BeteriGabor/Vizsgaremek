@@ -15,8 +15,8 @@ import ChickenGame from './components/Chicken/Chicken';
 import OtherGames from './components/OtherGames/OtherGames';
 import Roulette from './components/Roulette/Roulette';
 import Deposit from './components/Deposit/Deposit';
-import Bank from './components/Bank/Bank';
 import Withdraw from './components/Withdraw/Withdraw';
+import Wallet from './components/Wallet/Wallet';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -35,7 +35,7 @@ root.render(
         <Route path='othergames' element={<OtherGames/>}></Route>
         <Route path='roulette' element={<Roulette/>}></Route>
         <Route path='deposit' element={<Deposit/>}></Route>
-        <Route path='bank' element={<Bank/>}></Route>
+        <Route path='wallet' element={<Wallet/>}></Route>
         <Route path='withdraw' element={<Withdraw/>}></Route>
       </Routes>
     </Router>

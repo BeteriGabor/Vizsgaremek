@@ -15,6 +15,7 @@ module.exports = {
         "bank":"url(./components/assets/bankbg.png)",
         "aviatorgamebg":"url(./components/assets/aviatorgamebg.png)",
         "aviatorbg":"url(./components/assets/aviatorbg.png)",
+        "withdrawbg":"url(./components/assets/withdrawbg.png)"
       },
       fontFamily: {
         press: ['"Press Start 2P"', "cursive"], 
