@@ -5,9 +5,8 @@ import axios from "axios";
 function PasswordChange() {
   const [open, setOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordHelp, setPasswordHelp] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   const navigate = useNavigate();
 
@@ -15,40 +14,44 @@ function PasswordChange() {
     setOpen(true);
   }, []);
 
-  const fetchUser = async (name) => {
-    try {
-      const response = await axios.get(`http://localhost:1010/admin/get-all-users`);
-      const users = response.data.data;
-      const user = users.find(user => user.name === name);
-      return user ? user.id : null;
-    } catch (error) {
-      alert("User not found!");
-      return null;
-    }
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (password !== passwordHelp) {
-      alert("Passwords are not the same!");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You must be logged in to change your password.");
       return;
     }
 
-    const userId = await fetchUser(username);
-    if (userId) {
-      try {
-        await axios.put(`http://localhost:1010/admin/update/${userId}`, {
-          password: password,
-        });
-        alert("Password successfully changed! Login with the new password.");
-        navigate('/sign_in');
-      } catch (error) {
-        alert("There was an error changing password!");
-        console.error(error);
+    try {
+      const response = await axios.put(
+        "http://localhost:1010/auth/update-password",
+        {
+          oldPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Password changed successfully!");
+        navigate("/sign_in");
+      } else {
+        alert("Failed to change password. Please try again.");
       }
     }
-  };
+    catch (error) {
+      if (error.response && error.response.status === 401) {
+        alert("Old password is incorrect.");
+      } else {
+        alert("An error occurred. Please try again.");
+      }
+    }
+  }
 
   return (
     <>
@@ -58,24 +61,13 @@ function PasswordChange() {
             <h2 className="text-xl font-semibold mb-4 text-center">Change Password</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label>Username</label>
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label>New Password</label>
+                <label>Old Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
                     className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800 dark:text-white pr-10"
                   />
                   <button
@@ -89,13 +81,13 @@ function PasswordChange() {
               </div>
 
               <div>
-                <label>Confirm Password</label>
+                <label>New Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
-                    value={passwordHelp}
-                    onChange={(e) => setPasswordHelp(e.target.value)}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
                     className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800 dark:text-white pr-10"
                   />
                   <button
