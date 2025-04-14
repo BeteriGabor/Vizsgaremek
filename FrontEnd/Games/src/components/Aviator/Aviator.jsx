@@ -230,20 +230,25 @@ const Aviator = () => {
               Cash Out
             </button>
           </div>
-
-          <select
-            value={bet}
-            onChange={(e) => setBet(Number(e.target.value))}
-            disabled={gameStarted}
-            className="p-2 bg-gray-900 white rounded-lg shadow-md text-sm font-bold"
-          >
-            {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
-              <option key={amount} value={amount}>
-                {amount} Credits
-              </option>
-            ))}
-          </select>
-
+          <div className="flex items-center gap-4">
+            <select
+              value={bet}
+              onChange={(e) => setBet(Number(e.target.value))}
+              disabled={gameStarted}
+              className="p-2 bg-gray-900 white rounded-lg shadow-md text-sm font-bold"
+            >
+              {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
+                <option key={amount} value={amount}>
+                  {amount} Credits
+                </option>
+              ))}
+            </select>
+            <img
+              src={`/chips/${bet}.png`}
+              alt={`${bet} chip`}
+              className="w-10 h-10"
+            />
+          </div>
           
 
           <div className="absolute my-auto p-6">

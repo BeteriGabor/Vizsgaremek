@@ -101,58 +101,55 @@ const Wallet = () => {
     <>
       <div className="relative h-screen w-screen overflow-hidden bg-bank bg-center">
         <Navbar ref={navbarRef} />
-        <div className="relative z-20 flex justify-center items-center h-full px-4">
-        <div className="hidden md:block  bg-gray-900/95 text-white p-6 rounded-xl shadow-xl w-full max-w-4xl space-y-4">
-  <h2 className="text-2xl font-bold text-center">Credit Breakdown</h2>
-  <p className="text-center text-lg">Total credits: {credits}</p>
+        <div className="relative z-20 flex justify-center items-center h-full px-4 gap-4">
+          <div className="hidden md:block  bg-gray-900/95 text-white p-6 rounded-xl shadow-xl w-full max-w-4xl space-y-4"> 
+              <h2 className="text-2xl font-bold text-center">Credit Breakdown</h2>
+              <p className="text-center text-lg">Total credits: {credits}</p>
+              <div className="flex flex-col md:flex-row justify-between gap-8 mt-4">            
+                <div className="w-full md:w-3/4">
+                  <table className="w-full text-center border-separate border-spacing-y-2">
+                    <thead>
+                      <tr className="text-gray-300">
+                        <th>Chip</th>
+                        <th>Quantity</th>
+                        <th>Icon</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {chipBreakdown.map((chip) => (
+                        <tr key={chip.value}>
+                          <td>{chip.value} credits</td>
+                          <td>{chip.count} pcs</td>
+                          <td>
+                            <img
+                              src={`/chips/${chip.value}.png`}
+                              alt={`${chip.value}`}
+                              className="w-10 mx-auto"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                 </table>
+              </div>
+                    
+                <div className=" w-full md:w-1/4 flex gap-6 justify-center items-end ">
+                  {chipBreakdown.map((chip) => (
+                    <div key={chip.value} className="flex flex-col items-center mb-10">
+                      {[...Array(chip.count)].map((_, idx) => (
+                        <img
+                          key={idx}
+                          src={`/chips/${chip.value}.png`}
+                          alt={`${chip.value}`}
+                          className="hidden lg:block w-10 -mb-[50px] drop-shadow-md  "
+                        />
+                      ))}
 
-  {/* Flex container: Table + Stacks side-by-side */}
-  <div className="flex flex-col md:flex-row justify-between gap-8 mt-4">
-    {/* Táblázat */}
-    <div className="w-full md:w-3/4">
-      <table className="w-full text-center border-separate border-spacing-y-2">
-        <thead>
-          <tr className="text-gray-300">
-            <th>Chip</th>
-            <th>Quantity</th>
-            <th>Icon</th>
-          </tr>
-        </thead>
-        <tbody>
-          {chipBreakdown.map((chip) => (
-            <tr key={chip.value}>
-              <td>{chip.value} credits</td>
-              <td>{chip.count} pcs</td>
-              <td>
-                <img
-                  src={`/chips/${chip.value}.png`}
-                  alt={`${chip.value}`}
-                  className="w-10 mx-auto"
-                />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-    
-    <div className=" w-full md:w-1/4 flex gap-6 justify-center items-end ">
-      {chipBreakdown.map((chip) => (
-        <div key={chip.value} className="flex flex-col items-center mb-10">
-          {[...Array(chip.count)].map((_, idx) => (
-            <img
-              key={idx}
-              src={`/chips/${chip.value}.png`}
-              alt={`${chip.value}`}
-              className="w-10 -mb-[50px] drop-shadow-md "
-            />
-          ))}
-
-        </div>
-      ))}
-    </div>
-  </div>
-</div>     
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>     
           <div className="bg-gray-900/95 text-white  p-8 rounded-xl shadow-xl w-full max-w-md space-y-4">
             <h2 className="text-2xl font-bold text-center mb-4">Welcome to Your Wallet</h2>
             

@@ -144,7 +144,6 @@ const Roulette = () => {
   return (
     <>
       <Navbar ref={navbarRef} />
-
       <div className="flex flex-col items-center p-5 bg-blackjackbg  h-screen pt-[10%] ">
         <div className="flex flex-col items-center p-5">
           <div className="relative w-[300px] h-[300px] mb-8">
@@ -189,9 +188,9 @@ const Roulette = () => {
             )}
             
           </div>
-          <div className='absolute text-4xl top-1/3 backdrop-blur-md p-4'>
+          <div className='absolute text-4xl top-1/3  p-4'>
             {winningsMessage.text && (
-              <div className={` ${winningsMessage.type === 'win' ? 'text-green-600' : 'text-red-600'}`}>
+              <div className={` ${winningsMessage.type === 'win' ? 'text-green-600 backdrop-blur-md' : 'text-red-600 backdrop-blur-md'}`}>
                 {winningsMessage.text}
               </div>
             )}
@@ -222,19 +221,28 @@ const Roulette = () => {
                 className="ml-3 p-2 bg-gray-900 text-white rounded"
               />
             )}
-          </div>
-          <div className='mt-4 '>
-            <select
-                value={betAmount}
-                onChange={(e) => setBetAmount(Number(e.target.value))}
-                disabled={spinning}
-                className="p-2 bg-gray-900 text-white rounded-lg shadow-md text-sm font-bold"
-              >
-                {[10, 20, 50, 100, 200, 500, 1000].map(amount => (
-                  <option key={amount} value={amount}>{amount} Credits</option>
-                ))}
-              </select>
-            </div>
+        </div>
+          <div className="mt-4 flex items-center gap-4">
+  <select
+    value={betAmount}
+    onChange={(e) => setBetAmount(Number(e.target.value))}
+    disabled={spinning}
+    className="p-2 bg-gray-900 text-white rounded-lg shadow-md text-sm font-bold"
+  >
+    {[10, 20, 50, 100, 200, 500, 1000].map(amount => (
+      <option key={amount} value={amount}>
+        {amount} Credits
+      </option>
+    ))}
+  </select>
+
+
+  <img
+    src={`/chips/${betAmount}.png`}
+    alt={`${betAmount} chip`}
+    className="w-10 h-10"
+  />
+</div>
         </div>
       </div>
     </>

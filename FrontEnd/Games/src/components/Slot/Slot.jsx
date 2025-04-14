@@ -7,7 +7,6 @@ import loseSound from '../assets/sounds/lose.mp3';
 import axios from 'axios';
 
 const SYMBOLS = ['🍎', '🍋', '🍇', '🍒', '💎', '7️⃣'];
-const BET_AMOUNTS = [10, 20, 50, 100, 200, 500, 1000];
 
 const SlotMachine = () => {
   const [playCoin] = useSound(coinSound);
@@ -15,7 +14,7 @@ const SlotMachine = () => {
   const [playLose] = useSound(loseSound);
   const [isSpinning, setIsSpinning] = useState(false);
   const [slots, setSlots] = useState(['🍎', '🍋', '🍇']);
-  const [currentBet, setCurrentBet] = useState(BET_AMOUNTS[0]);
+  const [bet, setBet] = useState([10]);
   const [winningPositions, setWinningPositions] = useState([false, false, false]);
   const navbarRef = useRef();
   const [betId, setBetId] = useState(null);
@@ -27,25 +26,25 @@ const SlotMachine = () => {
     if (results[0] === results[1] && results[1] === results[2]) {
       newWinningPositions.fill(true);
       setWinningPositions(newWinningPositions);
-      return currentBet * 5;
+      return bet * 3;
     } else if (results[0] === results[1]) {
       newWinningPositions[0] = true;
       newWinningPositions[1] = true;
       setWinningPositions(newWinningPositions);
-      return currentBet * 2;
+      return bet * 2;
     } else if (results[1] === results[2]) {
       newWinningPositions[1] = true;
       newWinningPositions[2] = true;
       setWinningPositions(newWinningPositions);
-      return currentBet * 2;
+      return bet * 2;
     } else if (results[0] === results[2]) {
       newWinningPositions[0] = true;
       newWinningPositions[2] = true;
       setWinningPositions(newWinningPositions);
-      return currentBet * 2;
+      return bet * 2;
     }
     setWinningPositions([false, false, false]);
-    return -currentBet;
+    return -bet;
   };
 
   const placeBet = async () => {
@@ -56,7 +55,7 @@ const SlotMachine = () => {
         {},
         {
           headers: { Authorization: `Bearer ${token}` },
-          params: { amount: currentBet },
+          params: { amount: bet },
         }
       );
       navbarRef.current?.refreshCredits();
@@ -113,7 +112,7 @@ const SlotMachine = () => {
           if (completedSpins === 3) {
             setTimeout(() => {
               const winAmount = checkWin(finalSymbols);
-              resolveBet(winAmount > 0, winAmount / currentBet);
+              resolveBet(winAmount > 0, winAmount / bet);
               setIsSpinning(false);
             }, 500);
           }
@@ -141,21 +140,27 @@ const SlotMachine = () => {
           </div>
 
           <div className="flex flex-col items-center gap-4">
-            <div className="my-2.5 flex items-center gap-2.5 text-gray-100">
-            
-              <select
-                value={currentBet}
-                onChange={(e) => setCurrentBet(Number(e.target.value))}
-                disabled={isSpinning}
-                className="p-1.5 text-base rounded bg-gray-800 text-gray-100 border-2 border-gray-900"
-              >
-                {BET_AMOUNTS.map((amount) => (
-                  <option key={amount} value={amount}>
-                    {amount} credits
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div className="mt-4 flex items-center gap-4">
+            <select
+              value={bet}
+              onChange={(e) => setBet(Number(e.target.value))}
+              disabled={isSpinning}
+              className="p-2 bg-gray-900 text-white rounded-lg shadow-md text-sm font-bold"
+            >
+              {[10, 20, 50, 100, 200, 500, 1000].map(amount => (
+                <option key={amount} value={amount}>
+                  {amount} Credits
+                </option>
+              ))}
+            </select>
+
+
+            <img
+              src={`/chips/${bet}.png`}
+              alt={`${bet} chip`}
+              className="w-10 h-10"
+            />
+          </div>
 
             <button
               className="py-4 px-10 text-xl bg-red-600 text-white border-none rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:bg-red-700 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed"

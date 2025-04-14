@@ -311,24 +311,26 @@ const Blackjack = () => {
           </button>
         </div>
 
-        <div className="buttonStart-container mb-6">
-          <div className="form-control w-full">
-            <select
-              id="bet-amount"
-              value={bet}
-              onChange={(e) => setBet(Number(e.target.value))}
-              className="w-full p-2 bg-gray-900 text-white rounded-lg shadow-md"
-            >
-              {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
-                <option key={amount} value={amount}>
-                  {amount} Credits
-                </option>
-              ))}
-            </select>
-          </div>
+        <div className="flex items-center gap-4">
+          <select
+            id="bet-amount"
+            value={bet}
+            onChange={(e) => setBet(Number(e.target.value))}
+            className="w-full p-2 bg-gray-900 text-white rounded-lg shadow-md"            >
+            {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
+              <option key={amount} value={amount}>
+                {amount} Credits
+              </option>
+            ))}
+          </select>
+          <img
+            src={`/chips/${bet}.png`}
+            alt={`${bet} chip`}
+           className="w-10 h-10"
+          />
         </div>
 
-        <div className="absolute my-auto p-6">
+        <div className="absolute top-1/2 p-6">
           {message && (
             <div
               className={`message-container p-4 rounded-xl  shadow-lg ${

@@ -193,7 +193,7 @@ const ChickenGame = () => {
             </button>
           </div>
 
-          <div className="form-control ">
+          <div className="flex items-center gap-4 ">
             
             <select
               id="bet-amount"
@@ -208,6 +208,11 @@ const ChickenGame = () => {
                 </option>
               ))}
             </select>
+            <img
+              src={`/chips/${bet}.png`}
+              alt={`${bet} chip`}
+              className="w-10 h-10"
+            />
           </div>
         </div>
 
