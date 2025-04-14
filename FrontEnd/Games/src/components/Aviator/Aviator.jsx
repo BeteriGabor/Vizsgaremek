@@ -18,13 +18,24 @@ const Aviator = () => {
   const [bet, setBet] = useState(10);
   const [gameStarted, setGameStarted] = useState(false);
   const [betId, setBetId] = useState(null);
+  const [fade, setFade] = useState(false);
 
   const navbarRef = useRef();
 
   useEffect(() => {
+    if (statusMessage) {
+      setFade(true);
+      const timer = setTimeout(() => {
+        setFade(false);
+        setStatusMessage("");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [statusMessage]);
+
+  useEffect(() => {
     let flightInterval;
     if (isFlying) {
-      setStatusMessage("We wish you a successful flight!");
       let x = 0,
         y = 0,
         m = 1.0;
@@ -163,6 +174,9 @@ const Aviator = () => {
       <Navbar ref={navbarRef} />
       <div className="min-h-screen flex flex-col items-center justify-center bg-aviatorbg font-['Press Start 2P'] text-white px-4">
         <div className="flex flex-col items-center justify-center p-10 backdrop-blur-lg rounded-3xl">
+        <div className="text-xl sm:text-2xl font-bold text-white drop-shadow text-center">
+            Multiplier: <span className="text-green-500">{multiplier.toFixed(2)}x</span>
+          </div>
           <div className="relative w-[300px] h-[400px] bg-aviatorgamebg bg-opacity-0 rounded-xl overflow-hidden border-4 border-slate-800 mb-6">
             <svg className="absolute w-full h-full">
               <path
@@ -197,7 +211,7 @@ const Aviator = () => {
               disabled={isFlying}
               className={`px-6 py-2 rounded-lg text-white font-semibold transition-transform duration-300 ${
                 isFlying
-                  ? "bg-gray-400 cursor-not-allowed"
+                  ? "bg-blue-300 cursor-not-allowed"
                   : "bg-blue-600 hover:-translate-y-1 hover:bg-blue-800"
               }`}
             >
@@ -209,7 +223,7 @@ const Aviator = () => {
               disabled={!isFlying || !gameStarted}
               className={`px-6 py-2 rounded-lg text-white font-semibold transition-transform duration-300 ${
                 !isFlying
-                  ? "bg-gray-400 cursor-not-allowed"
+                  ? "bg-green-300 cursor-not-allowed"
                   : "bg-green-600 hover:-translate-y-1 hover:bg-green-800"
               }`}
             >
@@ -221,23 +235,38 @@ const Aviator = () => {
             value={bet}
             onChange={(e) => setBet(Number(e.target.value))}
             disabled={gameStarted}
-            className="p-2 bg-white text-black rounded-lg shadow-md text-sm font-bold"
+            className="p-2 bg-gray-900 white rounded-lg shadow-md text-sm font-bold"
           >
-            {[10, 20, 50, 100, 200, 500].map((amount) => (
+            {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
               <option key={amount} value={amount}>
                 {amount} Credits
               </option>
             ))}
           </select>
 
-          <div className="text-xl sm:text-2xl font-bold text-white drop-shadow">
-            Multiplier: <span>{multiplier.toFixed(2)}x</span>
-          </div>
+          
 
-          <p className="italic text-sm sm:text-base text-gray-300 drop-shadow-sm text-center">
-            {statusMessage}
-          </p>
-
+          <div className="absolute my-auto p-6">
+          {statusMessage && (
+            <div
+              className={`message-container p-4 rounded-xl ${
+                fade ? "fade-in" : "fade-out"
+              } 
+                        ${
+                          statusMessage.includes("crashed")
+                            ? "text-red-600   "
+                            : statusMessage.includes("won")
+                            ? "text-green-600 "
+                            : statusMessage.includes("tie")
+                            ? "text-gray-800 "
+                            : "text-yellow-500 "
+                        }`}
+              style={{ transition: "all 0.5s ease" }}
+            >
+              <h2 className="text-center text-4xl ">{statusMessage}</h2>
+            </div>
+          )}
+        </div>
           <style>
             {`
               @keyframes fall {

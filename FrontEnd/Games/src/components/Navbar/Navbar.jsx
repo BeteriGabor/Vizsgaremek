@@ -53,7 +53,7 @@ const Navbar = forwardRef((_, ref) => {
     <div className="fixed top-0 left-0 right-0 bg-gray-900 text-white z-50 shadow-lg border-b border-gray-700 px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-y-2 h-10">
       
       {/* Exit + icons (only on desktop) */}
-      <div className="flex items-center justify-start w-full sm:w-auto gap-3 absolute">
+      <div className="flex items-center justify-start w-full sm:w-auto gap-3 absolute z-50">
         <button
           onClick={exit}
           className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs sm:text-sm"

@@ -7,7 +7,7 @@ import loseSound from '../assets/sounds/lose.mp3';
 import axios from 'axios';
 
 const SYMBOLS = ['🍎', '🍋', '🍇', '🍒', '💎', '7️⃣'];
-const BET_AMOUNTS = [10, 20, 50, 100];
+const BET_AMOUNTS = [10, 20, 50, 100, 200, 500, 1000];
 
 const SlotMachine = () => {
   const [playCoin] = useSound(coinSound);
@@ -132,7 +132,7 @@ const SlotMachine = () => {
               <div
                 key={index}
                 className={`w-full h-[120px] rounded-xl flex items-center justify-center text-[60px] ${
-                  winningPositions[index] ? 'bg-green-500/70 border-3 border-green-500 animate-pulse' : ''
+                  winningPositions[index] ? 'bg-green-500 border-3 border-green-500 animate-pulse' : ''
                 }`}
               >
                 {symbol}
@@ -142,7 +142,7 @@ const SlotMachine = () => {
 
           <div className="flex flex-col items-center gap-4">
             <div className="my-2.5 flex items-center gap-2.5 text-gray-100">
-              <label>Select Bet:</label>
+            
               <select
                 value={currentBet}
                 onChange={(e) => setCurrentBet(Number(e.target.value))}

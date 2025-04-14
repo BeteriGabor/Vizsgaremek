@@ -55,7 +55,7 @@ function Deposit() {
 
       if (response.status === 200) {
         alert("✅ Deposit was successful!");
-        navigate('/bank');
+        navigate('/wallet');
       } else {
         setError("Something went wrong. Please try again.");
       }
@@ -69,6 +69,7 @@ function Deposit() {
 
   return (
     <>
+    <div className="bg-amber-300 w-sceen h-screen bg-depositbg bg-cover">
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
           <div className="bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg p-6 w-full max-w-md shadow-lg">
@@ -135,6 +136,7 @@ function Deposit() {
           </div>
         </div>
       )}
+      </div>
     </>
   );
 }

@@ -311,18 +311,15 @@ const Blackjack = () => {
           </button>
         </div>
 
-        <div className="header flex justify-between items-center mb-6 p-4 rounded-xl shadow-lg w-full max-w-3xl px-4">
+        <div className="buttonStart-container mb-6">
           <div className="form-control w-full">
-            <label htmlFor="bet-amount" className="block text-white mb-2">
-              Bet Amount
-            </label>
             <select
               id="bet-amount"
               value={bet}
               onChange={(e) => setBet(Number(e.target.value))}
-              className="w-full p-2 bg-white text-black rounded-lg shadow-md"
+              className="w-full p-2 bg-gray-900 text-white rounded-lg shadow-md"
             >
-              {[10, 20, 50, 100].map((amount) => (
+              {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
                 <option key={amount} value={amount}>
                   {amount} Credits
                 </option>
@@ -331,24 +328,24 @@ const Blackjack = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-0 w-full p-6">
+        <div className="absolute my-auto p-6">
           {message && (
             <div
-              className={`message-container p-4 rounded-xl text-white shadow-lg ${
+              className={`message-container p-4 rounded-xl  shadow-lg ${
                 fade ? "fade-in" : "fade-out"
               } 
                         ${
                           message.includes("lose")
-                            ? "bg-red-600 border-l-4 border-red-800"
+                            ? "text-red-600   "
                             : message.includes("win")
-                            ? "bg-green-600 border-l-4 border-green-800"
+                            ? "text-green-600 "
                             : message.includes("tie")
-                            ? "bg-gray-600 border-l-4 border-gray-800"
-                            : "bg-yellow-500 border-l-4 border-yellow-700"
+                            ? "text-gray-500 "
+                            : "text-yellow-500 "
                         }`}
               style={{ transition: "all 0.5s ease" }}
             >
-              <h2 className="text-center text-xl font-semibold">{message}</h2>
+              <h2 className="text-center text-4xl backdrop-blur-sm">{message}</h2>
             </div>
           )}
         </div>

@@ -145,7 +145,7 @@ const Roulette = () => {
     <>
       <Navbar ref={navbarRef} />
 
-      <div className="flex flex-col items-center p-5 bg-blackjackbg h-screen pt-[10%]">
+      <div className="flex flex-col items-center p-5 bg-blackjackbg  h-screen pt-[10%] ">
         <div className="flex flex-col items-center p-5">
           <div className="relative w-[300px] h-[300px] mb-8">
             <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[10px] border-r-[10px] border-t-[20px] border-l-transparent border-r-transparent border-t-red-500 z-10"></div>
@@ -158,7 +158,7 @@ const Roulette = () => {
                 return (
                   <div
                     key={index}
-                    className={`absolute w-[30px] h-[30px] top-1/2 left-1/2 -ml-[15px] -mt-[15px] text-center leading-[30px] rounded-full text-white font-bold text-sm`}
+                    className={`absolute w-[30px] h-[30px] top-1/2 left-1/2 -ml-[15px] -mt-[15px] text-center leading-[30px] rounded-full text-white font-bold text-xs`}
                     style={{
                       transform: `rotate(${rotation}deg) translateY(-125px) rotate(-${rotation}deg)`,
                     }}
@@ -183,38 +183,35 @@ const Roulette = () => {
             </button>
 
             {result !== null && (
-              <div className="text-lg font-bold">
+              <div className="text-lg font-bold text-white">
                 Result: <span className={getTextColor(result)}>{result}</span>
               </div>
             )}
+            
+          </div>
+          <div className='absolute text-4xl top-1/3 backdrop-blur-md p-4'>
             {winningsMessage.text && (
-              <div className={`mt-4 px-6 py-4 rounded-xl text-white text-xl font-bold shadow-lg transition-all duration-500 ${winningsMessage.type === 'win' ? 'bg-green-600' : 'bg-red-600'}`}>
+              <div className={` ${winningsMessage.type === 'win' ? 'text-green-600' : 'text-red-600'}`}>
                 {winningsMessage.text}
               </div>
             )}
           </div>
-
-          <div className="bg-gray-800 p-4 rounded-md shadow-md mt-5 flex flex-wrap items-center justify-center">
-            <select
-              value={betAmount}
-              onChange={(e) => setBetAmount(Number(e.target.value))}
-              disabled={spinning}
-              className="p-2 bg-white text-black rounded-lg shadow-md text-sm font-bold"
-            >
-              {[10, 20, 50, 100, 200, 500].map(amount => (
-                <option key={amount} value={amount}>{amount} Credits</option>
-              ))}
-            </select>
-
-            <select onChange={(e) => setBetType(e.target.value)} className="ml-3 p-2 text-black rounded mb-2 md:mb-0">
-              <option value="number">Specific Number</option>
-              <option value="red">Red</option>
-              <option value="black">Black</option>
-              <option value="even">Even</option>
-              <option value="odd">Odd</option>
-              <option value="high">19-36</option>
-              <option value="low">1-18</option>
-            </select>
+          <div className="flex flex-wrap items-center justify-center mt-4">
+          <select
+            onChange={(e) => setBetType(e.target.value)}
+            className={`ml-3 p-2 text-white rounded mb-2 md:mb-0 
+              ${betType === 'red' ? 'bg-red-600' :
+                betType === 'black' ? 'bg-black' : 'bg-gray-900'}`}
+            value={betType}
+          >
+            <option value="number" className='bg-gray-900'>Specific Number</option>
+            <option value="red" className='bg-red-600'>Red</option>
+            <option value="black" className='bg-black'>Black</option>
+            <option value="even" className='bg-gray-900'>Even</option>
+            <option value="odd" className='bg-gray-900'>Odd</option>
+            <option value="high" className='bg-gray-900'>19-36</option>
+            <option value="low" className='bg-gray-900'>1-18</option>
+          </select>
 
             {betType === 'number' && (
               <input
@@ -222,10 +219,22 @@ const Roulette = () => {
                 placeholder="Number (0-36)"
                 value={betNumber}
                 onChange={(e) => setBetNumber(e.target.value)}
-                className="ml-3 p-2 text-black rounded"
+                className="ml-3 p-2 bg-gray-900 text-white rounded"
               />
             )}
           </div>
+          <div className='mt-4 '>
+            <select
+                value={betAmount}
+                onChange={(e) => setBetAmount(Number(e.target.value))}
+                disabled={spinning}
+                className="p-2 bg-gray-900 text-white rounded-lg shadow-md text-sm font-bold"
+              >
+                {[10, 20, 50, 100, 200, 500, 1000].map(amount => (
+                  <option key={amount} value={amount}>{amount} Credits</option>
+                ))}
+              </select>
+            </div>
         </div>
       </div>
     </>

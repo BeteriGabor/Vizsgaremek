@@ -87,14 +87,14 @@ const ChickenGame = () => {
       if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
       if (win) {
         playWin();
-        setMessage(`You won ${(bet * multiplierValue).toFixed(2)} credits!`);
+        setMessage(`${(bet * multiplierValue).toFixed(2)} credits!`);
       } else {
         playLose();
         setMessage(`You lost your bet of ${bet} credits.`);
       }
       
     } catch (error) {
-      console.error("Hiba a resolveBet közben:", error);
+      console.error("Error while resolvebet:", error);
     }
   };
 
@@ -171,8 +171,8 @@ const ChickenGame = () => {
           </p>
         )}
 
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col space-y-4 items-center bg-slate-500 p-4 rounded-xl z-20 w-[90%] max-w-md">
-          <div className="text-white text-lg font-bold">
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col space-y-4 items-center bg-slate-700 border-gray-900 border-8  p-4 rounded-xl z-20 w-[90%] max-w-md">
+          <div className="text-white text-lg font-bold text-center">
             Current multiplier: {multiplier.toFixed(2)}x
           </div>
           <div className="flex flex-wrap justify-center space-x-4">
@@ -181,7 +181,7 @@ const ChickenGame = () => {
               onClick={placeBet}
               disabled={gameStarted && !gameOver}
             >
-              New Game
+              Placebet
             </button>
 
             <button
@@ -193,21 +193,16 @@ const ChickenGame = () => {
             </button>
           </div>
 
-          <div className="form-control w-full">
-            <label
-              htmlFor="bet-amount"
-              className="block text-white mb-2 text-base"
-            >
-              Bet Amount
-            </label>
+          <div className="form-control ">
+            
             <select
               id="bet-amount"
               value={bet}
               onChange={(e) => setBet(Number(e.target.value))}
-              className="w-full p-2 bg-white text-black rounded-lg shadow-md text-base"
+              className="w-full p-2 bg-gray-900 text-white rounded-lg shadow-md text-base"
               disabled={gameStarted && !gameOver}
             >
-              {[10, 20, 50, 100].map((amount) => (
+              {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
                 <option key={amount} value={amount}>
                   {amount} Credits
                 </option>

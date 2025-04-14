@@ -15,7 +15,8 @@ module.exports = {
         "bank":"url(./components/assets/bankbg.png)",
         "aviatorgamebg":"url(./components/assets/aviatorgamebg.png)",
         "aviatorbg":"url(./components/assets/aviatorbg.png)",
-        "withdrawbg":"url(./components/assets/withdrawbg.png)"
+        "withdrawbg":"url(./components/assets/withdrawbg.png)",
+        "depositbg":"url(./components/assets/depositbg.png)"
       },
       fontFamily: {
         press: ['"Press Start 2P"', "cursive"], 
