@@ -19,6 +19,22 @@ const Aviator = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [betId, setBetId] = useState(null);
   const [fade, setFade] = useState(false);
+  const [credits, setCredits] = useState(0);
+  
+  
+    useEffect(() => {
+      updateCredits();
+    }, []);
+    
+    const updateCredits = async () => {
+      if (navbarRef.current?.refreshCredits && navbarRef.current?.getCredits) {
+        await navbarRef.current.refreshCredits();
+        setTimeout(() => {
+          const updatedCredits = navbarRef.current.getCredits();
+          setCredits(updatedCredits);
+        }, 100); 
+      }
+    };
 
   const navbarRef = useRef();
 
@@ -99,7 +115,7 @@ const Aviator = () => {
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
       if (id) setBetId(id);
-
+      await updateCredits();
       navbarRef.current?.refreshCredits();
       playCoin();
       setIsFlying(true);
@@ -128,6 +144,7 @@ const Aviator = () => {
           },
         }
       );
+      await updateCredits();
       if (navbarRef.current?.refreshCredits) {
         navbarRef.current.refreshCredits();
       }
@@ -231,14 +248,18 @@ const Aviator = () => {
             </button>
           </div>
           <div className="flex items-center gap-4">
-            <select
+          <select
               value={bet}
               onChange={(e) => setBet(Number(e.target.value))}
-              disabled={gameStarted}
-              className="p-2 bg-gray-900 white rounded-lg shadow-md text-sm font-bold"
+              className="p-2 bg-gray-900 text-white rounded-lg shadow-md text-sm font-bold"
             >
-              {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
-                <option key={amount} value={amount}>
+              {[10, 20, 50, 100, 200, 500, 1000].map(amount => (
+                <option
+                  key={amount}
+                  value={amount}
+                  disabled={credits < amount}
+                  className={credits < amount ? 'text-gray-500' : ''}
+                >
                   {amount} Credits
                 </option>
               ))}

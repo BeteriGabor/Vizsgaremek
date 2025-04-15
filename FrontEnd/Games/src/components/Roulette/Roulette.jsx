@@ -1,11 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Navbar from '../Navbar/Navbar';
 import axios from 'axios';
 import useSound from 'use-sound';
 import coinSound from '../assets/sounds/coin.wav';
 import winSound from '../assets/sounds/win.mp3';
 import loseSound from '../assets/sounds/lose.mp3';
-
 const Roulette = () => {
   const [playCoin] = useSound(coinSound);
   const [playWin] = useSound(winSound);
@@ -20,6 +19,14 @@ const Roulette = () => {
   const [betId, setBetId] = useState(null);
   const wheelRef = useRef(null);
   const navbarRef = useRef();
+  const [credits, setCredits] = useState(0);
+
+
+  useEffect(() => {
+    updateCredits();
+  }, []);
+  
+
 
   const numbers = [
     0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23,
@@ -33,6 +40,16 @@ const Roulette = () => {
       : 'text-black';
   };
 
+  const updateCredits = async () => {
+    if (navbarRef.current?.refreshCredits && navbarRef.current?.getCredits) {
+      await navbarRef.current.refreshCredits();
+      setTimeout(() => {
+        const updatedCredits = navbarRef.current.getCredits();
+        setCredits(updatedCredits);
+      }, 100); 
+    }
+  };
+  
   const placeBet = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -44,13 +61,13 @@ const Roulette = () => {
           params: { amount: betAmount },
         }
       );
-      navbarRef.current?.refreshCredits();
+      await updateCredits();
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
       if (id) setBetId(id);
       playCoin();
     } catch (err) {
-      console.error("Failed to place bet", err);
+      setWinningsMessage({ text: `Not Enough Credits`, type: 'lose' });
     }
   };
 
@@ -66,21 +83,22 @@ const Roulette = () => {
           params: { win, multiplier },
         }
       );
-      navbarRef.current?.refreshCredits?.();
+      await updateCredits();
     } catch (err) {
-      console.error("Resolve bet error", err);
+      setWinningsMessage({ text: `Not Enough Credits`, type: 'lose' });
     }
   };
 
   const spinWheel = async () => {
     const bet = parseInt(betAmount);
-
+  
     if (
       spinning ||
       bet <= 0 ||
+      credits < bet
       (betType === 'number' && (betNumber === '' || betNumber < 0 || betNumber > 36))
     ) {
-      setWinningsMessage({ text: "Please select a valid bet and number!", type: 'lose' });
+      setWinningsMessage({ text: "Please select a valid bet, number, or check your credits!", type: 'lose' });
       return;
     }
 
@@ -174,6 +192,7 @@ const Roulette = () => {
               onClick={spinWheel}
               disabled={
                 spinning || 
+                credits < betAmount ||
                 (betType === 'number' && (betNumber === '' || betNumber < 0 || betNumber > 36))
               }
               className={`px-5 py-2.5 ${spinning ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded mb-4 font-medium`}
@@ -223,26 +242,29 @@ const Roulette = () => {
             )}
         </div>
           <div className="mt-4 flex items-center gap-4">
-  <select
-    value={betAmount}
-    onChange={(e) => setBetAmount(Number(e.target.value))}
-    disabled={spinning}
-    className="p-2 bg-gray-900 text-white rounded-lg shadow-md text-sm font-bold"
-  >
-    {[10, 20, 50, 100, 200, 500, 1000].map(amount => (
-      <option key={amount} value={amount}>
-        {amount} Credits
-      </option>
-    ))}
-  </select>
-
-
-  <img
-    src={`/chips/${betAmount}.png`}
-    alt={`${betAmount} chip`}
-    className="w-10 h-10"
-  />
-</div>
+            <select
+              value={betAmount}
+              onChange={(e) => setBetAmount(Number(e.target.value))}
+              disabled={spinning}
+              className="p-2 bg-gray-900 text-white rounded-lg shadow-md text-sm font-bold"
+            >
+              {[10, 20, 50, 100, 200, 500, 1000].map(amount => (
+                <option
+                  key={amount}
+                  value={amount}
+                  disabled={credits < amount}
+                  className={credits < amount ? 'text-gray-500' : ''}
+                >
+                  {amount} Credits
+                </option>
+              ))}
+            </select>
+            <img
+              src={`/chips/${betAmount}.png`}
+              alt={`${betAmount} chip`}
+              className="w-10 h-10"
+            />
+          </div>
         </div>
       </div>
     </>

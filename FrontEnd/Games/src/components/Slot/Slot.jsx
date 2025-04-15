@@ -25,6 +25,7 @@ const SlotMachine = () => {
   const [winningPositions, setWinningPositions] = useState([false, false, false]);
   const navbarRef = useRef();
   const [betId, setBetId] = useState(null);
+  const [credits, setCredits] = useState(0);
 
   const getRandomSymbol = () => SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
 
@@ -54,6 +55,24 @@ const SlotMachine = () => {
     return -bet;
   };
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (navbarRef.current?.getCredits) {
+        setCredits(navbarRef.current.getCredits());
+        clearInterval(interval);
+      }
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  const updateCredits = async () => {
+    if (navbarRef.current?.refreshCredits && navbarRef.current?.getCredits) {
+      await navbarRef.current.refreshCredits();
+      const updatedCredits = navbarRef.current.getCredits();
+      setCredits(updatedCredits);  
+    }
+  };
+
   const placeBet = async () => {
     const token = localStorage.getItem("token");
     try {
@@ -66,6 +85,7 @@ const SlotMachine = () => {
         }
       );
       navbarRef.current?.refreshCredits();
+      updateCredits();  
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
       if (id) setBetId(id);
@@ -88,6 +108,7 @@ const SlotMachine = () => {
         }
       );
       navbarRef.current?.refreshCredits();
+      updateCredits();  
       win ? playWin() : playLose();
     } catch (err) {
       console.error("Resolve bet error", err);
@@ -145,7 +166,6 @@ const SlotMachine = () => {
                 </div>
               </div>
             ))}
-
           </div>
 
           <div className="flex flex-col items-center gap-4">
@@ -157,24 +177,23 @@ const SlotMachine = () => {
                 className="p-2 bg-gray-900 text-white rounded-lg shadow-md text-sm font-bold"
               >
                 {[10, 20, 50, 100, 200, 500, 1000].map(amount => (
-                  <option key={amount} value={amount}>
+                  <option key={amount} value={amount} disabled={amount > credits}>
                     {amount} Credits
                   </option>
                 ))}
               </select>
-
 
               <img
                 src={`/chips/${bet}.png`}
                 alt={`${bet} chip`}
                 className="w-10 h-10"
               />
-          </div>
+            </div>
 
             <button
               className="py-4 px-10 text-xl bg-red-600 text-white border-none rounded-lg cursor-pointer transition-all duration-300 ease-in-out hover:bg-red-700 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed"
               onClick={spin}
-              disabled={isSpinning}
+              disabled={isSpinning || bet > credits}
             >
               {isSpinning ? 'SPINNING...' : `SPIN!`}
             </button>

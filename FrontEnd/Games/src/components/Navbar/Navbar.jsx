@@ -38,7 +38,9 @@ const Navbar = forwardRef((_, ref) => {
 
   useImperativeHandle(ref, () => ({
     refreshCredits: fetchCredits,
+    getCredits: () => credits,
   }));
+  
 
   const exit = () => {
     window.close();

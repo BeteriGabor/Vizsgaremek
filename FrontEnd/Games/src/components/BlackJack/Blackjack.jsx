@@ -53,8 +53,10 @@ const Blackjack = () => {
   const [gameActive, setGameActive] = useState(false);
   const [betId, setBetId] = useState(null);
   const navbarRef = useRef();
+  const [credits, setCredits] = useState(0);
 
   useEffect(() => {
+    updateCredits();
     if (message) {
       setFade(true);
       const timer = setTimeout(() => {
@@ -64,6 +66,16 @@ const Blackjack = () => {
       return () => clearTimeout(timer);
     }
   }, [message]);
+
+  const updateCredits = async () => {
+    if (navbarRef.current?.refreshCredits && navbarRef.current?.getCredits) {
+      await navbarRef.current.refreshCredits();
+      setTimeout(() => {
+        const updatedCredits = navbarRef.current.getCredits();
+        setCredits(updatedCredits);
+      }, 100); 
+    }
+  };
 
   const isBlackjack = (hand) => {
     return (
@@ -102,7 +114,7 @@ const Blackjack = () => {
           },
         }
       );
-      navbarRef.current?.refreshCredits();
+      await updateCredits();
       playCoin();
       const match = response.data.match(/Bet ID: (\d+)/);
       const id = match ? parseInt(match[1]) : null;
@@ -140,24 +152,27 @@ const Blackjack = () => {
       setMessage("A game is already in progress!");
       return;
     }
+
     await placeBet();
     const newDeck = createDeck();
-    setDeck(newDeck);
     const playerCards = [newDeck.pop(), newDeck.pop()];
     const dealerCards = [newDeck.pop(), newDeck.pop()];
+
+    setDeck(newDeck);
     setPlayerHand(playerCards);
     setDealerHand(dealerCards);
     setDeck(newDeck);
     setGameOver(false);
     setGameActive(true);
+
     if (isBlackjack(playerCards)) {
         setMessage('You got a Blackjack! You win!');
-        Navbar.credits=(prevCredits => prevCredits + bet * 1.5); 
+        resolveBet(true, 2);
         setGameOver(true);
         setGameActive(false)
     } else if (isBlackjack(dealerCards)) {
         setMessage('Dealer got a Blackjack! You lose!');
-        Navbar.credits=(prevCredits => prevCredits - bet);
+        resolveBet(false);
         setGameOver(true);
         setGameActive(false)
     }
@@ -194,6 +209,7 @@ const Blackjack = () => {
       setDealerHand(dealerCards);
       setDeck(newDeck);
       let win = false;
+      let tie = false;
       if (dealerScore > 21 || playerScore > dealerScore) {
         setMessage("You win!");
         win = true;
@@ -201,8 +217,10 @@ const Blackjack = () => {
         setMessage("You lose!");
       } else {
         setMessage("It's a tie!");
+        tie=true
       }
       resolveBet(win, 2);
+      resolveBet(tie, 1);
       setGameOver(true);
       setGameActive(false);
     }
@@ -316,13 +334,19 @@ const Blackjack = () => {
             id="bet-amount"
             value={bet}
             onChange={(e) => setBet(Number(e.target.value))}
-            className="w-full p-2 bg-gray-900 text-white rounded-lg shadow-md"            >
+            className="w-full p-2 bg-gray-900 text-white rounded-lg shadow-md"
+          >
             {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
-              <option key={amount} value={amount}>
+              <option
+                key={amount}
+                value={amount}
+                disabled={amount > credits}
+              >
                 {amount} Credits
               </option>
             ))}
           </select>
+
           <img
             src={`/chips/${bet}.png`}
             alt={`${bet} chip`}

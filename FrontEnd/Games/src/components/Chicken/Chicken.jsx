@@ -20,9 +20,32 @@ const ChickenGame = () => {
   const [multiplier, setMultiplier] = useState(1);
   const [playerWon, setPlayerWon] = useState(false);
   const [betId, setBetId] = useState(null);
+  const [credits, setCredits] = useState(0);
+
 
   const navbarRef = useRef();
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (navbarRef.current?.getCredits) {
+        setCredits(navbarRef.current.getCredits());
+        clearInterval(interval);
+      }
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+  
+  const updateCredits = async () => {
+    if (navbarRef.current?.refreshCredits && navbarRef.current?.getCredits) {
+      await navbarRef.current.refreshCredits();
 
+      setTimeout(() => {
+        const updatedCredits = navbarRef.current.getCredits();
+        setCredits(updatedCredits);
+      }, 100); 
+    }
+  };
+  
+  
   useEffect(() => {
     if (gameStarted && !gameOver) {
       setMultiplier(position * 0.5 + 1);
@@ -48,6 +71,7 @@ const ChickenGame = () => {
             amount: bet,
           },
         }
+        
       );
 
       if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
@@ -62,9 +86,15 @@ const ChickenGame = () => {
       setMessage("");
       setPlayerWon(false);
     } catch (error) {
-      console.error("Hiba a fogadás elküldésekor:", error);
+      console.error("Error sending bet:", error);
       setMessage("Bet failed.");
     }
+
+    if (navbarRef.current?.refreshCredits) {
+      navbarRef.current.refreshCredits();
+      updateCredits();
+    }
+    
   };
 
   const resolveBet = async (win, multiplierValue) => {
@@ -96,6 +126,11 @@ const ChickenGame = () => {
     } catch (error) {
       console.error("Error while resolvebet:", error);
     }
+    if (navbarRef.current?.refreshCredits) {
+      navbarRef.current.refreshCredits();
+      updateCredits();
+    }
+    
   };
 
   const nextStep = () => {
@@ -204,11 +239,12 @@ const ChickenGame = () => {
               disabled={gameStarted && !gameOver}
             >
               {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
-                <option key={amount} value={amount}>
+                <option key={amount} value={amount} disabled={amount > credits}>
                   {amount} Credits
                 </option>
               ))}
             </select>
+
             <img
               src={`/chips/${bet}.png`}
               alt={`${bet} chip`}
