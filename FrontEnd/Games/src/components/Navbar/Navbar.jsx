@@ -80,7 +80,7 @@ const Navbar = forwardRef((_, ref) => {
 
       {/* Balance */}
       <div className="absolute right-0 flex justify-end w-full sm:w-auto">
-      <img src="wallet.png" alt="Wallet" title="Wallet" onClick={() => navigate("/wallet")} className={`h-6 sm:h-7 hover:scale-110 transition cursor-pointer mr-4 ${isActive("Wallet")?"border-b-2 border-red-600" : ""}`} />
+      <img src="wallet.png" alt="Wallet" title="Wallet" onClick={() => navigate("/wallet")} className={`h-6 hover:scale-110 hidden sm:flex transition cursor-pointer mr-4 ${isActive("Wallet")?"border-b-2 border-red-600" : ""}`} />
         <div className="text-sm sm:text-base font-medium text-right sm:text-left">
           {loading ? (
             <span className="animate-pulse text-gray-400">Loading...</span>

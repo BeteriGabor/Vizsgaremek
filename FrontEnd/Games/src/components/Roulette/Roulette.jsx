@@ -144,7 +144,7 @@ const Roulette = () => {
   return (
     <>
       <Navbar ref={navbarRef} />
-      <div className="flex flex-col items-center p-5 bg-blackjackbg  h-screen pt-[10%] ">
+      <div className="flex flex-col items-center p-5 bg-blackjackbg  h-screen pt-[10%] overflow-hidden ">
         <div className="flex flex-col items-center p-5">
           <div className="relative w-[300px] h-[300px] mb-8">
             <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[10px] border-r-[10px] border-t-[20px] border-l-transparent border-r-transparent border-t-red-500 z-10"></div>

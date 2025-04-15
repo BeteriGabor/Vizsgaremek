@@ -65,8 +65,8 @@ function Register() {
   return (
     <>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-defbg px-4">
-          <div className="bg-gray-800 text-white rounded-2xl p-8 w-full max-w-xl shadow-2xl border border-gray-700">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-defbg px-4 overflow-auto">
+          <div className="bg-gray-800 text-white rounded-2xl p-8 w-full max-w-xl shadow-2xl border border-gray-700 ">
             <h2 className="text-3xl font-bold mb-6 text-center text-green-400">Create Your Account</h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">

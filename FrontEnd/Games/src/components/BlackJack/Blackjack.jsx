@@ -215,8 +215,8 @@ const Blackjack = () => {
   return (
     <>
       <Navbar ref={navbarRef} />
-      <div className="flex flex-col items-center justify-center w-screen h-screen bg-blackjackbg bg-cover">
-        <div className="flex flex-wrap justify-center space-x-4 mb-4 w-full max-w-5xl px-4">
+      <div className="flex flex-col items-center justify-center w-screen h-screen bg-blackjackbg bg-cover overflow-auto">
+        <div className="flex flex-wrap justify-center space-x-4 mb-4 w-full max-w-5xl px-4 mt-20">
           <div className="dealer-box p-4 border-2 border-gray-700 bg-green-950 rounded-xl shadow-lg w-full md:w-1/2 lg:w-1/3">
             <h2 className="text-xl text-center text-white">Dealer's Hand:</h2>
             <div className="flex justify-center flex-wrap gap-2">

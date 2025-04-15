@@ -76,7 +76,7 @@ const Wallet = () => {
       alert("❌Could not download transactions.");
     }
   };
-  const chipValues = [1000, 500, 200, 100, 50, 20, 10];
+  const chipValues = [100000, 10000, 1000, 500, 200, 100, 50, 20, 10];
 
     const calculateChips = (totalCredits) => {
       const result = [];
@@ -140,7 +140,7 @@ const Wallet = () => {
                           key={idx}
                           src={`/chips/${chip.value}.png`}
                           alt={`${chip.value}`}
-                          className="hidden lg:block w-10 -mb-[50px] drop-shadow-md  "
+                          className="hidden lg:block w-10 -mb-[120%] drop-shadow-md  "
                         />
                       ))}
 

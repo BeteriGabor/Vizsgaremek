@@ -6,12 +6,14 @@ import winSound from '../assets/sounds/win.mp3';
 import loseSound from '../assets/sounds/lose.mp3';
 import axios from 'axios';
 
-const SYMBOLS = [<img src="/emoji/apple.png" alt="🍎" />,
-                <img src="/emoji/lemon.png" alt="🍋" />, 
-                <img src="/emoji/grape.png" alt="🍇" />, 
-                <img src="/emoji/cherry.png" alt="🍒" />, 
-                <img src="/emoji/diamond.png" alt="💎" />, 
-                <img src="/emoji/7.png" alt="7️⃣" />];
+const SYMBOLS = [
+                <img src="/emoji/apple.png" alt="🍎" className="w-full h-full object-contain" />,
+                <img src="/emoji/lemon.png" alt="🍋" className="w-full h-full object-contain" />,
+                <img src="/emoji/grape.png" alt="🍇" className="w-full h-full object-contain" />,
+                <img src="/emoji/cherry.png" alt="🍒" className="w-full h-full object-contain" />,
+                <img src="/emoji/diamond.png" alt="💎" className="w-full h-full object-contain" />,
+                <img src="/emoji/7.png" alt="7️⃣" className="w-full h-full object-contain" />,
+              ];
 
 const SlotMachine = () => {
   const [playCoin] = useSound(coinSound);
@@ -129,42 +131,44 @@ const SlotMachine = () => {
   return (
     <>
       <Navbar ref={navbarRef} />
-      <div className="w-screen h-screen bg-fixed bg-center bg-slotbg flex items-center relative font-sans pt-16">
+      <div className="w-screen h-screen bg-fixed bg-center bg-slotbg flex items-center relative font-sans pt-16 overflow-hidden">
         <div className="max-w-[20%] mx-auto text-center py-[20%]">
-          <div className="flex justify-center gap-[70px] mb-[270px] mt-[-5%]">
+          <div className="flex justify-center gap-[50px] mb-[270px] mt-[-5%]">
             {slots.map((symbol, index) => (
               <div
                 key={index}
-                className={`w-full h-[120px] rounded-xl flex items-center justify-center text-[60px] ${
-                  winningPositions[index] ? 'bg-green-500 border-3 border-green-500 animate-pulse' : ''
-                }`}
+                className={`w-[100px] h-[100px] min-w-[100px] min-h-[100px] flex items-center justify-center rounded-xl overflow-hidden
+                  ${winningPositions[index] ? 'bg-green-500 border-3 border-green-500 animate-pulse' : ''}`}
               >
-                {symbol}
+                <div className="w-[80px] h-[80px] flex items-center justify-center">
+                  {symbol}
+                </div>
               </div>
             ))}
+
           </div>
 
           <div className="flex flex-col items-center gap-4">
-          <div className="mt-4 flex items-center gap-4">
-            <select
-              value={bet}
-              onChange={(e) => setBet(Number(e.target.value))}
-              disabled={isSpinning}
-              className="p-2 bg-gray-900 text-white rounded-lg shadow-md text-sm font-bold"
-            >
-              {[10, 20, 50, 100, 200, 500, 1000].map(amount => (
-                <option key={amount} value={amount}>
-                  {amount} Credits
-                </option>
-              ))}
-            </select>
+            <div className="mt-4 flex items-center gap-4">
+              <select
+                value={bet}
+                onChange={(e) => setBet(Number(e.target.value))}
+                disabled={isSpinning}
+                className="p-2 bg-gray-900 text-white rounded-lg shadow-md text-sm font-bold"
+              >
+                {[10, 20, 50, 100, 200, 500, 1000].map(amount => (
+                  <option key={amount} value={amount}>
+                    {amount} Credits
+                  </option>
+                ))}
+              </select>
 
 
-            <img
-              src={`/chips/${bet}.png`}
-              alt={`${bet} chip`}
-              className="w-10 h-10"
-            />
+              <img
+                src={`/chips/${bet}.png`}
+                alt={`${bet} chip`}
+                className="w-10 h-10"
+              />
           </div>
 
             <button

@@ -136,12 +136,13 @@ const ChickenGame = () => {
 
   return (
     <>
-      <div className="w-screen h-screen relative bg-slate-600">
+      <Navbar ref={navbarRef} />
+      <div className="w-screen h-screen relative bg-slate-600  overflow-hidden">
         <div
           className="absolute top-0 left-[45%] h-full w-[2000px] bg-chickenmap transition-transform duration-300 ease-in-out"
           style={{ transform: `translateX(-${position * 10}rem)` }}
         ></div>
-        <Navbar ref={navbarRef} />
+        
 
         {carVisible && (
           <img
