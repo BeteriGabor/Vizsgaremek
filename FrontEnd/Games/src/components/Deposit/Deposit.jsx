@@ -54,13 +54,13 @@ function Deposit() {
       });
 
       if (response.status === 200) {
-        alert("✅ Deposit was successful!");
+        alert("✅Deposit was successful!");
         navigate('/wallet');
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("❌Something went wrong. Please try again.");
       }
     } catch (error) {
-      setError("Something went wrong during the deposit.");
+      setError("❌Something went wrong during the deposit.");
       console.error(error);
     } finally {
       setLoading(false);

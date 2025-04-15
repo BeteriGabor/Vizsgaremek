@@ -57,10 +57,10 @@ function Withdraw() {
         alert("✅ Withdrawal was successful!");
         navigate('/wallet');
       } else {
-        setError("Something went wrong. Please try again.");
+        setError("❌Something went wrong. Please try again.");
       }
     } catch (error) {
-      setError("Something went wrong during withdrawal.");
+      setError("❌Something went wrong during withdrawal.");
       console.error(error);
     } finally {
       setLoading(false);

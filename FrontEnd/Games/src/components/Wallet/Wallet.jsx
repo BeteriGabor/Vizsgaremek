@@ -6,7 +6,6 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 const Wallet = () => {
-  const [hover, setHover] = useState("");
   const [credits, setCredits] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -73,8 +72,8 @@ const Wallet = () => {
 
       doc.save("transactions.pdf");
     } catch (error) {
-      console.error("Failed to fetch transactions:", error);
-      alert("Could not download transactions.");
+      console.error("❌Failed to fetch transactions:", error);
+      alert("❌Could not download transactions.");
     }
   };
   const chipValues = [1000, 500, 200, 100, 50, 20, 10];
@@ -156,23 +155,23 @@ const Wallet = () => {
 
             <button
               onClick={handleNavigateToDeposit}
-              className="w-full py-3 px-4 text-lg font-semibold rounded-lg bg-gray-800 text-white hover:bg-red-600 transition duration-200"
+              className="w-full py-3 px-4 text-lg font-semibold rounded-lg bg-gray-800 text-white hover:bg-red-600 transition duration-200  "
             >
-              💰 Deposit
+              <img src="/emoji/bag.png" alt="💰" className="w-8 h-8 mx-auto" /> Deposit
             </button>
 
             <button
               onClick={handleNavigateToWithdraw}
               className="w-full py-3 px-4 text-lg font-semibold rounded-lg bg-gray-800 text-white hover:bg-green-600 transition duration-200"
             >
-              🏧 Withdraw
+              <img src="/emoji/banknote.png" alt="💵" className="w-8 h-8 mx-auto" /> Withdraw
             </button>
 
             <button
               onClick={handleDownloadTransactions}
               className="w-full py-3 px-4 text-lg font-semibold rounded-lg bg-gray-800 text-white hover:bg-blue-600 transition duration-200"
             >
-              📄 Download Transactions
+              <img src="/emoji/downloading.png" alt="⬇️" className="w-8 h-8 mx-auto" />Download Transactions
             </button>
           </div>
         </div>

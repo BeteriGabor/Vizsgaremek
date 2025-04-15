@@ -6,14 +6,19 @@ import winSound from '../assets/sounds/win.mp3';
 import loseSound from '../assets/sounds/lose.mp3';
 import axios from 'axios';
 
-const SYMBOLS = ['🍎', '🍋', '🍇', '🍒', '💎', '7️⃣'];
+const SYMBOLS = [<img src="/emoji/apple.png" alt="🍎" />,
+                <img src="/emoji/lemon.png" alt="🍋" />, 
+                <img src="/emoji/grape.png" alt="🍇" />, 
+                <img src="/emoji/cherry.png" alt="🍒" />, 
+                <img src="/emoji/diamond.png" alt="💎" />, 
+                <img src="/emoji/7.png" alt="7️⃣" />];
 
 const SlotMachine = () => {
   const [playCoin] = useSound(coinSound);
   const [playWin] = useSound(winSound);
   const [playLose] = useSound(loseSound);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [slots, setSlots] = useState(['🍎', '🍋', '🍇']);
+  const [slots, setSlots] = useState([<img src="/emoji/apple.png" alt="🍎" />, <img src="/emoji/lemon.png" alt="🍋" />, <img src="/emoji/grape.png" alt="🍇" />]);
   const [bet, setBet] = useState([10]);
   const [winningPositions, setWinningPositions] = useState([false, false, false]);
   const navbarRef = useRef();

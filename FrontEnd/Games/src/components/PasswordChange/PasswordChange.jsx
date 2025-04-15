@@ -38,17 +38,17 @@ function PasswordChange() {
       );
 
       if (response.status === 200) {
-        alert("Password changed successfully!");
+        alert("✅Password changed successfully!");
         navigate("/sign_in");
       } else {
-        alert("Failed to change password. Please try again.");
+        alert("❌Failed to change password. Please try again.");
       }
     }
     catch (error) {
       if (error.response && error.response.status === 401) {
-        alert("Old password is incorrect.");
+        alert("❌Old password is incorrect.");
       } else {
-        alert("An error occurred. Please try again.");
+        alert("❌An error occurred. Please try again.");
       }
     }
   }
@@ -56,8 +56,8 @@ function PasswordChange() {
   return (
     <>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg p-6 w-full max-w-md shadow-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center ">
+          <div className="bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg p-6 w-full max-w-md shadow-lg">
             <h2 className="text-xl font-semibold mb-4 text-center">Change Password</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -75,7 +75,7 @@ function PasswordChange() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300"
                   >
-                    {showPassword ? '🙈' : '👁️'}
+                   {showPassword ? <img src="/emoji/looking.png" alt="👁️" className="w-10"/>:<img src="/emoji/eyesclosed.png" alt="🙈" className="w-10"/> }
                   </button>
                 </div>
               </div>
@@ -95,7 +95,7 @@ function PasswordChange() {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300"
                   >
-                    {showPassword ? '🙈' : '👁️'}
+                    {showPassword ? <img src="/emoji/looking.png" alt="👁️" className="w-10"/>:<img src="/emoji/eyesclosed.png" alt="🙈" className="w-10"/> }
                   </button>
                 </div>
               </div>

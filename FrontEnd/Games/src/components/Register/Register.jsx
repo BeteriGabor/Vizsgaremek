@@ -25,7 +25,7 @@ function Register() {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     if (password !== passwordHelp) {
-      alert("❌ Passwords do not match!");
+      alert("Passwords do not match!");
       return;
     }
 
@@ -55,10 +55,10 @@ function Register() {
         alert('⚠️ Error uploading image.');
       }
 
-      alert("✅ Registration successful!");
+      alert("Registration successful!");
       navigate('/sign_in');
     } catch (error) {
-      alert("❌ Registration failed! Please try again.");
+      alert("Registration failed! Please try again.");
     }
   };
 
@@ -67,7 +67,7 @@ function Register() {
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-defbg px-4">
           <div className="bg-gray-800 text-white rounded-2xl p-8 w-full max-w-xl shadow-2xl border border-gray-700">
-            <h2 className="text-3xl font-bold mb-6 text-center text-green-400">🎰 Create Your Account</h2>
+            <h2 className="text-3xl font-bold mb-6 text-center text-green-400">Create Your Account</h2>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
@@ -99,7 +99,7 @@ function Register() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl"
                     title={showPassword ? "Hide password" : "Show password"}
                   >
-                    {showPassword ? '🙈' : '👁️'}
+                    {showPassword ? <img src="/emoji/looking.png" alt="👁️" className="w-10"/>:<img src="/emoji/eyesclosed.png" alt="🙈" className="w-10"/> }
                   </button>
                 </div>
               </div>

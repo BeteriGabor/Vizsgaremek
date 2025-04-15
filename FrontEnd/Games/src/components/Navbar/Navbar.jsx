@@ -47,7 +47,7 @@ const Navbar = forwardRef((_, ref) => {
   const pathName = window.location.pathname.split("/").pop();
   const pageName = pathName
     ? pathName.charAt(0).toUpperCase() + pathName.slice(1)
-    : "HomePage";
+    : "Hub";
   const isActive = (path) => pathName.toLowerCase() === path.toLowerCase();
   return (
     <div className="fixed top-0 left-0 right-0 bg-gray-900 text-white z-50 shadow-lg border-b border-gray-700 px-3 py-2 flex flex-col sm:flex-row sm:items-center gap-y-2 h-10">
@@ -71,7 +71,7 @@ const Navbar = forwardRef((_, ref) => {
       </div>
 
       {/* Logo + page name (desktop only) */}
-      <div className="hidden sm:flex items-center justify-center gap-2 mx-auto">
+      <div className="hidden lg:flex items-center justify-center gap-2 mx-auto">
         <img src="logo.png" alt="Logo" className="h-6 sm:h-8" />
         <div className="text-yellow-300 font-bold text-base sm:text-lg tracking-wide">
           {pageName}
