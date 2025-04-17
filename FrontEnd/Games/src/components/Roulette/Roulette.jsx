@@ -95,27 +95,27 @@ const Roulette = () => {
     if (
       spinning ||
       bet <= 0 ||
-      credits < bet
+      credits < bet ||
       (betType === 'number' && (betNumber === '' || betNumber < 0 || betNumber > 36))
     ) {
       setWinningsMessage({ text: "Please select a valid bet, number, or check your credits!", type: 'lose' });
       return;
     }
-
+  
     await placeBet();
     setSpinning(true);
     setResult(null);
     setWinningsMessage({ text: '', type: '' });
-
+  
     const fullRotations = 3 + Math.floor(Math.random() * 8);
     const randomIndex = Math.floor(Math.random() * numbers.length);
     const rotationDegrees = fullRotations * 360 + (randomIndex * (360 / numbers.length));
-
+  
     if (wheelRef.current) {
       wheelRef.current.style.transform = `rotate(${rotationDegrees}deg)`;
       wheelRef.current.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.15, 1)';
     }
-
+  
     setTimeout(() => {
       setSpinning(false);
       const degreesPerNumber = 360 / numbers.length;
@@ -127,6 +127,7 @@ const Roulette = () => {
       handleBetOutcome(winningNumber);
     }, 5000);
   };
+  
 
   const handleBetOutcome = (winningNumber) => {
     let winnings = 0;

@@ -11,7 +11,7 @@ import { people, image, cash } from "ionicons/icons";
 import { Redirect, Route } from "react-router-dom";
 import UserManagementTab from "./UsersTab";
 import AgeVerificationTab from "./AgeVerificationTab";
-import TransactionTab from "./UsersTab";
+import TransactionTab from "./TransactionTab";
 
 const Tabs: React.FC = () => {
   return (

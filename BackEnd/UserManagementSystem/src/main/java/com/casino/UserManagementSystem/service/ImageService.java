@@ -68,4 +68,12 @@ public class ImageService {
             return imageDTO;
         }).collect(Collectors.toList());
     }
+    public boolean deleteImageById(Integer imageId) {
+        if (imageRepo.existsById(imageId)) {
+            imageRepo.deleteById(imageId);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

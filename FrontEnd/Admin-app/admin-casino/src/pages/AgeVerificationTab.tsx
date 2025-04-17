@@ -30,7 +30,24 @@ const AgeVerificationTab: React.FC = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setImages(res.data || []);
+
+      const allImages = res.data || [];
+      const validImages = [];
+
+      for (const img of allImages) {
+        try {
+          const userRes = await axios.get(`http://localhost:1010/admin/get-users/${img.userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (userRes.data.ourUsers) {
+            validImages.push(img);
+          }
+        } catch (e) {
+          console.log(`Skip image ${img.id} — user not found`);
+        }
+      }
+
+      setImages(validImages);
     } catch (err) {
       console.error("Hiba a képek lekérésekor", err);
     }
@@ -70,20 +87,34 @@ const AgeVerificationTab: React.FC = () => {
     }
   };
 
-  const rejectVerification = async (userId: number) => {
+  const deleteImageOnly = async (imageId: number) => {
     try {
-      await axios.put(
-        `http://localhost:1010/admin/accept-age-verification/${userId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.delete(`http://localhost:1010/admin/delete-image/${imageId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       closeModalAndRefresh();
     } catch (err) {
-      console.error("Hiba az életkor elutasítása közben", err);
+      console.error("Hiba a kép törlésekor", err);
+    }
+  };
+
+  const deleteUserAndImage = async (userId: number, imageId: number) => {
+    try {
+      await axios.delete(`http://localhost:1010/admin/delete/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      await axios.delete(`http://localhost:1010/admin/delete-image/${imageId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      closeModalAndRefresh();
+    } catch (err) {
+      console.error("Hiba a kép és/vagy felhasználó törlésekor", err);
     }
   };
 
@@ -148,6 +179,7 @@ const AgeVerificationTab: React.FC = () => {
                       <p>Email: {userInfo.email}</p>
                       <p>Szerep: {userInfo.role}</p>
                     </IonLabel>
+
                     <IonButton
                       expand="block"
                       color="success"
@@ -157,10 +189,17 @@ const AgeVerificationTab: React.FC = () => {
                     </IonButton>
                     <IonButton
                       expand="block"
-                      color="danger"
-                      onClick={() => rejectVerification(userInfo.id)}
+                      color="warning"
+                      onClick={() => deleteImageOnly(selectedImage.id)}
                     >
-                      Elutasítás
+                      Csak kép törlése
+                    </IonButton>
+                    <IonButton
+                      expand="block"
+                      color="danger"
+                      onClick={() => deleteUserAndImage(userInfo.id, selectedImage.id)}
+                    >
+                      Kép ÉS felhasználó törlése
                     </IonButton>
                   </div>
                 )}

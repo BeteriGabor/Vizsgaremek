@@ -11,6 +11,7 @@ import {
   IonLabel,
   IonButton,
   IonInput,
+  IonButtons,
 } from "@ionic/react";
 
 const UserManagementTab: React.FC = () => {
@@ -60,14 +61,17 @@ const UserManagementTab: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Felhasználók kezelése</IonTitle>
+          <IonButtons slot="end">
+            <IonButton onClick={fetchUsers}>🔄 Frissítés</IonButton>
+          </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <IonContent>
+      <IonContent className="ion-padding">
         <IonInput
           placeholder="Szűrés név vagy email alapján"
           value={filter}
           onIonChange={(e) => setFilter(e.detail.value!)}
-          className="ion-margin"
+          className="ion-margin-bottom"
         />
         <IonList>
           {filteredUsers.map((user) => (

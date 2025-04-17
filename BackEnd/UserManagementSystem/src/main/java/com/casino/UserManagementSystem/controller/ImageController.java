@@ -48,4 +48,18 @@ public class ImageController {
         List<ImageDTO> imageDTOs = imageService.getAllImages();
         return ResponseEntity.ok(imageDTOs);
     }
+    @DeleteMapping("/admin/delete-image/{imageId}")
+    public ResponseEntity<?> deleteImage(@PathVariable Integer imageId) {
+        try {
+            boolean deleted = imageService.deleteImageById(imageId);
+            if (deleted) {
+                return ResponseEntity.ok("Kép sikeresen törölve.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Nem található kép a megadott ID-val.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Hiba történt a kép törlése közben.");
+        }
+    }
+
 }
