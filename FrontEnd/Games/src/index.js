@@ -4,19 +4,19 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 import { BrowserRouter as Router, Routes , Route } from 'react-router-dom';
-import Register from './components/Register/Register'
-import Blackjack from './components/BlackJack/Blackjack';
-import Sign_in from './components/Sign_in/Sign_in';
-import Slot from './components/Slot/Slot';
-import PasswordChange from './components/PasswordChange/PasswordChange';
+import Register from './components/Pages/Register'
+import Blackjack from './components/Pages/Blackjack';
+import Sign_in from './components/Pages/Sign_in';
+import Slot from './components/Pages/Slot';
+import PasswordChange from './components/Pages/PasswordChange';
 import App from './App';
-import Aviator from './components/Aviator/Aviator';
-import ChickenGame from './components/Chicken/Chicken';
-import OtherGames from './components/OtherGames/OtherGames';
-import Roulette from './components/Roulette/Roulette';
-import Deposit from './components/Deposit/Deposit';
-import Withdraw from './components/Withdraw/Withdraw';
-import Wallet from './components/Wallet/Wallet';
+import Aviator from './components/Pages/Aviator';
+import ChickenGame from './components/Pages/Chicken';
+import OtherGames from './components/Pages/OtherGames';
+import Roulette from './components/Pages/Roulette';
+import Deposit from './components/Pages/Deposit';
+import Withdraw from './components/Pages/Withdraw';
+import Wallet from './components/Pages/Wallet';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

@@ -1,33 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../Navbar/Navbar";
-import axios from "axios";
+import axios from "axios"
+import Navbar from "../Pages/Navbar";
+import useFetchCredits from "../Hooks/Axios/useFetchCredits";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 const Wallet = () => {
-  const [credits, setCredits] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { credits, loading, error, fetchCredits} = useFetchCredits(); 
 
   const navigate = useNavigate();
   const navbarRef = useRef();
-
-  const fetchCredits = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get("http://localhost:1010/auth/wallet/balance", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCredits(response.data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchCredits();

@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import Navbar from "../Navbar/Navbar";
-import useSound from "use-sound";
-import coinSound from "../assets/sounds/coin.wav";
-import winSound from "../assets/sounds/win.mp3";
-import loseSound from "../assets/sounds/lose.mp3";
+import Navbar from "../Pages/Navbar";
 import axios from "axios";
+import usePlaySound from "../Hooks/usePlaySound/usePlaySound";
 
 const Aviator = () => {
-  const [playCoin] = useSound(coinSound);
-  const [playWin] = useSound(winSound);
-  const [playLose] = useSound(loseSound);
+  const { playCoin, playWin, playLose } = usePlaySound();
   const [multiplier, setMultiplier] = useState(1.0);
   const [isFlying, setIsFlying] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");

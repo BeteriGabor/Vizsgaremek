@@ -5,32 +5,11 @@ import React, {
   forwardRef,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import useFetchCredits from "../Hooks/Axios/useFetchCredits";
 
 const Navbar = forwardRef((_, ref) => {
   const navigate = useNavigate();
-  const [credits, setCredits] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const fetchCredits = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await axios.get(
-        "http://localhost:1010/auth/wallet/balance",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setCredits(response.data);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { credits, loading, error, fetchCredits} = useFetchCredits(); 
 
   useEffect(() => {
     fetchCredits();
