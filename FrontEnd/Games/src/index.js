@@ -4,19 +4,19 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 import { BrowserRouter as Router, Routes , Route } from 'react-router-dom';
-import Register from './components/Register/Register'
-import Blackjack from './components/BlackJack/Blackjack';
-import Sign_in from './components/Sign_in/Sign_in';
-import Slot from './components/Slot/Slot';
-import PasswordChange from './components/PasswordChange/PasswordChange';
+import Register from './pages/Register'
+import Blackjack from './pages/Blackjack';
+import Sign_in from './pages/Sign_in';
+import Slot from './pages/Slot';
+import PasswordChange from './pages/PasswordChange';
 import App from './App';
-import Aviator from './components/Aviator/Aviator';
-import ChickenGame from './components/Chicken/Chicken';
-import OtherGames from './components/OtherGames/OtherGames';
-import Roulette from './components/Roulette/Roulette';
-import Deposit from './components/Deposit/Deposit';
-import Withdraw from './components/Withdraw/Withdraw';
-import Wallet from './components/Wallet/Wallet';
+import Aviator from './pages/Aviator';
+import ChickenGame from './pages/Chicken';
+import OtherGames from './pages/OtherGames';
+import Roulette from './pages/Roulette';
+import Deposit from './pages/Deposit';
+import Withdraw from './pages/Withdraw';
+import Wallet from './pages/Wallet';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

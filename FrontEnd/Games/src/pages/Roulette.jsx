@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Navbar from '../Navbar/Navbar';
+import Navbar from '../components/Navbar/Navbar';
 import axios from 'axios';
 import useSound from 'use-sound';
-import coinSound from '../assets/sounds/coin.wav';
-import winSound from '../assets/sounds/win.mp3';
-import loseSound from '../assets/sounds/lose.mp3';
+import coinSound from '../components/assets/sounds/coin.wav';
+import winSound from '../components/assets/sounds/win.mp3';
+import loseSound from '../components/assets/sounds/lose.mp3';
 const Roulette = () => {
   const [playCoin] = useSound(coinSound);
   const [playWin] = useSound(winSound);
