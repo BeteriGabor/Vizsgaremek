@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { changePassword } from "../utils/changePassword";
 
 function PasswordChange() {
   const [open, setOpen] = useState(false);
@@ -16,47 +16,20 @@ function PasswordChange() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const result = await changePassword({ oldPassword, newPassword });
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("You must be logged in to change your password.");
-      return;
+    if (result.success) {
+      alert("✅ Password changed successfully!");
+      navigate("/sign_in");
+    } else {
+      alert(`❌ ${result.message}`);
     }
-
-    try {
-      const response = await axios.put(
-        "http://localhost:1010/auth/update-password",
-        {
-          oldPassword,
-          newPassword,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        alert("✅Password changed successfully!");
-        navigate("/sign_in");
-      } else {
-        alert("❌Failed to change password. Please try again.");
-      }
-    }
-    catch (error) {
-      if (error.response && error.response.status === 401) {
-        alert("❌Old password is incorrect.");
-      } else {
-        alert("❌An error occurred. Please try again.");
-      }
-    }
-  }
+  };
 
   return (
     <>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center ">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div className="bg-white dark:bg-gray-800 text-black dark:text-white rounded-lg p-6 w-full max-w-md shadow-lg">
             <h2 className="text-xl font-semibold mb-4 text-center">Change Password</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -73,9 +46,11 @@ function PasswordChange() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300"
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
                   >
-                   {showPassword ? <img src="/emoji/looking.png" alt="👁️" className="w-10"/>:<img src="/emoji/eyesclosed.png" alt="🙈" className="w-10"/> }
+                    {showPassword
+                      ? <img src="/emoji/looking.png" alt="👁️" className="w-10" />
+                      : <img src="/emoji/eyesclosed.png" alt="🙈" className="w-10" />}
                   </button>
                 </div>
               </div>
@@ -93,9 +68,11 @@ function PasswordChange() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300"
+                    className="absolute right-2 top-1/2 -translate-y-1/2"
                   >
-                    {showPassword ? <img src="/emoji/looking.png" alt="👁️" className="w-10"/>:<img src="/emoji/eyesclosed.png" alt="🙈" className="w-10"/> }
+                    {showPassword
+                      ? <img src="/emoji/looking.png" alt="👁️" className="w-10" />
+                      : <img src="/emoji/eyesclosed.png" alt="🙈" className="w-10" />}
                   </button>
                 </div>
               </div>

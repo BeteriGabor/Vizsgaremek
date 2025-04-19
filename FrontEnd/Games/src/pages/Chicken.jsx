@@ -2,14 +2,19 @@ import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import useSound from "use-sound";
-import coinSound from '../components/assets/sounds/coin.wav';
-import winSound from '../components/assets/sounds/win.mp3';
-import loseSound from '../components/assets/sounds/lose.mp3';
+import coinSound from "../components/assets/sounds/coin.wav";
+import winSound from "../components/assets/sounds/win.mp3";
+import loseSound from "../components/assets/sounds/lose.mp3";
+
+import { placeBet } from "../utils/placeBets";
+import { resolveBet } from "../utils/resolveBet";
+import { updateCredits } from "../utils/updateCredits";
 
 const ChickenGame = () => {
   const [playCoin] = useSound(coinSound);
   const [playWin] = useSound(winSound);
   const [playLose] = useSound(loseSound);
+
   const [position, setPosition] = useState(0);
   const [obstacle, setObstacle] = useState(Math.floor(Math.random() * 10) + 1);
   const [gameOver, setGameOver] = useState(false);
@@ -22,115 +27,57 @@ const ChickenGame = () => {
   const [betId, setBetId] = useState(null);
   const [credits, setCredits] = useState(0);
 
-
   const navbarRef = useRef();
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (navbarRef.current?.getCredits) {
-        setCredits(navbarRef.current.getCredits());
-        clearInterval(interval);
-      }
-    }, 100);
-    return () => clearInterval(interval);
-  }, []);
-  
-  const updateCredits = async () => {
-    if (navbarRef.current?.refreshCredits && navbarRef.current?.getCredits) {
-      await navbarRef.current.refreshCredits();
 
-      setTimeout(() => {
-        const updatedCredits = navbarRef.current.getCredits();
-        setCredits(updatedCredits);
-      }, 100); 
-    }
-  };
-  
-  
+  useEffect(() => {
+    updateCredits(navbarRef, setCredits);
+  }, []);
+
   useEffect(() => {
     if (gameStarted && !gameOver) {
       setMultiplier(position * 0.5 + 1);
     }
   }, [position, gameStarted, gameOver]);
 
-  const placeBet = async () => {
+  const handlePlaceBet = async () => {
     if (bet <= 0) {
       setMessage("Invalid bet amount!");
       return;
     }
 
-    const token = localStorage.getItem("token");
-    try {
-      const response = await axios.post(
-        `http://localhost:1010/auth/place`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            amount: bet,
-          },
-        }
-        
-      );
+    const result = await placeBet({
+      bet,
+      setBetId,
+      playCoin,
+      updateCredits: () => updateCredits(navbarRef, setCredits),
+    });
 
-      if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
-      playCoin();
-
-      const match = response.data.match(/Bet ID: (\d+)/);
-      const id = match ? parseInt(match[1]) : null;
-      if (id) setBetId(id);
-
-      resetGame();
-      setGameStarted(true);
-      setMessage("");
-      setPlayerWon(false);
-    } catch (error) {
-      console.error("Error sending bet:", error);
+    if (!result.success) {
       setMessage("Bet failed.");
+      return;
     }
 
-    if (navbarRef.current?.refreshCredits) {
-      navbarRef.current.refreshCredits();
-      updateCredits();
-    }
-    
+    resetGame();
+    setGameStarted(true);
+    setMessage("");
+    setPlayerWon(false);
   };
 
-  const resolveBet = async (win, multiplierValue) => {
-    if (!betId) return;
-    const token = localStorage.getItem("token");
-    try {
-      await axios.post(
-        `http://localhost:1010/api/resolve/${betId}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            win: win,
-            multiplier: multiplierValue,
-          },
-        }
-      );
-      if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
-      if (win) {
-        playWin();
-        setMessage(`${(bet * multiplierValue).toFixed(2)} credits!`);
-      } else {
-        playLose();
-        setMessage(`You lost your bet of ${bet} credits.`);
-      }
-      
-    } catch (error) {
-      console.error("Error while resolvebet:", error);
+  const handleResolveBet = async (win, multiplierValue) => {
+    await resolveBet({
+      betId,
+      win,
+      multiplier: multiplierValue,
+      playWin,
+      playLose,
+      updateCredits: () => updateCredits(navbarRef, setCredits),
+    });
+
+    if (win) {
+      setMessage(`${(bet * multiplierValue).toFixed(2)} credits!`);
+    } else {
+      setMessage(`You lost your bet of ${bet} credits.`);
     }
-    if (navbarRef.current?.refreshCredits) {
-      navbarRef.current.refreshCredits();
-      updateCredits();
-    }
-    
   };
 
   const nextStep = () => {
@@ -142,13 +89,22 @@ const ChickenGame = () => {
         setGameOver(true);
         setCarVisible(true);
         setPlayerWon(false);
-        resolveBet(false, multiplier);
+        handleResolveBet(false, multiplier);
       } else if (newPosition === 11) {
         setGameOver(true);
         setPlayerWon(true);
-        resolveBet(true, multiplier * 1.5);
+        handleResolveBet(true, multiplier * 1.5);
       }
     }
+  };
+
+  const stand = () => {
+    if (!gameStarted || gameOver) return;
+    setMessage(`You cashed out with ${(bet * multiplier).toFixed(2)} credits!`);
+    setPlayerWon(true);
+    setGameStarted(false);
+    setGameOver(true);
+    handleResolveBet(true, multiplier);
   };
 
   const resetGame = () => {
@@ -160,24 +116,14 @@ const ChickenGame = () => {
     setMultiplier(1);
   };
 
-  const stand = () => {
-    if (!gameStarted || gameOver) return;
-    setMessage(`You cashed out with ${(bet * multiplier).toFixed(2)} credits!`);
-    setPlayerWon(true);
-    setGameStarted(false);
-    setGameOver(true);
-    resolveBet(true, multiplier);
-  };
-
   return (
     <>
       <Navbar ref={navbarRef} />
-      <div className="w-screen h-screen relative bg-slate-600  overflow-hidden">
+      <div className="w-screen h-screen relative bg-slate-600 overflow-hidden">
         <div
           className="absolute top-0 left-[45%] h-full w-[2000px] bg-chickenmap transition-transform duration-300 ease-in-out"
           style={{ transform: `translateX(-${position * 10}rem)` }}
         ></div>
-        
 
         {carVisible && (
           <img
@@ -207,19 +153,18 @@ const ChickenGame = () => {
           </p>
         )}
 
-        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col space-y-4 items-center bg-slate-700 border-gray-900 border-8  p-4 rounded-xl z-20 w-[90%] max-w-md">
+        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 flex flex-col space-y-4 items-center bg-slate-700 border-gray-900 border-8 p-4 rounded-xl z-20 w-[90%] max-w-md">
           <div className="text-white text-lg font-bold text-center">
             Current multiplier: {multiplier.toFixed(2)}x
           </div>
           <div className="flex flex-wrap justify-center space-x-4">
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded-lg text-base font-bold hover:bg-blue-600 transition-colors"
-              onClick={placeBet}
+              onClick={handlePlaceBet}
               disabled={gameStarted && !gameOver}
             >
-              Placebet
+              Place Bet
             </button>
-
             <button
               className="bg-green-700 text-white px-4 py-2 rounded-lg text-base font-bold hover:bg-green-800 transition-colors"
               onClick={stand}
@@ -229,10 +174,8 @@ const ChickenGame = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-4 ">
-            
+          <div className="flex items-center gap-4">
             <select
-              id="bet-amount"
               value={bet}
               onChange={(e) => setBet(Number(e.target.value))}
               className="w-full p-2 bg-gray-900 text-white rounded-lg shadow-md text-base"
@@ -244,7 +187,6 @@ const ChickenGame = () => {
                 </option>
               ))}
             </select>
-
             <img
               src={`/chips/${bet}.png`}
               alt={`${bet} chip`}

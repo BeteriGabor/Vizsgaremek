@@ -4,24 +4,12 @@ import coinSound from "../components/assets/sounds/coin.wav";
 import winSound from "../components/assets/sounds/win.mp3";
 import loseSound from "../components/assets/sounds/lose.mp3";
 import Navbar from "../components/Navbar";
-import axios from "axios";
+import { placeBet } from "../utils/placeBets";
+import { resolveBet } from "../utils/resolveBet";
+import { updateCredits } from "../utils/updateCredits";
 
 const suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
-const ranks = [
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "11",
-  "12",
-  "13",
-  "1",
-];
+const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "1"];
 
 const createDeck = () => {
   const deck = [];
@@ -43,6 +31,7 @@ const Blackjack = () => {
   const [playCoin] = useSound(coinSound);
   const [playWin] = useSound(winSound);
   const [playLose] = useSound(loseSound);
+
   const [deck, setDeck] = useState(createDeck());
   const [playerHand, setPlayerHand] = useState([]);
   const [dealerHand, setDealerHand] = useState([]);
@@ -52,11 +41,15 @@ const Blackjack = () => {
   const [fade, setFade] = useState(false);
   const [gameActive, setGameActive] = useState(false);
   const [betId, setBetId] = useState(null);
-  const navbarRef = useRef();
   const [credits, setCredits] = useState(0);
 
+  const navbarRef = useRef();
+
   useEffect(() => {
-    updateCredits();
+    updateCredits(navbarRef, setCredits);
+  }, []);
+
+  useEffect(() => {
     if (message) {
       setFade(true);
       const timer = setTimeout(() => {
@@ -67,20 +60,9 @@ const Blackjack = () => {
     }
   }, [message]);
 
-  const updateCredits = async () => {
-    if (navbarRef.current?.refreshCredits && navbarRef.current?.getCredits) {
-      await navbarRef.current.refreshCredits();
-      setTimeout(() => {
-        const updatedCredits = navbarRef.current.getCredits();
-        setCredits(updatedCredits);
-      }, 100); 
-    }
-  };
-
   const isBlackjack = (hand) => {
     return (
-      (hand[0].rank === "1" &&
-        ["10", "11", "12", "13"].includes(hand[1].rank)) ||
+      (hand[0].rank === "1" && ["10", "11", "12", "13"].includes(hand[1].rank)) ||
       (["10", "11", "12", "13"].includes(hand[0].rank) && hand[1].rank === "1")
     );
   };
@@ -88,6 +70,7 @@ const Blackjack = () => {
   const calculateScore = (hand, forceAceAsEleven = false) => {
     let score = hand.reduce((total, card) => total + getCardValue(card), 0);
     let aces = hand.filter((card) => card.rank === "1").length;
+
     if (forceAceAsEleven && score <= 21) {
       score += aces;
     } else {
@@ -99,61 +82,24 @@ const Blackjack = () => {
     return score;
   };
 
-  const placeBet = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await axios.post(
-        `http://localhost:1010/auth/place`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            amount: bet,
-          },
-        }
-      );
-      await updateCredits();
-      playCoin();
-      const match = response.data.match(/Bet ID: (\d+)/);
-      const id = match ? parseInt(match[1]) : null;
-      if (id) setBetId(id);
-    } catch (err) {
-      setMessage("Failed to place bet");
-    }
-  };
-
-  const resolveBet = async (win, multiplier = 1) => {
-    if (!betId) return;
-    const token = localStorage.getItem("token");
-    try {
-      await axios.post(
-        `http://localhost:1010/api/resolve/${betId}`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          params: { win, multiplier },
-        }
-      );
-      if (navbarRef.current?.refreshCredits) navbarRef.current.refreshCredits();
-      if (win) {
-        playWin();
-      } else {
-        playLose();
-      }
-    } catch (err) {
-      console.error("Resolve bet error", err);
-    }
-  };
-
   const startGame = async () => {
     if (gameActive) {
       setMessage("A game is already in progress!");
       return;
     }
 
-    await placeBet();
+    const result = await placeBet({
+      bet,
+      setBetId,
+      playCoin,
+      updateCredits: () => updateCredits(navbarRef, setCredits),
+    });
+
+    if (!result.success) {
+      setMessage("Failed to place bet");
+      return;
+    }
+
     const newDeck = createDeck();
     const playerCards = [newDeck.pop(), newDeck.pop()];
     const dealerCards = [newDeck.pop(), newDeck.pop()];
@@ -161,69 +107,100 @@ const Blackjack = () => {
     setDeck(newDeck);
     setPlayerHand(playerCards);
     setDealerHand(dealerCards);
-    setDeck(newDeck);
     setGameOver(false);
     setGameActive(true);
 
     if (isBlackjack(playerCards)) {
-        setMessage('You got a Blackjack! You win!');
-        resolveBet(true, 2);
-        setGameOver(true);
-        setGameActive(false)
+      setMessage("You got a Blackjack! You win!");
+      resolveBet({
+        betId,
+        win: true,
+        multiplier: 2,
+        playWin,
+        playLose,
+        updateCredits: () => updateCredits(navbarRef, setCredits),
+      });
+      setGameOver(true);
+      setGameActive(false);
     } else if (isBlackjack(dealerCards)) {
-        setMessage('Dealer got a Blackjack! You lose!');
-        resolveBet(false);
-        setGameOver(true);
-        setGameActive(false)
+      setMessage("Dealer got a Blackjack! You lose!");
+      resolveBet({
+        betId,
+        win: false,
+        multiplier: 1,
+        playWin,
+        playLose,
+        updateCredits: () => updateCredits(navbarRef, setCredits),
+      });
+      setGameOver(true);
+      setGameActive(false);
     }
   };
 
   const hit = () => {
-    if (!gameOver && playerHand.length > 0) {
-      const newDeck = [...deck];
-      const newCard = newDeck.pop();
-      const newHand = [...playerHand, newCard];
-      setPlayerHand(newHand);
-      setDeck(newDeck);
-      const playerScore = calculateScore(newHand);
-      if (playerScore > 21) {
-        setMessage("You busted! You lose!");
-        resolveBet(false);
-        setGameOver(true);
-        setGameActive(false);
-      }
+    if (gameOver || playerHand.length === 0) return;
+
+    const newDeck = [...deck];
+    const newCard = newDeck.pop();
+    const newHand = [...playerHand, newCard];
+
+    setPlayerHand(newHand);
+    setDeck(newDeck);
+
+    const playerScore = calculateScore(newHand);
+    if (playerScore > 21) {
+      setMessage("You busted! You lose!");
+      resolveBet({
+        betId,
+        win: false,
+        multiplier: 1,
+        playWin,
+        playLose,
+        updateCredits: () => updateCredits(navbarRef, setCredits),
+      });
+      setGameOver(true);
+      setGameActive(false);
     }
   };
 
   const stand = () => {
-    if (!gameOver && playerHand.length > 0) {
-      let newDeck = [...deck];
-      let dealerCards = [...dealerHand];
-      const playerScore = calculateScore(playerHand);
-      let dealerScore = calculateScore(dealerCards);
-      while (dealerScore < 17) {
-        const newCard = newDeck.pop();
-        dealerCards.push(newCard);
-        dealerScore = calculateScore(dealerCards);
-      }
-      setDealerHand(dealerCards);
-      setDeck(newDeck);
-      let win = false;
-      let tie = false;
-      if (dealerScore > 21 || playerScore > dealerScore) {
-        setMessage("You win!");
-        win = true;
-      } else if (playerScore < dealerScore) {
-        setMessage("You lose!");
-      } else {
-        setMessage("It's a tie!");
-        tie=true
-      }
-      resolveBet(win, 2);
-      resolveBet(tie, 1);
-      setGameOver(true);
-      setGameActive(false);
+    if (gameOver || playerHand.length === 0) return;
+
+    let newDeck = [...deck];
+    let dealerCards = [...dealerHand];
+    const playerScore = calculateScore(playerHand);
+    let dealerScore = calculateScore(dealerCards);
+
+    while (dealerScore < 17) {
+      const newCard = newDeck.pop();
+      dealerCards.push(newCard);
+      dealerScore = calculateScore(dealerCards);
     }
+
+    setDealerHand(dealerCards);
+    setDeck(newDeck);
+
+    let win = false;
+    if (dealerScore > 21 || playerScore > dealerScore) {
+      setMessage("You win!");
+      win = true;
+    } else if (playerScore < dealerScore) {
+      setMessage("You lose!");
+    } else {
+      setMessage("It's a tie!");
+    }
+
+    resolveBet({
+      betId,
+      win,
+      multiplier: win ? 2 : 1,
+      playWin,
+      playLose,
+      updateCredits: () => updateCredits(navbarRef, setCredits),
+    });
+
+    setGameOver(true);
+    setGameActive(false);
   };
 
   const getCardImage = (rank, suit) => {
@@ -239,14 +216,7 @@ const Blackjack = () => {
             <h2 className="text-xl text-center text-white">Dealer's Hand:</h2>
             <div className="flex justify-center flex-wrap gap-2">
               {dealerHand.map((card, index) =>
-                gameOver ? (
-                  <img
-                    key={index}
-                    src={getCardImage(card.rank, card.suit)}
-                    alt={`${card.suit} ${card.rank}`}
-                    className="w-20 h-32"
-                  />
-                ) : index === 0 ? (
+                gameOver || index === 0 ? (
                   <img
                     key={index}
                     src={getCardImage(card.rank, card.suit)}
@@ -319,11 +289,10 @@ const Blackjack = () => {
         <div className="buttonStart-container mb-6">
           <button
             onClick={startGame}
-            className={`bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors 
-                            ${
-                              gameActive ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
             disabled={gameActive}
+            className={`bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors ${
+              gameActive ? "opacity-50 cursor-not-allowed" : ""
+            }`}
           >
             Start Game
           </button>
@@ -331,44 +300,34 @@ const Blackjack = () => {
 
         <div className="flex items-center gap-4">
           <select
-            id="bet-amount"
             value={bet}
             onChange={(e) => setBet(Number(e.target.value))}
             className="w-full p-2 bg-gray-900 text-white rounded-lg shadow-md"
           >
             {[10, 20, 50, 100, 200, 500, 1000].map((amount) => (
-              <option
-                key={amount}
-                value={amount}
-                disabled={amount > credits}
-              >
+              <option key={amount} value={amount} disabled={amount > credits}>
                 {amount} Credits
               </option>
             ))}
           </select>
 
-          <img
-            src={`/chips/${bet}.png`}
-            alt={`${bet} chip`}
-           className="w-10 h-10"
-          />
+          <img src={`/chips/${bet}.png`} alt={`${bet} chip`} className="w-10 h-10" />
         </div>
 
         <div className="absolute top-1/2 p-6">
           {message && (
             <div
-              className={`message-container p-4 rounded-xl  shadow-lg ${
+              className={`message-container p-4 rounded-xl shadow-lg ${
                 fade ? "fade-in" : "fade-out"
-              } 
-                        ${
-                          message.includes("lose")
-                            ? "text-red-600   "
-                            : message.includes("win")
-                            ? "text-green-600 "
-                            : message.includes("tie")
-                            ? "text-gray-500 "
-                            : "text-yellow-500 "
-                        }`}
+              } ${
+                message.includes("lose")
+                  ? "text-red-600"
+                  : message.includes("win")
+                  ? "text-green-600"
+                  : message.includes("tie")
+                  ? "text-gray-500"
+                  : "text-yellow-500"
+              }`}
               style={{ transition: "all 0.5s ease" }}
             >
               <h2 className="text-center text-4xl backdrop-blur-sm">{message}</h2>
