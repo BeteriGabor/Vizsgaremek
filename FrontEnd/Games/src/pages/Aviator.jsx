@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import useSound from "use-sound";
 import coinSound from "../components/assets/sounds/coin.wav";
@@ -7,6 +7,8 @@ import loseSound from "../components/assets/sounds/lose.mp3";
 import { placeBet } from "../utils/placeBets";
 import { resolveBet } from "../utils/resolveBet";
 import { updateCredits } from "../utils/updateCredits";
+import { useStatusMessage } from '../hooks/useStatusMessage';
+import { useFlightLogic } from '../hooks/useFlightLogic';
 
 
 const Aviator = () => {
@@ -14,68 +16,14 @@ const Aviator = () => {
   const [playWin] = useSound(winSound);
   const [playLose] = useSound(loseSound);
 
-  const [multiplier, setMultiplier] = useState(1.0);
-  const [isFlying, setIsFlying] = useState(false);
-  const [statusMessage, setStatusMessage] = useState("");
-  const [positions, setPositions] = useState([]);
-  const [isVisible, setIsVisible] = useState(true);
   const [bet, setBet] = useState(10);
   const [gameStarted, setGameStarted] = useState(false);
   const [betId, setBetId] = useState(null);
-  const [fade, setFade] = useState(false);
   const [credits, setCredits] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   const navbarRef = useRef();
-
-  useEffect(() => {
-    updateCredits(navbarRef, setCredits);
-  }, []);
-
-  useEffect(() => {
-    if (statusMessage) {
-      setFade(true);
-      const timer = setTimeout(() => {
-        setFade(false);
-        setStatusMessage("");
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [statusMessage]);
-
-  useEffect(() => {
-    let flightInterval;
-    if (isFlying) {
-      let x = 0, y = 0, m = 1.0;
-      const startTime = Date.now();
-
-      flightInterval = setInterval(() => {
-        m = parseFloat((m * 1.01).toFixed(4));
-        const t = (Date.now() - startTime) / 1000;
-        x = x * 1.00001 + 1;
-        y = Math.max(0, 0.5 * Math.pow(t, 2));
-        setMultiplier(m);
-        setPositions((prev) => [...prev, { x, y }]);
-
-        if (y > 400) {
-          clearInterval(flightInterval);
-          handleCrash(m);
-        }
-      }, 100);
-
-      const crashTime = Math.floor(Math.random() * 12000);
-      const crashTimeout = setTimeout(() => {
-        clearInterval(flightInterval);
-        handleCrash(multiplier);
-      }, crashTime);
-
-      return () => {
-        clearInterval(flightInterval);
-        clearTimeout(crashTimeout);
-      };
-    } else {
-      setPositions([]);
-    }
-  }, [isFlying]);
+  const { message, setMessage, fade } = useStatusMessage();
 
   const handleCrash = async (multiplierValue) => {
     setIsFlying(false);
@@ -88,8 +36,21 @@ const Aviator = () => {
       playLose,
       updateCredits: () => updateCredits(navbarRef, setCredits),
     });
-    setStatusMessage("The plane crashed!");
+    setMessage("The plane crashed!");
   };
+
+  const {
+    multiplier,
+    positions,
+    isFlying,
+    setIsFlying,
+    setMultiplier,
+    setPositions
+  } = useFlightLogic(1.0, handleCrash);
+
+  useEffect(() => {
+    updateCredits(navbarRef, setCredits);
+  }, []);
 
   const handlePlaceBet = async () => {
     const result = await placeBet({
@@ -104,7 +65,7 @@ const Aviator = () => {
       setIsVisible(true);
       setGameStarted(true);
     } else {
-      setStatusMessage(result.message);
+      setMessage(result.message);
     }
   };
 
@@ -112,7 +73,7 @@ const Aviator = () => {
     if (isFlying) {
       const winnings = Math.floor(bet * multiplier);
       setGameStarted(false);
-      setStatusMessage(
+      setMessage(
         `Cashed out: ${multiplier.toFixed(2)}x, You won ${winnings.toFixed(2)} credits!`
       );
       await resolveBet({
@@ -126,7 +87,7 @@ const Aviator = () => {
       setMultiplier(1.0);
       setPositions([]);
     } else {
-      setStatusMessage("There is no active game!");
+      setMessage("There is no active game!");
     }
   };
 
@@ -212,22 +173,20 @@ const Aviator = () => {
           </div>
 
           <div className="absolute my-auto p-6">
-            {statusMessage && (
+            {message && (
               <div
                 className={`message-container p-4 rounded-xl ${
                   fade ? "fade-in" : "fade-out"
                 } ${
-                  statusMessage.includes("crashed")
+                  message.includes("crashed")
                     ? "text-red-600"
-                    : statusMessage.includes("won")
+                    : message.includes("won")
                     ? "text-green-600"
-                    : statusMessage.includes("tie")
-                    ? "text-gray-800"
                     : "text-yellow-500"
                 }`}
                 style={{ transition: "all 0.5s ease" }}
               >
-                <h2 className="text-center text-4xl">{statusMessage}</h2>
+                <h2 className="text-center text-4xl">{message}</h2>
               </div>
             )}
           </div>
