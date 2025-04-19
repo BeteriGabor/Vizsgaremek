@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import Navbar from "../components/Navbar/Navbar";
+import Navbar from "../components/Navbar";
 import axios from "axios";
 import useSound from "use-sound";
 import coinSound from '../components/assets/sounds/coin.wav';
