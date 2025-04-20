@@ -23,7 +23,7 @@ const TransactionTab: React.FC = () => {
   const [filterType, setFilterType] = useState("");
   const token = localStorage.getItem("token");
 
-  const fetchTransactions = async () => {
+  const fetchData = async () => {
     try {
       const [txRes, userRes] = await Promise.all([
         axios.get("http://localhost:1010/transactions/admin/all", {
@@ -33,31 +33,21 @@ const TransactionTab: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
-
-      const usersList = userRes.data.ourUsersList || [];
-      setUsers(usersList);
-
-      const sorted = txRes.data.sort(
-        (a: any, b: any) =>
-          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      );
-      setTransactions(sorted);
+      setTransactions(txRes.data);
+      setUsers(userRes.data.ourUsersList || []);
     } catch (err) {
-      console.error("Hiba az adatok lekérésekor", err);
+      console.error("Hiba a lekérés során:", err);
     }
   };
 
   useEffect(() => {
-    fetchTransactions();
+    fetchData();
   }, []);
 
-  const getUsernameById = (userId: number) => {
-    console.log("Searching for userId:", userId, "in users:", users);
-    const user = users.find((u) => u.id === userId);
+  const getUsername = (userId: number) => {
+    const user = users.find((u: any) => u.id === userId);
     return user ? user.username : `#${userId}`;
   };
-  
-  
 
   const filtered = transactions.filter((t) => {
     const matchesAmount = filterAmount
@@ -73,7 +63,7 @@ const TransactionTab: React.FC = () => {
         <IonToolbar>
           <IonTitle>Tranzakciók</IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={fetchTransactions}>🔄 Frissítés</IonButton>
+            <IonButton onClick={fetchData}>🔄 Frissítés</IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -93,6 +83,7 @@ const TransactionTab: React.FC = () => {
           <IonSelectOption value="">Mind</IonSelectOption>
           <IonSelectOption value="DEPOSIT">Befizetés</IonSelectOption>
           <IonSelectOption value="WITHDRAW">Kivét</IonSelectOption>
+          <IonSelectOption value="BET">Fogadás</IonSelectOption>
         </IonSelect>
 
         <IonList>
@@ -100,9 +91,17 @@ const TransactionTab: React.FC = () => {
             <IonItem key={t.id}>
               <IonLabel>
                 <h2>{t.transactionType}</h2>
-                <p><strong>Felhasználó:</strong> {getUsernameById(t.userId)}</p>
-                <p><strong>Összeg:</strong> {t.amount} credits</p>
-                <p><strong>Dátum:</strong> {new Date(t.timestamp).toLocaleString()}</p>
+                <p>
+                  <strong>Felhasználó ID:</strong> #{t.id}
+                </p>
+
+                <p>
+                  <strong>Összeg:</strong> {t.amount} credits
+                </p>
+                <p>
+                  <strong>Dátum:</strong>{" "}
+                  {new Date(t.timestamp).toLocaleString("hu-HU")}
+                </p>
               </IonLabel>
             </IonItem>
           ))}

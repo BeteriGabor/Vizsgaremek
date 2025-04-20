@@ -2,7 +2,6 @@ package com.casino.UserManagementSystem.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-
 @Entity
 public class Image {
 
@@ -16,15 +15,17 @@ public class Image {
     @Lob
     private byte[] data;
 
-    private Integer userId; // Felhasználóhoz kapcsolódó ID
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private OurUsers user;
 
     private LocalDateTime uploadedAt;
-
-    // Getters and setters
 
     public Image() {
         this.uploadedAt = LocalDateTime.now();
     }
+
+    // Getters and Setters
 
     public Integer getId() {
         return id;
@@ -58,12 +59,12 @@ public class Image {
         this.data = data;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public OurUsers getUser() {
+        return user;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUser(OurUsers user) {
+        this.user = user;
     }
 
     public LocalDateTime getUploadedAt() {

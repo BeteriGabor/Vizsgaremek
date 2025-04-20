@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ImageRepo extends JpaRepository<Image, Integer> {
-    List<Image> findByUserId(Integer userId);
+    void deleteByUser_Id(Integer userId);
 }

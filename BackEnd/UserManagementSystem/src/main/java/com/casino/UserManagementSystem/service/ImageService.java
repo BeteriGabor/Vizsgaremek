@@ -2,78 +2,94 @@ package com.casino.UserManagementSystem.service;
 
 import com.casino.UserManagementSystem.dto.ImageDTO;
 import com.casino.UserManagementSystem.entity.Image;
+import com.casino.UserManagementSystem.entity.OurUsers;
 import com.casino.UserManagementSystem.repository.ImageRepo;
+import com.casino.UserManagementSystem.repository.UsersRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ImageService {
 
     @Autowired
-    private ImageRepo imageRepo;
+    private ImageRepo imageRepository;
 
-    // Kép feltöltése
-    public ImageDTO addImage(Integer userId, MultipartFile file) throws IOException {
-        // Ellenőrizze, hogy a fájl valóban egy kép
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new IllegalArgumentException("Csak képfájlok tölthetők fel!");
+    @Autowired
+    private UsersRepo userRepository;
+
+    public ImageDTO addImage(Integer userId, MultipartFile file) throws Exception {
+        Optional<OurUsers> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            throw new Exception("User not found");
         }
 
-        // Ha a fájl típus helyes, akkor folytatjuk a feltöltést
         Image image = new Image();
+        image.setUser(userOpt.get());
         image.setFileName(file.getOriginalFilename());
-        image.setFileType(contentType);
+        image.setFileType(file.getContentType());
         image.setData(file.getBytes());
-        image.setUploadedAt(LocalDateTime.now());
-        image.setUserId(userId); // A userId beállítása
 
-        // A fájl mentése az adatbázisba
-        Image savedImage = imageRepo.save(image);
+        image = imageRepository.save(image);
 
-        // DTO visszaadása Base64 kódolt képpel
-        ImageDTO imageDTO = new ImageDTO();
-        imageDTO.setFileName(savedImage.getFileName());
-        imageDTO.setFileType(savedImage.getFileType());
-        imageDTO.setId(savedImage.getId());
-        imageDTO.setUserId(savedImage.getUserId());
-
-        imageDTO.setImageBase64(Base64.getEncoder().encodeToString(savedImage.getData())); // Base64 kódolás
-
-        return imageDTO;
+        return convertToDTO(image);
     }
 
-    // Képek lekérése felhasználó ID alapján
     public List<Image> getImagesByUserId(Integer userId) {
-        return imageRepo.findByUserId(userId);
+        return imageRepository.findAll().stream()
+                .filter(img -> img.getUser().getId() == userId)
+                .collect(Collectors.toList());
     }
 
-    // Összes kép lekérése Base64 kódolással
     public List<ImageDTO> getAllImages() {
-        List<Image> images = imageRepo.findAll();
-        return images.stream().map(image -> {
-            ImageDTO imageDTO = new ImageDTO();
-            imageDTO.setId(image.getId());
-            imageDTO.setFileName(image.getFileName());
-            imageDTO.setFileType(image.getFileType());
-            imageDTO.setUserId(image.getUserId());
-            imageDTO.setImageBase64(Base64.getEncoder().encodeToString(image.getData())); // Base64 kódolás
-            return imageDTO;
-        }).collect(Collectors.toList());
+        return imageRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
+
+    public Optional<ImageDTO> getImageByUserId(Integer userId) {
+        return imageRepository.findAll().stream()
+                .filter(image -> image.getUser().getId() == userId)
+                .findFirst()
+                .map(this::convertToDTO);
+    }
+
+    @Transactional
     public boolean deleteImageById(Integer imageId) {
-        if (imageRepo.existsById(imageId)) {
-            imageRepo.deleteById(imageId);
+        Optional<Image> image = imageRepository.findById(imageId);
+        if (image.isPresent()) {
+            imageRepository.deleteById(imageId);
             return true;
-        } else {
-            return false;
         }
+        return false;
+    }
+
+    public boolean hasImageForUser(int userId) {
+        return imageRepository.findAll().stream()
+                .anyMatch(image -> image.getUser().getId() == userId);
+    }
+
+    public void deleteByUser(OurUsers user) {
+        Optional<Image> image = imageRepository.findAll().stream()
+                .filter(img -> img.getUser().getId() == user.getId())
+                .findFirst();
+        image.ifPresent(imageRepository::delete);
+    }
+
+    public ImageDTO convertToDTO(Image image) {
+        ImageDTO dto = new ImageDTO();
+        dto.setId(image.getId());
+        dto.setFileName(image.getFileName());
+        dto.setFileType(image.getFileType());
+        dto.setUserId(image.getUser().getId());
+        dto.setImageBase64(Base64.getEncoder().encodeToString(image.getData()));
+        return dto;
     }
 }

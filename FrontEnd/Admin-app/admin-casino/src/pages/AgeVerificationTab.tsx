@@ -100,21 +100,16 @@ const AgeVerificationTab: React.FC = () => {
     }
   };
 
-  const deleteUserAndImage = async (userId: number, imageId: number) => {
+  const deleteUserAndImage = async (userId: number) => {
     try {
       await axios.delete(`http://localhost:1010/admin/delete/${userId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      await axios.delete(`http://localhost:1010/admin/delete-image/${imageId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
       closeModalAndRefresh();
     } catch (err) {
-      console.error("Hiba a kép és/vagy felhasználó törlésekor", err);
+      console.error("Hiba a törlés közben", err);
     }
   };
 
@@ -197,7 +192,7 @@ const AgeVerificationTab: React.FC = () => {
                     <IonButton
                       expand="block"
                       color="danger"
-                      onClick={() => deleteUserAndImage(userInfo.id, selectedImage.id)}
+                      onClick={() => deleteUserAndImage(userInfo.id)}
                     >
                       Kép ÉS felhasználó törlése
                     </IonButton>

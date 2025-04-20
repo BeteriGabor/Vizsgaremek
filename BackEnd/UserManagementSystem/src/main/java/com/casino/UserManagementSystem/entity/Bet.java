@@ -1,6 +1,9 @@
 package com.casino.UserManagementSystem.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import java.math.BigDecimal;
 
 @Entity
@@ -13,6 +16,7 @@ public class Bet {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private OurUsers user;
 
     private BigDecimal amount; // Fogadott összeg

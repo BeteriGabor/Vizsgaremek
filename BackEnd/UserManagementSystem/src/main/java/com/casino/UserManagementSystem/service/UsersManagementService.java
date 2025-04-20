@@ -5,11 +5,12 @@ import com.casino.UserManagementSystem.dto.RegisterRequestDTO;
 import com.casino.UserManagementSystem.dto.ReqRes;
 import com.casino.UserManagementSystem.entity.OurUsers;
 import com.casino.UserManagementSystem.entity.Wallet;
-import com.casino.UserManagementSystem.repository.TransactionRepo;
-import com.casino.UserManagementSystem.repository.UsersRepo;
-import com.casino.UserManagementSystem.repository.WalletRepo;
+import com.casino.UserManagementSystem.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.User;
@@ -39,6 +40,10 @@ public class UsersManagementService {
     private WalletRepo walletRepo;
     @Autowired
     private TransactionRepo transactionRepo;
+    @Autowired
+    private ImageRepo imageRepo;
+    @Autowired
+    private BetRepository betRepo;
 
     public ReqRes register(RegisterRequestDTO registrationRequest) {
         ReqRes resp = new ReqRes();
@@ -199,13 +204,13 @@ public class UsersManagementService {
         try {
             Optional<OurUsers> userOptional = usersRepo.findById(userId);
             if (userOptional.isPresent()) {
-                // Először töröljük a felhasználóhoz tartozó walletet
+                betRepo.deleteByUserId(userId);
+
                 walletRepo.deleteByUserId(userId);
-
-
                 transactionRepo.deleteByUserId(userId);
-                // Most már törölhetjük a felhasználót
+                imageRepo.deleteByUser_Id(userId);
                 usersRepo.deleteById(userId);
+
 
                 reqRes.setStatusCode(200);
                 reqRes.setMessage("User and related data deleted successfully");
