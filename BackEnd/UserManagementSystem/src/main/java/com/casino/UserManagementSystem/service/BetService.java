@@ -81,8 +81,14 @@ public class BetService {
         }
 
         // A tranzakció rögzítése a "transaction" táblában (a tranzakciók rögzítésére is szükség van)
-        Transaction transaction = new Transaction(bet.getUser(), bet.getAmount(), TransactionType.DEPOSIT);
+        Transaction transaction = new Transaction(
+                bet.getUser(),
+                win ? bet.getAmount() : bet.getAmount().negate(),
+                TransactionType.BET
+        );
         transactionRepository.save(transaction);
+
+
 
         // A frissített fogadás mentése
         betRepository.save(bet);

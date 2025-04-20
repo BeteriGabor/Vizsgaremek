@@ -1,216 +1,54 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import useSound from "use-sound";
+import Navbar from "../components/Navbar";
 import coinSound from "../components/assets/sounds/coin.wav";
 import winSound from "../components/assets/sounds/win.mp3";
 import loseSound from "../components/assets/sounds/lose.mp3";
-import Navbar from "../components/Navbar";
+import { updateCredits } from "../utils/updateCredits";
 import { placeBet } from "../utils/placeBets";
 import { resolveBet } from "../utils/resolveBet";
-import { updateCredits } from "../utils/updateCredits";
-
-const suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
-const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "1"];
-
-const createDeck = () => {
-  const deck = [];
-  for (const suit of suits) {
-    for (const rank of ranks) {
-      deck.push({ suit, rank });
-    }
-  }
-  return deck.sort(() => Math.random() - 0.5);
-};
-
-const getCardValue = (card) => {
-  if (["11", "12", "13"].includes(card.rank)) return 10;
-  if (card.rank === "1") return 11;
-  return parseInt(card.rank);
-};
+import { useBlackjackGame } from "../hooks/useBlackjackGame";
+import { useStatusMessage } from "../hooks/useStatusMessage";
 
 const Blackjack = () => {
   const [playCoin] = useSound(coinSound);
   const [playWin] = useSound(winSound);
   const [playLose] = useSound(loseSound);
-
-  const [deck, setDeck] = useState(createDeck());
-  const [playerHand, setPlayerHand] = useState([]);
-  const [dealerHand, setDealerHand] = useState([]);
-  const [gameOver, setGameOver] = useState(false);
-  const [message, setMessage] = useState("");
-  const [bet, setBet] = useState(10);
-  const [fade, setFade] = useState(false);
-  const [gameActive, setGameActive] = useState(false);
-  const [betId, setBetId] = useState(null);
-  const [credits, setCredits] = useState(0);
-
   const navbarRef = useRef();
 
-  useEffect(() => {
-    updateCredits(navbarRef, setCredits);
-  }, []);
+  const {
+    deck,
+    playerHand,
+    dealerHand,
+    gameOver,
+    gameActive,
+    bet,
+    betId,
+    credits,
+    setBet,
+    startGame,
+    hit,
+    stand,
+    calculateScore,
+    getCardImage,
+    getCardValue,
+  } = useBlackjackGame({
+    playCoin,
+    playWin,
+    playLose,
+    navbarRef,
+    updateCredits,
+    placeBet,
+    resolveBet,
+  });
 
-  useEffect(() => {
-    if (message) {
-      setFade(true);
-      const timer = setTimeout(() => {
-        setFade(false);
-        setMessage("");
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
-
-  const isBlackjack = (hand) => {
-    return (
-      (hand[0].rank === "1" && ["10", "11", "12", "13"].includes(hand[1].rank)) ||
-      (["10", "11", "12", "13"].includes(hand[0].rank) && hand[1].rank === "1")
-    );
-  };
-
-  const calculateScore = (hand, forceAceAsEleven = false) => {
-    let score = hand.reduce((total, card) => total + getCardValue(card), 0);
-    let aces = hand.filter((card) => card.rank === "1").length;
-
-    if (forceAceAsEleven && score <= 21) {
-      score += aces;
-    } else {
-      while (score > 21 && aces) {
-        score -= 10;
-        aces--;
-      }
-    }
-    return score;
-  };
-
-  const startGame = async () => {
-    if (gameActive) {
-      setMessage("A game is already in progress!");
-      return;
-    }
-
-    const result = await placeBet({
-      bet,
-      setBetId,
-      playCoin,
-      updateCredits: () => updateCredits(navbarRef, setCredits),
-    });
-
-    if (!result.success) {
-      setMessage("Failed to place bet");
-      return;
-    }
-
-    const newDeck = createDeck();
-    const playerCards = [newDeck.pop(), newDeck.pop()];
-    const dealerCards = [newDeck.pop(), newDeck.pop()];
-
-    setDeck(newDeck);
-    setPlayerHand(playerCards);
-    setDealerHand(dealerCards);
-    setGameOver(false);
-    setGameActive(true);
-
-    if (isBlackjack(playerCards)) {
-      setMessage("You got a Blackjack! You win!");
-      resolveBet({
-        betId,
-        win: true,
-        multiplier: 2,
-        playWin,
-        playLose,
-        updateCredits: () => updateCredits(navbarRef, setCredits),
-      });
-      setGameOver(true);
-      setGameActive(false);
-    } else if (isBlackjack(dealerCards)) {
-      setMessage("Dealer got a Blackjack! You lose!");
-      resolveBet({
-        betId,
-        win: false,
-        multiplier: 1,
-        playWin,
-        playLose,
-        updateCredits: () => updateCredits(navbarRef, setCredits),
-      });
-      setGameOver(true);
-      setGameActive(false);
-    }
-  };
-
-  const hit = () => {
-    if (gameOver || playerHand.length === 0) return;
-
-    const newDeck = [...deck];
-    const newCard = newDeck.pop();
-    const newHand = [...playerHand, newCard];
-
-    setPlayerHand(newHand);
-    setDeck(newDeck);
-
-    const playerScore = calculateScore(newHand);
-    if (playerScore > 21) {
-      setMessage("You busted! You lose!");
-      resolveBet({
-        betId,
-        win: false,
-        multiplier: 1,
-        playWin,
-        playLose,
-        updateCredits: () => updateCredits(navbarRef, setCredits),
-      });
-      setGameOver(true);
-      setGameActive(false);
-    }
-  };
-
-  const stand = () => {
-    if (gameOver || playerHand.length === 0) return;
-
-    let newDeck = [...deck];
-    let dealerCards = [...dealerHand];
-    const playerScore = calculateScore(playerHand);
-    let dealerScore = calculateScore(dealerCards);
-
-    while (dealerScore < 17) {
-      const newCard = newDeck.pop();
-      dealerCards.push(newCard);
-      dealerScore = calculateScore(dealerCards);
-    }
-
-    setDealerHand(dealerCards);
-    setDeck(newDeck);
-
-    let win = false;
-    if (dealerScore > 21 || playerScore > dealerScore) {
-      setMessage("You win!");
-      win = true;
-    } else if (playerScore < dealerScore) {
-      setMessage("You lose!");
-    } else {
-      setMessage("It's a tie!");
-    }
-
-    resolveBet({
-      betId,
-      win,
-      multiplier: win ? 2 : 1,
-      playWin,
-      playLose,
-      updateCredits: () => updateCredits(navbarRef, setCredits),
-    });
-
-    setGameOver(true);
-    setGameActive(false);
-  };
-
-  const getCardImage = (rank, suit) => {
-    return require(`../components/assets/cards/${suit} ${rank}.png`);
-  };
+  const { message, fade, setMessage } = useStatusMessage();
 
   return (
     <>
       <Navbar ref={navbarRef} />
       <div className="flex flex-col items-center justify-center w-screen h-screen bg-blackjackbg bg-cover overflow-auto">
+        {/* Dealer */}
         <div className="flex flex-wrap justify-center space-x-4 mb-4 w-full max-w-5xl px-4 mt-20">
           <div className="dealer-box p-4 border-2 border-gray-700 bg-green-950 rounded-xl shadow-lg w-full md:w-1/2 lg:w-1/3">
             <h2 className="text-xl text-center text-white">Dealer's Hand:</h2>
@@ -235,14 +73,11 @@ const Blackjack = () => {
             </div>
             <p className="text-xl text-center text-white">
               Dealer's Score:{" "}
-              {gameOver
-                ? calculateScore(dealerHand)
-                : dealerHand.length > 0
-                ? getCardValue(dealerHand[0])
-                : 0}
+              {gameOver ? calculateScore(dealerHand) : dealerHand[0] ? getCardValue(dealerHand[0]) : 0}
             </p>
           </div>
 
+          {/* Player */}
           <div className="player-box p-4 border-2 border-gray-700 bg-green-950 rounded-xl shadow-lg w-full md:w-1/2 lg:w-1/3">
             <h2 className="text-xl text-center text-white">Your Hand:</h2>
             <div className="flex justify-center flex-wrap gap-2">
@@ -261,34 +96,32 @@ const Blackjack = () => {
           </div>
         </div>
 
+        {/* Buttons */}
         <div className="button-container flex justify-center space-x-4 mb-6 w-full max-w-3xl px-4">
           <button
-            onClick={hit}
+            onClick={() => hit(setMessage)}
             disabled={gameOver || playerHand.length === 0}
             className={`bg-orange-500 text-white py-2 px-6 rounded-lg hover:bg-orange-700 transition-opacity ${
-              gameOver || playerHand.length === 0
-                ? "opacity-50 cursor-not-allowed"
-                : "opacity-100 cursor-pointer"
+              gameOver || playerHand.length === 0 ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
             Hit
           </button>
           <button
-            onClick={stand}
+            onClick={() => stand(setMessage)}
             disabled={gameOver || playerHand.length === 0}
             className={`bg-green-500 text-white py-2 px-6 rounded-lg hover:bg-green-700 transition-opacity ${
-              gameOver || playerHand.length === 0
-                ? "opacity-50 cursor-not-allowed"
-                : "opacity-100 cursor-pointer"
+              gameOver || playerHand.length === 0 ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
             Stand
           </button>
         </div>
 
+        {/* Start */}
         <div className="buttonStart-container mb-6">
           <button
-            onClick={startGame}
+            onClick={() => startGame(setMessage)}
             disabled={gameActive}
             className={`bg-blue-600 text-white py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors ${
               gameActive ? "opacity-50 cursor-not-allowed" : ""
@@ -298,6 +131,7 @@ const Blackjack = () => {
           </button>
         </div>
 
+        {/* Bet amount */}
         <div className="flex items-center gap-4">
           <select
             value={bet}
@@ -310,30 +144,27 @@ const Blackjack = () => {
               </option>
             ))}
           </select>
-
           <img src={`/chips/${bet}.png`} alt={`${bet} chip`} className="w-10 h-10" />
         </div>
 
-        <div className="absolute top-1/2 p-6">
-          {message && (
+        {/* Message popup */}
+        {message && (
+          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
             <div
-              className={`message-container p-4 rounded-xl shadow-lg ${
-                fade ? "fade-in" : "fade-out"
+              className={`backdrop-blur-md p-6 rounded-xl text-4xl font-bold shadow-xl text-center transition-opacity duration-300 ${
+                fade ? "opacity-100" : "opacity-0"
               } ${
-                message.includes("lose")
-                  ? "text-red-600"
-                  : message.includes("win")
-                  ? "text-green-600"
-                  : message.includes("tie")
-                  ? "text-gray-500"
-                  : "text-yellow-500"
+                message.toLowerCase().includes("win")
+                  ? "text-green-500"
+                  : message.toLowerCase().includes("lose")
+                  ? "text-red-500"
+                  : "text-yellow-400"
               }`}
-              style={{ transition: "all 0.5s ease" }}
             >
-              <h2 className="text-center text-4xl backdrop-blur-sm">{message}</h2>
+              {message}
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </>
   );

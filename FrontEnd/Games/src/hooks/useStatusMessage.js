@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export const useStatusMessage = () => {
   const [message, setMessage] = useState("");
@@ -15,9 +15,5 @@ export const useStatusMessage = () => {
     }
   }, [message]);
 
-  return {
-    message,
-    setMessage,
-    fade,
-  };
+  return { message, fade, setMessage };
 };
