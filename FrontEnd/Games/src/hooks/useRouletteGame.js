@@ -45,7 +45,7 @@ export const useRouletteGame = ({
       credits < bet ||
       (betType === "number" && (betNumber === "" || betNumber < 0 || betNumber > 36))
     ) {
-      setWinningsMessage({ text: "Please select a valid bet, number, or check your credits!", type: "lose" });
+      setWinningsMessage({ text: "Failed to place bet!", type: "lose" });
       return;
     }
 
