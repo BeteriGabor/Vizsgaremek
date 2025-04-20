@@ -1,15 +1,14 @@
-// src/hooks/useRouletteGame.js
 import { useState, useEffect, useRef } from "react";
 
-const numbers = [
-  0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23,
-  10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26,
-];
-
-const isRed = (num) =>
-  [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(num);
-
-export const useRouletteGame = ({ navbarRef, playCoin, playWin, playLose, updateCredits, placeBet, resolveBet }) => {
+export const useRouletteGame = ({
+  playCoin,
+  playWin,
+  playLose,
+  updateCredits,
+  placeBet,
+  resolveBet,
+  navbarRef,
+}) => {
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState(null);
   const [betAmount, setBetAmount] = useState(10);
@@ -18,7 +17,13 @@ export const useRouletteGame = ({ navbarRef, playCoin, playWin, playLose, update
   const [winningsMessage, setWinningsMessage] = useState({ text: "", type: "" });
   const [betId, setBetId] = useState(null);
   const [credits, setCredits] = useState(0);
+
   const wheelRef = useRef();
+
+  const numbers = [
+    0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23,
+    10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26,
+  ];
 
   useEffect(() => {
     updateCredits(navbarRef, setCredits);
@@ -26,11 +31,14 @@ export const useRouletteGame = ({ navbarRef, playCoin, playWin, playLose, update
 
   const getTextColor = (number) => {
     if (number === 0) return "text-green-600";
-    return isRed(number) ? "text-red-600" : "text-black";
+    return [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(number)
+      ? "text-red-600"
+      : "text-black";
   };
 
   const spinWheel = async () => {
     const bet = parseInt(betAmount);
+
     if (
       spinning ||
       bet <= 0 ||
@@ -48,10 +56,13 @@ export const useRouletteGame = ({ navbarRef, playCoin, playWin, playLose, update
       updateCredits: () => updateCredits(navbarRef, setCredits),
     });
 
-    if (!result.success) {
+    if (!result.success || !result.betId) {
       setWinningsMessage({ text: "Bet failed", type: "lose" });
       return;
     }
+
+    const currentBetId = result.betId;
+    setBetId(currentBetId); // csak tárolás céljából
 
     setSpinning(true);
     setResult(null);
@@ -74,19 +85,19 @@ export const useRouletteGame = ({ navbarRef, playCoin, playWin, playLose, update
       const resultIndex = (numbers.length - indexAtPointer) % numbers.length;
       const winningNumber = numbers[resultIndex];
       setResult(winningNumber);
-      handleBetOutcome(winningNumber);
+      handleBetOutcome(winningNumber, currentBetId);
     }, 5000);
   };
 
-  const handleBetOutcome = (winningNumber) => {
-    const bet = parseInt(betAmount);
+  const handleBetOutcome = (winningNumber, currentBetId) => {
     let winnings = 0;
+    const bet = parseInt(betAmount);
 
-    if (betType === "number" && parseInt(betNumber) === winningNumber) {
+    if (betType === "number" && betNumber == winningNumber) {
       winnings = bet * 35;
-    } else if (betType === "red" && isRed(winningNumber)) {
+    } else if (betType === "red" && getTextColor(winningNumber) === "text-red-600") {
       winnings = bet * 2;
-    } else if (betType === "black" && !isRed(winningNumber) && winningNumber !== 0) {
+    } else if (betType === "black" && getTextColor(winningNumber) === "text-black") {
       winnings = bet * 2;
     } else if (betType === "even" && winningNumber % 2 === 0 && winningNumber !== 0) {
       winnings = bet * 2;
@@ -99,34 +110,34 @@ export const useRouletteGame = ({ navbarRef, playCoin, playWin, playLose, update
     }
 
     resolveBet({
-      betId,
+      betId: currentBetId,
       win: winnings > 0,
-      multiplier: winnings / bet || 1,
+      multiplier: winnings > 0 ? winnings / bet : 1,
       playWin,
       playLose,
       updateCredits: () => updateCredits(navbarRef, setCredits),
     });
 
-    setWinningsMessage({
-      text: winnings > 0 ? `You won ${winnings} credits!` : "You lost",
-      type: winnings > 0 ? "win" : "lose",
-    });
+    if (winnings > 0) {
+      setWinningsMessage({ text: `You won ${winnings} credits!`, type: "win" });
+    } else {
+      setWinningsMessage({ text: "You lost", type: "lose" });
+    }
   };
 
   return {
-    numbers,
     spinning,
     result,
     betAmount,
-    betType,
-    betNumber,
-    winningsMessage,
-    credits,
-    wheelRef,
     setBetAmount,
+    betType,
     setBetType,
+    betNumber,
     setBetNumber,
+    winningsMessage,
     spinWheel,
+    wheelRef,
     getTextColor,
+    numbers,
   };
 };

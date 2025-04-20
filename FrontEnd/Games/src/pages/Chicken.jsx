@@ -1,120 +1,45 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import axios from "axios";
 import useSound from "use-sound";
 import coinSound from "../components/assets/sounds/coin.wav";
 import winSound from "../components/assets/sounds/win.mp3";
 import loseSound from "../components/assets/sounds/lose.mp3";
-
-import { placeBet } from "../utils/placeBets";
-import { resolveBet } from "../utils/resolveBet";
 import { updateCredits } from "../utils/updateCredits";
+import { useChickenGame } from "../hooks/useChickenGame";
 
 const ChickenGame = () => {
   const [playCoin] = useSound(coinSound);
   const [playWin] = useSound(winSound);
   const [playLose] = useSound(loseSound);
-
-  const [position, setPosition] = useState(0);
-  const [obstacle, setObstacle] = useState(Math.floor(Math.random() * 10) + 1);
-  const [gameOver, setGameOver] = useState(false);
-  const [carVisible, setCarVisible] = useState(false);
-  const [bet, setBet] = useState(10);
-  const [message, setMessage] = useState("");
-  const [gameStarted, setGameStarted] = useState(false);
-  const [multiplier, setMultiplier] = useState(1);
-  const [playerWon, setPlayerWon] = useState(false);
-  const [betId, setBetId] = useState(null);
-  const [credits, setCredits] = useState(0);
-
   const navbarRef = useRef();
+
+  const {
+    position,
+    obstacle,
+    gameOver,
+    carVisible,
+    bet,
+    message,
+    gameStarted,
+    multiplier,
+    playerWon,
+    credits,
+    setBet,
+    handlePlaceBet,
+    handleStep,
+    handleCashOut,
+    resetGame,
+    setCredits,
+  } = useChickenGame({
+    playCoin,
+    playWin,
+    playLose,
+    navbarRef,
+  });
 
   useEffect(() => {
     updateCredits(navbarRef, setCredits);
   }, []);
-
-  useEffect(() => {
-    if (gameStarted && !gameOver) {
-      setMultiplier(position * 0.5 + 1);
-    }
-  }, [position, gameStarted, gameOver]);
-
-  const handlePlaceBet = async () => {
-    if (bet <= 0) {
-      setMessage("Invalid bet amount!");
-      return;
-    }
-
-    const result = await placeBet({
-      bet,
-      setBetId,
-      playCoin,
-      updateCredits: () => updateCredits(navbarRef, setCredits),
-    });
-
-    if (!result.success) {
-      setMessage("Bet failed.");
-      return;
-    }
-
-    resetGame();
-    setGameStarted(true);
-    setMessage("");
-    setPlayerWon(false);
-  };
-
-  const handleResolveBet = async (win, multiplierValue) => {
-    await resolveBet({
-      betId,
-      win,
-      multiplier: multiplierValue,
-      playWin,
-      playLose,
-      updateCredits: () => updateCredits(navbarRef, setCredits),
-    });
-
-    if (win) {
-      setMessage(`${(bet * multiplierValue).toFixed(2)} credits!`);
-    } else {
-      setMessage(`You lost your bet of ${bet} credits.`);
-    }
-  };
-
-  const nextStep = () => {
-    if (!gameOver && gameStarted) {
-      const newPosition = position + 1;
-      setPosition(newPosition);
-
-      if (newPosition === obstacle && obstacle !== 11) {
-        setGameOver(true);
-        setCarVisible(true);
-        setPlayerWon(false);
-        handleResolveBet(false, multiplier);
-      } else if (newPosition === 11) {
-        setGameOver(true);
-        setPlayerWon(true);
-        handleResolveBet(true, multiplier * 1.5);
-      }
-    }
-  };
-
-  const stand = () => {
-    if (!gameStarted || gameOver) return;
-    setMessage(`You cashed out with ${(bet * multiplier).toFixed(2)} credits!`);
-    setPlayerWon(true);
-    setGameStarted(false);
-    setGameOver(true);
-    handleResolveBet(true, multiplier);
-  };
-
-  const resetGame = () => {
-    const newObstacle = Math.floor(Math.random() * 11) + 1;
-    setPosition(0);
-    setObstacle(newObstacle);
-    setGameOver(false);
-    setCarVisible(false);
-    setMultiplier(1);
-  };
 
   return (
     <>
@@ -136,7 +61,7 @@ const ChickenGame = () => {
         {!gameOver && (
           <img
             className="w-28 h-28 absolute top-2/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10"
-            onClick={nextStep}
+            onClick={handleStep}
             src="chicken.png"
             alt="Chicken"
           />
@@ -167,7 +92,7 @@ const ChickenGame = () => {
             </button>
             <button
               className="bg-green-700 text-white px-4 py-2 rounded-lg text-base font-bold hover:bg-green-800 transition-colors"
-              onClick={stand}
+              onClick={handleCashOut}
               disabled={!gameStarted || gameOver}
             >
               Cash Out

@@ -29,9 +29,7 @@ public class BetService {
     @Autowired
     private UsersManagementService usersManagementService;
 
-    // Bet elhelyezése
     public Bet placeBet(OurUsers user, BigDecimal amount) {
-        // Ellenőrizzük, hogy a felhasználónak van-e elegendő pénze a fogadáshoz
         Wallet wallet = walletRepository.findByUser(user).orElseThrow(() -> new IllegalArgumentException("Wallet not found"));
         BigDecimal balance = wallet.getBalance();
 
@@ -39,48 +37,36 @@ public class BetService {
             throw new IllegalArgumentException("Insufficient balance");
         }
 
-        // Fogadás létrehozása
         Bet bet = new Bet();
         bet.setUser(user);
         bet.setAmount(amount);
-        bet.setStatus("PENDING"); // Kezdeti státusz
+        bet.setStatus("PENDING");
 
-        // Csökkentjük a felhasználó egyenlegét
         wallet.setBalance(balance.subtract(amount));
         walletRepository.save(wallet);
 
-        // Hozzáadjuk a fogadást az adatbázishoz
         betRepository.save(bet);
 
-        // Visszaadjuk a fogadást
         return bet;
     }
 
-    // Bet kimenetének meghatározása
     public void resolveBet(Bet bet, boolean win, BigDecimal multiplier) {
-        // Ellenőrizzük a státuszt, hogy még ne oldották-e meg
         if (!bet.getStatus().equals("PENDING")) {
             throw new IllegalArgumentException("Bet has already been resolved");
         }
 
-        // A szorzó alapján kiszámoljuk az eredményt
         BigDecimal amountWon = bet.getAmount().multiply(multiplier);
 
-        // Nyerés vagy veszteség kezelése
         if (win) {
-            // Ha nyer, hozzáadjuk a nyert összeget a felhasználó egyenlegéhez
             Wallet wallet = walletRepository.findByUser(bet.getUser()).orElseThrow(() -> new IllegalArgumentException("Wallet not found"));
             wallet.setBalance(wallet.getBalance().add(amountWon));
             walletRepository.save(wallet);
 
-            // A fogadás státuszának frissítése
             bet.setStatus("WIN");
         } else {
-            // Ha veszít, a fogadás státuszának frissítése
             bet.setStatus("LOSE");
         }
 
-        // A tranzakció rögzítése a "transaction" táblában (a tranzakciók rögzítésére is szükség van)
         Transaction transaction = new Transaction(
                 bet.getUser(),
                 win ? bet.getAmount() : bet.getAmount().negate(),

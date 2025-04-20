@@ -18,7 +18,7 @@ function Sign_in() {
     const result = await handleLogin({ username, password });
     if (result.success) {
       alert(result.message || "Login successful!");
-      window.close(); // vagy: navigate("/main"); ha új route-ot akarsz
+      window.close();
     } else {
       alert(result.message || "❌ Login failed! Please check your credentials.");
     }
