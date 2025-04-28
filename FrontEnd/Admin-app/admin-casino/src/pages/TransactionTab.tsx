@@ -92,7 +92,7 @@ const TransactionTab: React.FC = () => {
               <IonLabel>
                 <h2>{t.transactionType}</h2>
                 <p>
-                  <strong>Felhasználó ID:</strong> #{t.id}
+                  <strong>Tranzakció ID:</strong> #{t.id}
                 </p>
 
                 <p>

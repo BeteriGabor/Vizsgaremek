@@ -179,8 +179,8 @@ export const useBlackjackGame = ({
     } else {
       // TIE
       setMessage("It's a tie!");
-      win = true;       // treat as refund
-      multiplier = 1;   // return original bet
+      win = true;    
+      multiplier = 1;
     }
   
     resolveBet({

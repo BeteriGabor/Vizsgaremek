@@ -1,4 +1,3 @@
-// ✅ useSlotGame.js - VÉGLEGES FIXÁLT VÁLTOZAT
 import { useState } from "react";
 import { placeBet } from "../utils/placeBets";
 import { resolveBet } from "../utils/resolveBet";

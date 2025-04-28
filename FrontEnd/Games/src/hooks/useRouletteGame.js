@@ -62,7 +62,7 @@ export const useRouletteGame = ({
     }
 
     const currentBetId = result.betId;
-    setBetId(currentBetId); // csak tárolás céljából
+    setBetId(currentBetId); 
 
     setSpinning(true);
     setResult(null);
