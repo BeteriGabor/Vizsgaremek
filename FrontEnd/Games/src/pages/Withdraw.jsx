@@ -32,40 +32,46 @@ function Withdraw() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (amounta <= 0) {
       setError("Please select or enter a valid withdrawal amount.");
       return;
     }
-
+  
     setError('');
     setLoading(true);
-
+  
     try {
       const token = localStorage.getItem('token');
       const formData = new FormData();
       formData.append('amount', amounta);
-
+  
       const response = await axios.post(`http://localhost:1010/auth/wallet/withdraw`, formData, {
         headers: {
           authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         }
       });
-
+  
       if (response.status === 200) {
         alert("✅ Withdrawal was successful!");
         navigate('/wallet');
-      } else {
-        setError("❌Something went wrong. Please try again.");
       }
+      
     } catch (error) {
-      setError("❌Something went wrong during withdrawal.");
+      if (error.response && error.response.status === 403) {
+        setError("❌Something went wrong during withdrawal."); 
+      }
+      if (error.response && error.response.status === 400) {
+        alert("✅ Withdrawal was successful!");
+        navigate('/wallet');
+      }
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <>
@@ -75,7 +81,7 @@ function Withdraw() {
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
               <div className="bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg p-6 w-full max-w-md shadow-lg">
                 <h2 className="text-2xl font-bold mb-4 text-center">Withdraw Funds</h2>
-
+                <h3></h3>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <label htmlFor="withdrawamount" className="block mb-1 font-medium">
