@@ -1,4 +1,4 @@
 # Projekt Dokumentáció
 
-## A dokumentaciok mappaban
+## A Dokumentumok mappaban
 
